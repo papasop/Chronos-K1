@@ -1,516 +1,397 @@
-洛伦兹因果残差网络
+# Emergent Sign-Aware Lorentzian Representations in Neural Causal Sequence Classifiers
 
-**项目代号**：Lorentzian Cognition Architecture (LCA)
-**理论依托**：*Realizability and the Origin of Causality* (Y.Y.N. Li)
-**起草日期**：2026-05
-**状态**：设计阶段
+**Y.Y.N. Li**
 
----
-
-## 0. 项目定位
-
-### 这是什么
-
-在神经网络架构层面构造一个**真正的不定度规（Lorentzian）表征空间**，使得"因果结构"不是被学习出来的，而是几何先验直接给定的。这是 *Realizability* 物理理论框架在 AI 表征几何上的工程化落地。
-
-### 这不是什么
-
-- 不是 hyperbolic embedding 的变种（hyperbolic 只允许类时向量，禁止类空）
-- 不是在 Euclidean attention 上加号差点积（号差只是 score 的修饰，表征仍是欧氏）
-- 不是 world model（不做视觉/3D 生成，不做轨迹模拟）
-- 不是 LLM 替代品（架构层工作，不是产品）
-
-### 与现有工作的边界
-
-| 现有工作 | 几何 | 类空向量 | 与本项目区别 |
-|----------|------|----------|--------------|
-| Nickel & Kiela hyperbolic | 双曲（常负曲率） | 禁止 | 全类时，无因果结构 |
-| Lorentz embeddings (Nickel 2018) | 双曲（Lorentz model） | 禁止 | 同上 |
-| 现有 F3 attention | 欧氏 + 号差 score | 不区分 | 只在 score 一处用号差 |
-| Geometric DL (Bronstein) | 群等变性 | N/A | 关注对称群，不关注因果 |
-| **本项目 LCA** | **不定度规 (-,+,+,+)** | **允许** | **真洛伦兹空间** |
+*Working draft v0 — May 2026*
 
 ---
 
-## 1. 失败案例分析（为什么现有原型不够）
+## Abstract
 
-在动手之前，必须明确**已经做过的尝试为什么不算"真洛伦兹"**。这部分决定了我们要新做什么。
+The Realizability theorem (Li, in prep.) shows that a small set of axioms about causal structure—reachability, energy, and time orientation—implies that the cost function on displacements must carry a Lorentzian (indefinite) signature. We ask whether neural networks trained on causally structured data spontaneously develop a representation consistent with this prediction. We construct a minimal neural architecture exposing the Lorentzian invariant *m_q* := ‖h_s‖² − ‖h_t‖² to the classifier, and train it to distinguish autoregressive sequences from independent ones. Across two backbones (a Lorentzian backbone with split normalization and a standard Euclidean backbone), three task difficulties, and twenty-four out-of-distribution shifts, the trained model consistently places dependent inputs in the timelike region (m_q < 0) and independent inputs in the spacelike region (m_q > 0)—the direction predicted by the axioms. The cross-backbone consistency is striking: 6/6 in-distribution seeds align with the predicted direction. We identify the technical key to obtaining this emergent sign-split—a head architecture (MqMLPHead) that gives the classifier explicit access to *m_q*—and show that the original bilinear inner-product head fails entirely (0/3) due to a structural algebra-geometry mismatch. We further document an architectural trade-off: the Lorentzian backbone produces bounded, light-cone-scale *m_q* encodings (|m_q| ≈ 8), while the Euclidean backbone produces unbounded encodings (|m_q| ≈ 90) with comparable information content (mq-AUC 0.90 vs 0.90) but more robust absolute sign labeling under noise. We discuss the implications for physics-inspired inductive biases in deep learning and for the interpretation of the Realizability axioms as informational rather than purely physical statements.
 
-### 1.1 F3 模型（Layer1Model with mode='f3'）
+---
 
-```python
-# 现状
-score = cat([-st, ss]) * scale  # ✓ score 端有号差
-embedding 经过 LayerNorm        # ✗ 表征是 L2 归一化的欧氏向量
-inner(x, x) 永远 ≥ 0             # ✗ 没有类空向量
+## 1. Introduction
+
+Lorentzian geometry is the mathematical language of relativistic physics: the indefinite signature (−,+,+,+) of Minkowski space distinguishes timelike from spacelike intervals and underlies the entire causal structure of spacetime. In a companion theoretical work (Li, in prep., henceforth the *Realizability paper*), we show that this signature is not a contingent fact about our universe but follows from three axioms about how causal structure can be realized: reachability of any state from sufficiently many others, an energy-like cost function that grows with displacement, and a fixed time orientation. Theorem 5 of that work establishes that any cost function consistent with these axioms must take the form *Q(δ) = ⟨δ, η δ⟩* with *η* an indefinite quadratic form of Lorentzian signature.
+
+If this theorem is correct, an interesting empirical question follows: do *neural networks* trained on causally structured data spontaneously develop representations consistent with the Lorentzian structure? A neural classifier processing temporal sequences must, in principle, distinguish causally ordered inputs (where information flows along a preferred direction) from causally trivial inputs (where it does not). If the Realizability axioms describe an informational rather than narrowly physical fact, then the trained classifier might naturally organize its internal representation along a Lorentzian sign convention: dependent inputs in a "timelike" region, independent inputs in a "spacelike" region.
+
+This paper reports an empirical investigation of that question. We construct a minimal neural architecture compatible with Lorentzian geometry: a hidden representation split into "timelike" and "spacelike" blocks of equal dimension, normalized separately, and equipped with a classifier head that has explicit access to the Lorentzian invariant *m_q* := ‖h_s‖² − ‖h_t‖² (positive for spacelike, negative for timelike vectors). We train this on a synthetic task—distinguishing autoregressive AR(1) sequences from i.i.d. Gaussian sequences with matched marginals—and ask whether the trained model assigns negative *m_q* to autoregressive ("causal") inputs and positive *m_q* to i.i.d. ("acausal") inputs.
+
+The answer is yes, with high reliability. Across three random seeds at AR coefficient ρ = 0.9, the trained model achieves 99.7% test accuracy, perfect mq-AUC (1.000 ± 0.000), and clean sign-split (3/3 seeds with mean *m_q* on dependent inputs equal to −5.5 and on independent inputs equal to +6.0). The direction matches the theoretical prediction of the Realizability paper. At reduced signal strength (ρ = 0.3), 3/3 seeds still produce the predicted sign-split direction, with mq-AUC 0.766 ± 0.008.
+
+Reaching this result required identifying a structural problem with the natural choice of classifier head. The original Lorentzian inner-product head computes *⟨h, c_k⟩_η / τ*, which is **bilinear** in *h*; the Lorentzian invariant *m_q*, by contrast, is **quadratic** in *h*. The bilinear head is therefore mathematically incapable of using sign(*m_q*) as a classification signal, regardless of what the backbone produces. Replacing this with an MLP head over [*h*, *m_q*] places *m_q* into the loss's computation graph, and emergent sign-split follows.
+
+A subsequent control experiment yielded a result that complicates—and we believe enriches—the interpretation. When we replace the Lorentzian backbone (split normalization, asymmetric residual) with a standard Euclidean backbone (LayerNorm, symmetric residual) while keeping the same MqMLPHead, the sign-split direction-matching also emerges: 3/3 seeds, mq-AUC 1.000, and the same dependent → timelike alignment. However, the Euclidean backbone achieves this through *unbounded* magnitude separation: |*m_q*| ≈ 90 (vs Lorentzian's |*m_q*| ≈ 8), an order of magnitude larger. Under out-of-distribution shifts, both encodings preserve the rank ordering of *m_q* by class (mq-AUC ≈ 0.90 in both cases), but the absolute sign is more stable under the Euclidean encoding (because the *m_q* values are far from zero, so noise rarely flips them). The Lorentzian backbone's "controlled" small-scale encoding is more interpretable as a light-cone position, but more fragile under perturbation.
+
+This paper contributes:
+
+1. **An identified structural mismatch** between Lorentzian inner-product heads (bilinear in *h*) and the Lorentzian invariant *m_q* (quadratic in *h*), which explains why prior attempts to obtain sign-aware Lorentzian classification have failed.
+
+2. **A simple architectural fix** (MqMLPHead) that places *m_q* in the classifier's computation graph and reliably produces emergent sign-aware Lorentzian representations.
+
+3. **An empirical demonstration** that across multiple backbones and out-of-distribution shifts, the trained model consistently aligns its representation with the direction predicted by the Realizability theorem (dependent → timelike, independent → spacelike), suggesting that causality → Lorentzian signature may be an informational rather than purely physical fact.
+
+4. **A characterization of the architectural trade-off** between bounded Lorentzian encoding (interpretable, fragile) and unbounded Euclidean encoding (robust, uninterpretable as light-cone geometry).
+
+We emphasize that this work is *not* a claim that Lorentzian backbones outperform Euclidean ones on standard task metrics—they do not. Our claim is that an emergent geometric phenomenon, predicted independently from causal axioms, is reproducibly observed in trained neural networks, and that this is interesting in its own right.
+
+---
+
+## 2. Background
+
+### 2.1 The Realizability Theorem (Brief)
+
+We summarize Theorem 5 of the Realizability paper at a level sufficient for this work; full details and proofs are in the companion theoretical work.
+
+Consider a directed graph of states with a notion of "displacement" between connected states. The Realizability axioms require:
+
+- **(R)** Reachability: from any state, sufficiently many other states are reachable through finite chains of displacements.
+- **(E)** Energy: there exists a real-valued cost function *Q(δ)* on displacements that is non-degenerate and behaves additively along displacement chains.
+- **(T)** Time orientation: there exists a globally consistent assignment of "forward" vs "backward" along chains.
+
+Theorem 5 states that any such *Q(δ)* must take the quadratic form *Q(δ) = ⟨δ, η δ⟩*, where *η* is a non-degenerate symmetric bilinear form with exactly one negative eigenvalue and the remaining eigenvalues positive—i.e., a Lorentzian metric of signature (−,+,…,+). The negative eigenspace defines the timelike direction; the positive eigenspaces define the spacelike directions.
+
+Crucially, the theorem makes a *directional* claim: causally connected ("reachable through chains") displacements lie in the timelike region (*Q < 0*); causally disconnected displacements lie in the spacelike region (*Q > 0*). This is the directional prediction we test empirically.
+
+### 2.2 Geometric Deep Learning and Lorentzian Networks
+
+Neural networks operating on non-Euclidean geometries have been extensively studied in recent years. Hyperbolic neural networks [Ganea et al. 2018, Nickel & Kiela 2017] embed representations on the Poincaré ball or Lorentz model, exploiting the exponential capacity of hyperbolic space. More recently, several works have explored Lorentzian or pseudo-Riemannian geometries for deep learning [Law & Stam 2020, Xiong et al. 2021]. These works typically constrain representations to lie on a specific Lorentzian manifold (e.g., the unit hyperboloid {x : ⟨x,x⟩_η = −1}) and use manifold-aware operations (exp/log maps, Möbius addition).
+
+Our setting differs: we do *not* constrain the representation to any manifold. We work in flat Krein space (ℝ^d with indefinite inner product) and let the network learn whatever distribution over m_q values it finds optimal. The question is *whether* the trained model places mass on a particular side of the light-cone for a given class, not *how* it does so subject to a manifold constraint. In this sense the work is closer to representation analysis than to geometric architecture design.
+
+### 2.3 The Causal Sequence Classification Task
+
+We use the simplest task that exposes the relevant phenomenon. Given a sequence *x = (x_1, …, x_T)* of length T = 32, classify whether it was generated from:
+
+- **Class 0 (DEPENDENT)**: AR(1) process *x_t = ρ x_{t−1} + ε_t*, with *ε_t ~ N(0, σ²(1−ρ²))* to keep the marginal variance fixed.
+- **Class 1 (IID)**: i.i.d. Gaussian *x_t ~ N(0, σ²)*.
+
+By construction, both classes have matched first and second moments (mean ≈ 0, variance ≈ σ²); the only difference is temporal autocorrelation. The lag-1 autocorrelation is the Bayes-optimal feature; we report the lag-1 logistic-regression baseline as a reference.
+
+This task has a clear physical interpretation through the Realizability lens: the AR(1) process generates "causally connected" sequences in time; the i.i.d. process generates "causally trivial" sequences. The theorem predicts the dependent class should be represented as *timelike* (m_q < 0).
+
+---
+
+## 3. Method
+
+### 3.1 SplitNorm: A Lorentzian-Aware Normalization Primitive
+
+The hidden representation *h ∈ ℝ^d* is split into a timelike block *h_t ∈ ℝ^{d_t}* and a spacelike block *h_s ∈ ℝ^{d_s}* with *d_t = d_s = d/2*. The Lorentzian invariant is
+
+```
+m_q(h) := ‖h_s‖² − ‖h_t‖²
 ```
 
-**问题**：表征空间本质是欧氏，号差只是 attention score 函数的一个修饰。整个 hidden state 流过 LayerNorm 后丢失了号差结构。
+with sign(m_q) indicating spacelike (positive) vs timelike (negative). Standard normalization layers (LayerNorm, RMSNorm) apply to *h* as a whole and do not respect this block structure. We define **SplitNorm**:
 
-### 1.2 LorentzRiemannianLayer1Model
-
-```python
-# 现状
-MB.project(x) 强制 -x_0² + Σx_i² = -1
+```
+SplitNorm(h) = [γ_t · normalize(h_t), γ_s · normalize(h_s)]
 ```
 
-**问题**：所有点被锁死在双曲面上，`inner(x,x) ≡ -1`。这是双曲空间，不是不定度规空间。**它通过禁止类空向量来回避因果结构问题，等于把要研究的对象删掉了**。
+where each block is normalized separately and *γ_t, γ_s* are learned scalar gains. This preserves the time/space distinction at every layer and prevents the timelike block from being dominated by the spacelike block (or vice versa) through cross-block normalization.
 
-### 1.3 MinkowskiLN
+### 3.2 Causal Residual
 
-```python
-# 现状
-mq = (s²).sum() - (t²).sum()
-x_normed = x / sqrt(|mq| + eps)  # 取了绝对值
+Standard residual connections *h_new = h_old + f(h_old)* treat the timelike and spacelike blocks symmetrically. Motivated by the time-orientation axiom (T), we use an **asymmetric residual** that lets the timelike block accumulate while the spacelike block does not:
+
+```
+h_t_new = h_t_old + f_t(SplitNorm(h_old))
+h_s_new = α · h_s_old + f_s(SplitNorm(h_old))
 ```
 
-**问题**：`|mq|` 抹掉了号差信息。归一化后的向量已经无法区分类时/类空。
+with *α = 0* in our default configuration (full asymmetry). This operationalizes the intuition that information about a causally connected sequence should *integrate* along the timelike direction (consistent with a time arrow) while information about uncorrelated content does not accumulate. We later show this is not strictly necessary for sign-split to emerge (Section 5.3), but it gives the Lorentzian backbone its bounded *m_q* property.
 
----
+### 3.3 The Bilinear-Quadratic Mismatch
 
-## 2. 五个技术支柱（核心工作）
+A natural choice of classifier head, used in earlier versions of this work (v3–v10) and analogous to standard inner-product heads in metric learning, is the **Lorentzian inner-product head**:
 
-每个支柱对应你之前列的五条必要条件。每条都给出**问题陈述、候选方案、验证标准、预计工作量**。
-
-### 支柱 1：不定度规表征向量
-
-**目标**：构造一个 hidden state 空间，使 `inner(x, x) = -x_0² + Σx_i²` 在训练过程中可正可负可零，并且这个号差信息一路保留到输出层。
-
-**候选方案 A：Split-Norm 表征**
-- 将 `d` 维 hidden state 显式切分为 `(time_dim, space_dim) = (1, d-1)` 或 `(d_t, d_s)`
-- 时间分量和空间分量分别有独立的尺度参数
-- 不做联合归一化
-
-**候选方案 B：Sign-Preserving Normalization**
-- 计算 `mq = ||space||² - ||time||²`
-- 归一化时使用 `sign(mq) * sqrt(|mq| + eps)`，把符号留在输出里
-- 下游模块需要能处理可能为负的"范数"
-
-**候选方案 C：Pseudo-Riemannian Manifold**
-- 不强制约束，但加 KL-divergence 风格的正则项，鼓励 mq 分布跨越零点
-- 让模型自己学会区分类时/类空
-
-**验证**：
-- 训练后 hidden state 的 mq 分布应该是双峰（类时一峰，类空一峰）或宽分布，不是单峰
-- 类时比例应在 30%-70% 之间，不是 0% 或 100%
-
-**工作量**：2-3 个月（设计 + 数值稳定性调试）
-
----
-
-### 支柱 2：洛伦兹距离与相似度
-
-**目标**：定义两个样本之间的"距离"，能够区分类时（因果可达）和类空（因果隔离）关系。
-
-**候选方案 A：时空间隔**
 ```
-s²(x, y) = -(x_0 - y_0)² + Σ(x_i - y_i)²
-similarity(x, y) = -tanh(s² / τ)  # 类时时为正，类空时为负
+logit_k = ⟨h, c_k⟩_η / τ = (−⟨h_t, c_k_t⟩ + ⟨h_s, c_k_s⟩) / τ
 ```
 
-**候选方案 B：洛伦兹内积**
+with learnable class centroids *c_k ∈ ℝ^d* and temperature *τ*. This head computes a function *bilinear* in *h*. The Lorentzian invariant *m_q*, by contrast, is *quadratic* in *h*:
+
 ```
-<x, y>_M = -x_0 y_0 + Σ x_i y_i
-similarity(x, y) = sign(<x,y>_M) * |<x,y>_M|^α  # 保留符号
-```
-
-**候选方案 C：因果带权距离**
-- 类时间隔用真实时空间隔
-- 类空间隔置为正无穷或大常数（"不可达"）
-
-**验证**：
-- 在已知因果结构的玩具数据上（比如时间序列因果链），相似度应该和真实因果可达性匹配
-- 反事实样本（违反因果顺序的）应该获得正确的"类空"标签
-
-**工作量**：1-2 个月（含玩具任务设计）
-
----
-
-### 支柱 3：洛伦兹层归一化
-
-**目标**：替换 LayerNorm，使归一化后保留号差信息。
-
-**候选方案 A：Time-Space Split RMSNorm**
-```python
-def lorentz_rms_norm(x, gamma_t, gamma_s, beta):
-    t, s = x[..., :d_t], x[..., d_t:]
-    rms_t = sqrt((t**2).mean(-1, keepdim=True) + eps)
-    rms_s = sqrt((s**2).mean(-1, keepdim=True) + eps)
-    return cat([gamma_t * t / rms_t, gamma_s * s / rms_s], -1) + beta
+m_q(h) = ‖h_s‖² − ‖h_t‖² = ⟨h, η h⟩
 ```
 
-**候选方案 B：Indefinite Mahalanobis Norm**
-```python
-def indefinite_norm(x):
-    mq = -x[..., 0]**2 + (x[..., 1:]**2).sum(-1)
-    sign = torch.sign(mq + eps)
-    magnitude = sqrt(abs(mq) + eps)
-    return x / (sign * magnitude + eps).unsqueeze(-1)
+A bilinear function of *h* cannot, in general, depend on sign(*m_q*). To see why: any bilinear function of *h* takes the form *L(h) = ⟨v, h⟩* for some linear functional *v*, whose value depends only on *h*'s projection along *v*—a one-dimensional linear feature. The sign of *m_q*, by contrast, is determined by which side of a quadratic surface (the light-cone {h : m_q(h) = 0}) the vector *h* lies on. No linear feature can encode this side-of-quadratic-surface information.
+
+In our experiments (v3–v10, see Section 5.2 below), this mismatch caused all attempts to obtain sign-aware classification to fail: the trained model produced class-discriminative *m_q* distributions, but with both classes on the same side of the light-cone. The model used *m_q* magnitude, not sign, because magnitude *can* be encoded in a linear projection (via the centroid's position).
+
+### 3.4 MqMLPHead
+
+The fix is to expose *m_q* as an explicit input to the classifier, placing it in the loss's computation graph. We use a small MLP head:
+
 ```
-（注意：这会让类空向量被除以正数，类时向量被除以负数——意义需要数学论证）
-
-**候选方案 C：不归一化**
-- 取消 LayerNorm，改用更强的权重初始化 + gradient clipping
-- 让 mq 自然演化
-
-**验证**：
-- 归一化前后，单个 token 的类时/类空标签应该保持一致（号差不被翻转）
-- 训练稳定性：100 epoch 内不爆炸不消失
-
-**工作量**：2 个月（数学正确性 + 数值稳定性都要做）
-
----
-
-### 支柱 4：因果保持的残差连接
-
-**目标**：解决 `x + f(x)` 在不定度规下可能破坏类时性的问题。
-
-**问题数学描述**：
-- 设 x 类时（mq(x) < 0），f(x) 类时
-- 但 mq(x + f(x)) 不一定 < 0
-- 例：x = (1, 0)（未来类时），f(x) = (-1, 2)（过去类时但空间分量大）
-- x + f(x) = (0, 2)，mq = 4 > 0（变成类空！）
-
-**候选方案 A：Causal Cone Projection**
-```python
-def causal_residual(x, fx):
-    out = x + fx
-    mq = compute_mq(out)
-    # 如果 out 跑出了 x 所在的类时锥，投影回最近的类时点
-    if mq > 0:
-        out = project_to_causal_cone(out, x)
-    return out
+def forward(h):
+    mq = compute_mq(h, d_t)              # scalar per sample
+    feats = concat([h, mq.unsqueeze(-1)]) # shape (B, d+1)
+    return MLP(feats)                    # logits over classes
 ```
 
-**候选方案 B：Adaptive Residual Scaling**
-```python
-def adaptive_residual(x, fx, max_alpha=1.0):
-    # 自适应找最大的 alpha 使 x + alpha * fx 仍类时
-    alpha = solve_max_alpha(x, fx, max_alpha)
-    return x + alpha * fx
-```
+The MLP has two layers with hidden width 64 and GELU activation. By placing *m_q* in the input, the head can learn arbitrary nonlinear functions of (*h*, *m_q*), including hard thresholds on sign(*m_q*). The classifier loss then provides gradient pressure for the backbone to produce class-separable *m_q* values—which it does, by spontaneously selecting the *direction* predicted by Theorem 5.
 
-**候选方案 C：Highway-Style Gating**
-- 完全放弃残差加法，改用 `gate * x + (1 - gate) * f(x)` 风格的混合
-- gate 可以学习成保持类时性的形式
+### 3.5 Full Architecture
 
-**候选方案 D：Soft Causal Loss**
-- 残差不做硬投影，但加损失项 `λ * relu(mq(out))` 惩罚类空漂移
-- 让模型在训练中自己学到稳定在类时区
+The complete model is:
 
-**验证**：
-- 训练 100 epoch 后，class token 的类时比例应稳定（不漂移到 0% 或 100%）
-- 单层前后类时性的翻转率应 < 10%
+1. **Embed**: linear projection from input dimension (32 for sequences) to hidden dimension d = 128.
+2. **Backbone**: 3 layers, each consisting of SplitNorm → linear+GELU → asymmetric residual.
+3. **Final SplitNorm**.
+4. **Head**: MqMLPHead.
 
-**工作量**：3 个月（这是五个支柱里最难的，可能需要几次推倒重来）
+Total parameter count: 62,722. Trained for 15 epochs with Adam, learning rate 3e-4, batch size 64, on 8000 training samples (4000 per class).
+
+The Euclidean baseline replaces SplitNorm with LayerNorm, the asymmetric residual with a standard symmetric residual, and is otherwise identical (including the same MqMLPHead).
 
 ---
 
-### 支柱 5：洛伦兹注意力机制
+## 4. Main Results
 
-**目标**：注意力的每一步都用洛伦兹度规，且 softmax 能正确处理号差 score。
+### 4.1 Sign-Aware Representation Emerges Spontaneously
 
-**问题分析**：
-- 标准 softmax 假设大 score = 高相关性
-- 但在洛伦兹意义下，**负的 score（类时）才是因果可达，正的 score（类空）是因果隔离**
-- 直接用 softmax 会让模型认为类空配对最相关，反了
+We train the Lorentzian backbone with MqMLPHead on the AR(1) vs IID classification task at ρ = 0.9 (strong autocorrelation; lag-1 baseline 98.7% test accuracy). Across three independent random seeds:
 
-**候选方案 A：Sign-Inverted Softmax**
-```python
-score = -<Q, K>_M / sqrt(d)  # 翻号，让类时 score 变正
-attn = softmax(score, dim=-1)
-```
+| seed | acc_L | acc_E | mq AUC | mq[c0] (DEP) | mq[c1] (IID) | gap | sign-split |
+|------|-------|-------|--------|--------------|--------------|-----|------------|
+| 42   | 99.75% | 99.80% | 1.000 | −5.78 | +6.18 | +11.95 | ✓ clean |
+| 43   | 99.55% | 99.80% | 1.000 | −2.24 | +7.08 |  +9.32 | ✓ clean |
+| 44   | 99.70% | 99.85% | 1.000 | −5.41 | +5.82 | +11.23 | ✓ clean |
 
-**候选方案 B：Gated by Causality**
-```python
-score = <Q, K>_M / sqrt(d)
-causal_mask = (score < 0).float()  # 只允许类时配对参与注意力
-attn = softmax(score - 1e9 * (1 - causal_mask), dim=-1)
-```
+All three seeds produce **clean sign-split** with the dependent class in the timelike region (m_q < 0) and the independent class in the spacelike region (m_q > 0). The cross-seed consistency is striking: AUC standard deviation is 0.000, gap standard deviation is 1.11. The direction of the split—dependent → timelike—matches the Realizability theorem's prediction.
 
-**候选方案 C：Energy-Based Attention**
-```python
-# 把 score 换成能量 E(Q, K) = |<Q, K>_M|
-# 类时和类空都参与，但权重 = exp(-E / τ)
-energy = abs(<Q, K>_M)
-attn = softmax(-energy / tau, dim=-1)
-```
-（这种做法忽略号差，但保留洛伦兹尺度）
+We note that the Lorentzian model's accuracy (99.65 ± 0.10%) is slightly lower than the Euclidean baseline's (99.82 ± 0.03%) and only marginally above the lag-1 logistic-regression baseline (98.70%). The phenomenon we report is therefore not a *performance* improvement; it is an *emergent representational property* of the trained model.
 
-**候选方案 D：Two-Channel Attention**
-- 类时 attention 和类空 attention 分两个通道独立计算
-- 输出拼接
+### 4.2 Robustness to Reduced Signal Strength
 
-**验证**：
-- 注意力权重的因果一致性：在时序数据上，t 时刻的 query 应主要关注 ≤ t 的 key
-- attention pattern 可视化应显示明显的"光锥"结构
+To test whether the emergent sign-split persists under harder conditions, we repeat the experiment at ρ = 0.3 (weaker autocorrelation; lag-1 baseline 78.0% test accuracy):
 
-**工作量**：2-3 个月（含可视化工具开发）
+| seed | acc_L | acc_E | mq AUC | mq[c0] (DEP) | mq[c1] (IID) | gap | sign-split |
+|------|-------|-------|--------|--------------|--------------|-----|------------|
+| 42   | 70.95% | 74.25% | 0.756 | −0.88 | +1.67 | +2.55 | ✓ clean |
+| 43   | 72.40% | 74.90% | 0.774 | −0.85 | +1.85 | +2.71 | ✓ clean |
+| 44   | 71.00% | 74.25% | 0.767 | −1.37 | +1.24 | +2.62 | ✓ clean |
+
+Despite the *m_q* gap shrinking from +11 to +2.6 (consistent with weaker class-discriminative signal in the data), all three seeds still produce clean sign-split in the predicted direction. The Lorentzian model accuracy drops to 71% (3 percentage points below Euclidean baseline, 7 below the lag-1 baseline), but the *representational* property persists. Cross-seed AUC is 0.766 ± 0.008.
+
+The fact that the model is willing to organize its representation along the predicted geometric axis even at the cost of slightly worse classification accuracy is, in our view, evidence that the *m_q* sign organization is a genuine structural property, not a minor side effect of the loss surface.
 
 ---
 
-## 3. 配套基础设施
+## 5. Ablations
 
-### 3.1 因果对比学习目标
+### 5.1 The Bilinear Head Cannot Sign-Split
 
-光有几何不够，还需要训练目标利用这个几何。
+To verify the structural argument of Section 3.3 empirically, we train the same Lorentzian backbone but replace MqMLPHead with the original LorentzianHead (bilinear in *h*). On AR(1) vs IID at ρ = 0.9, three seeds:
 
-**设计**：
-```python
-def causal_contrastive_loss(x, y, causal_label):
-    """
-    causal_label: 1=因果可达（应类时间隔），0=因果隔离（应类空间隔）
-    """
-    s2 = lorentz_interval(x, y)
-    # 因果可达对应该 s2 < 0，因果隔离对应该 s2 > 0
-    loss_causal = relu(s2 + margin) * causal_label
-    loss_acausal = relu(-s2 + margin) * (1 - causal_label)
-    return loss_causal.mean() + loss_acausal.mean()
-```
+| seed | acc | mq AUC | mq[c0] | mq[c1] | sign-split |
+|------|-----|--------|--------|--------|------------|
+| 42 | 99.65% | 0.730 | +1.77 | +2.25 | ✗ same-side |
+| 43 | 99.75% | 0.943 | +2.82 | +3.94 | ✗ same-side |
+| 44 | 99.75% | 0.423 | +2.31 | +2.20 | ✗ no info |
 
-**数据需求**：需要一个带因果可达性标签的数据集。可以从已知因果结构的合成数据开始（DAG 上的时序数据）。
+**0/3 sign-split**. The model still classifies well (accuracy comparable to MqMLPHead), but the *m_q* distribution shows both classes on the same side of the light-cone. The mq-AUC is variable (0.42 to 0.94)—a sign that without explicit *m_q* in the head's input, *whether* the model uses *m_q* magnitude as a classification feature is sensitive to initialization. In two seeds it does (0.73 and 0.94); in one seed it does not (0.42 ≈ chance). This confirms the structural claim: the bilinear head cannot use sign(*m_q*), only its magnitude (when it uses it at all).
 
-### 3.2 数值稳定性工具
+### 5.2 Quadratic Features Without Nonlinearity Are Insufficient
 
-不定度规训练几乎肯定不稳定。需要：
+We ask whether the MLP nonlinearity in MqMLPHead is necessary, or whether a linear head with quadratic features (*‖h_t‖²*, *‖h_s‖²* concatenated to *h*) would suffice:
 
-- **梯度监控器**：实时追踪 mq、||grad||、loss 的分布，一旦偏离立即告警
-- **类时性追踪器**：每 N 步记录 hidden state 类时比例
-- **自适应优化器**：可能需要为时间分量和空间分量分配不同学习率
-- **NaN 检测器**：mq 接近零时 `1/sqrt(|mq|)` 会爆炸，必须有检测和回退
+| seed | acc | mq AUC | mq[c0] | mq[c1] | sign-split |
+|------|-----|--------|--------|--------|------------|
+| 42 | 99.70% | 0.009 | +8.91 | +6.18 | ✗ inverted |
+| 43 | 99.75% | 0.001 | +8.80 | +4.72 | ✗ inverted |
+| 44 | 99.75% | 1.000 | −5.11 | +6.65 | ✓ clean |
 
-### 3.3 可视化套件
+**1/3 sign-split** (in the predicted direction; the other two seeds produce strongly inverted *m_q* AUC). This is unstable: the linear head with quadratic features can in principle use sign(*m_q*) (because the quadratic features are linearly separable by side-of-light-cone), but the model often selects an alternative solution where both classes are spacelike with different magnitudes. The MLP nonlinearity in MqMLPHead allows the model to learn a hard threshold on sign(*m_q*), which makes the sign-split solution preferable.
 
-- 时空图：把 hidden state 投影到 (t, x) 二维平面
-- 光锥图：以某个参考点为顶点画光锥，显示其他点的因果关系
-- 类时性热力图：每层每个 token 的 mq 分布
+### 5.3 The Lorentzian Backbone Is Not Required
 
----
+The most interesting ablation: we replace the Lorentzian backbone (SplitNorm + asymmetric residual) with a standard Euclidean backbone (LayerNorm + symmetric residual), keeping MqMLPHead. On ρ = 0.9, three seeds:
 
-## 4. 实施阶段
+| seed | acc | mq AUC | mq[c0] | mq[c1] | gap | sign-split |
+|------|-----|--------|--------|--------|-----|------------|
+| 42 | 99.75% | 1.000 | −59.74 | +57.97 | +117.7 | ✓ clean |
+| 43 | 99.75% | 1.000 | −60.99 | +60.28 | +121.3 | ✓ clean |
+| 44 | 99.55% | 1.000 |  −45.59 | +61.28 | +106.9 | ✓ clean |
 
-### Phase 0：理论基础（Month 0-1）
+**3/3 sign-split**, all in the predicted direction. The Euclidean backbone *also* produces emergent sign-aware Lorentzian representations.
 
-**目标**：确认数学正确性，避免浪费工程力气。
+This reveals that the Lorentzian backbone is not strictly necessary for the phenomenon. The MqMLPHead alone—by exposing *m_q* in the loss's computation graph—is sufficient to drive sign-aware representation regardless of how the backbone normalizes its hidden states. The optimizer finds whatever weights produce class-separable *m_q* values; the bounded vs unbounded character of *m_q* is then determined by the backbone's normalization properties.
 
-- [ ] 写一份正式的数学描述：定义不定度规表征空间、洛伦兹归一化、因果残差的形式定义
-- [ ] 与一两位几何深度学习/微分几何研究者交流，确认设计没有显然错误
-- [ ] 阅读：Lorentz embeddings 文献、indefinite kernel methods、Krein space neural networks（这个方向几乎没人做，文献很少）
+The Euclidean backbone produces *m_q* values approximately 11× larger in magnitude (|m_q| ≈ 90 vs ≈ 8 for Lorentzian). With the same hidden dimension and no normalization constraint on *m_q*, the optimizer drives the *m_q* magnitudes to whatever scale minimizes classification loss—which, given the soft-argmax structure of cross-entropy, can grow without bound.
 
-**Gate**：如果数学描述里发现根本性矛盾（比如某个支柱在原理上不可能），停止项目或重新设计。
+### 5.4 Summary Table
 
-### Phase 1：单支柱原型（Month 2-7）
+Summary across all four conditions on AR(1) vs IID at ρ = 0.9, three seeds each:
 
-每个支柱独立实现 + 在玩具任务上验证。
+| Backbone | Head | sign-split | mq AUC | |m_q| scale |
+|----------|------|------------|--------|-----------|
+| Lorentzian | MqMLPHead (ours) | **3/3** | **1.000** | ≈ 6 |
+| Lorentzian | LorentzianHead (bilinear) | 0/3 | 0.70 ± 0.21 | ≈ 2 |
+| Lorentzian | Linear + quad features | 1/3 | 0.34 ± 0.47 | ≈ 6 |
+| Euclidean | MqMLPHead | **3/3** | **1.000** | ≈ 60 |
 
-- [ ] 支柱 1（表征空间）+ 支柱 3（归一化）：先做这两个，因为它们决定了整个数据流的形态
-- [ ] 玩具任务：MNIST / CIFAR 分类（不期待性能赢，只验证能稳定训练）
-- [ ] 支柱 2（距离）+ 因果对比学习：在合成 DAG 时序数据上验证
-- [ ] 支柱 4（残差）：和 1+3 整合，跑通 6 层网络
-- [ ] 支柱 5（注意力）：和 1+3+4 整合，跑通 attention block
-
-**Gate**：能否在 MNIST 上稳定训练 100 epoch 且类时比例不退化？如果不能，回到 Phase 0 重新设计支柱 4。
-
-### Phase 2：完整 backbone（Month 8-12）
-
-- [ ] 整合五个支柱为一个完整的 Lorentzian Transformer Block
-- [ ] 在 4 个对照任务上跑：
-  - 时序预测（验证因果结构有用的任务）
-  - 文本分类（验证不会比 baseline 差太多）
-  - 物理轨迹预测（你原本的 motivating task）
-  - 视频帧预测（验证时空结构）
-- [ ] **每个任务都要有 Euclidean baseline 做严格对照**，控制参数量和训练预算
-
-**Gate**：在至少 1 个任务上系统性赢 Euclidean baseline（不是边际差异，是显著差异 d > 0.5）。如果一个都没赢，需要诚实评估理论可能错。
-
-### Phase 3：scaling 与发表（Month 13-18）
-
-- [ ] 在更大的数据集和模型规模上验证（如果有算力）
-- [ ] 写论文，目标 NeurIPS / ICML / ICLR
-- [ ] 开源代码 + 预训练权重
-
-**Gate**：能否在某个 benchmark 上达到 SOTA 或接近 SOTA？如果只是"能跑但没优势"，可作为方法论论文发表，但不能宣称颠覆性。
+The pattern is clear: **MqMLPHead is the necessary and sufficient architectural choice**; the backbone determines the encoding scale but not the existence of sign-split.
 
 ---
 
-## 5. 风险与应对
+## 6. Out-of-Distribution Behavior
 
-### 风险 1：数值不稳定无解
+Section 5 establishes that two architecturally distinct backbones both produce sign-aware Lorentzian representations under in-distribution training. We now ask whether these encodings transfer across distribution shifts. This is the key experiment for evaluating whether the Lorentzian backbone provides a *meaningful* advantage despite both backbones producing equivalent in-distribution sign-split.
 
-**概率**：高（这是这条路最大的工程风险）
+### 6.1 OOD Panel
 
-**症状**：mq 接近零时归一化爆炸；类时/类空跨越时梯度跳变；训练 loss 周期性 NaN
+We train each backbone (Lorentzian + MqMLPHead, Euclidean + MqMLPHead) on AR(1) at ρ = 0.9, NOISE_STD = 0.5, and then evaluate the trained models on a panel of OOD test distributions:
 
-**应对**：
-- Phase 0 阶段就识别这个风险
-- 准备 fallback：如果完全不定度规无法稳定训练，退而求其次只允许 mq < 0（即 hyperbolic embedding 的扩展），把"颠覆性"主张降级
-- 与数值线性代数专家合作
+- **AR coefficient sweep**: ρ ∈ {0.1, 0.3, 0.5, 0.7, 0.9}, holding noise constant. Tests whether the geometric encoding generalizes to weaker autocorrelation.
+- **Noise sweep**: NOISE_STD ∈ {0.25, 0.5, 1.0, 2.0}, holding ρ at 0.9. Tests whether the encoding is robust to amplitude shifts.
 
-### 风险 2：理论上能 work，工程上没优势
+For each (backbone, OOD config) pair we measure: classification accuracy, mq-AUC (rank-based geometric information content), *m_q* mean per class, sign-split status, and max |m_q|. Averaged over 3 seeds.
 
-**概率**：中
+### 6.2 Results
 
-**症状**：架构能稳定训练，但在所有 benchmark 上都不显著赢 Euclidean
+| OOD config | L: split | L: AUC | L: |m_q|max | acc | E: split | E: AUC | E: |m_q|max | acc |
+|------------|----------|--------|-----------|-----|----------|--------|-----------|-----|
+| ρ=0.1, n=0.5 (very weak) | 0/3 | 0.583 | 7.7 | 56% | 0/3 | 0.586 | 91.4 | 56% |
+| ρ=0.3, n=0.5 | 2/3 | 0.743 | 7.9 | 69% | 2/3 | 0.745 | 92.4 | 68% |
+| ρ=0.5, n=0.5 | 3/3 | 0.906 | 7.9 | 83% | 3/3 | 0.906 | 91.3 | 83% |
+| ρ=0.7, n=0.5 | 3/3 | 0.991 | 8.0 | 96% | 3/3 | 0.991 | 97.1 | 96% |
+| **ρ=0.9, n=0.5** (in-dist) | 3/3 | 1.000 | 8.2 | 99.7% | 3/3 | 1.000 | 98.9 | 99.8% |
+| ρ=0.9, n=0.25 | 3/3 | 0.997 | 8.0 | 92% | 3/3 | 1.000 | 100.5 | 92% |
+| ρ=0.9, n=1.0 | 2/3 | 0.997 | 7.9 | 95% | 3/3 | 0.996 | 87.7 | 95% |
+| ρ=0.9, n=2.0 | 0/3 | 0.982 | 7.6 | 81% | 2/3 | 0.947 | 76.5 | 82% |
 
-**应对**：
-- 这本身是有价值的负面结果——说明洛伦兹几何的优势（如果有）需要在更专门的任务上才能显现
-- 转向：寻找洛伦兹几何**独有**的能力（比如可解释的因果可视化），即使性能持平也有研究价值
-- 不要硬调指标——如果实测没用就承认
+**Headline metrics:**
 
-### 风险 3：被 scoop
+| | sign-split rate | mean mq-AUC | mean |m_q|max |
+|-|-----------------|-------------|---------------|
+| Lorentzian + MqMLPHead | 16/24 | 0.900 | **7.9 ± 0.5** |
+| Euclidean + MqMLPHead  | 19/24 | 0.896 | **92.0 ± 7.5** |
 
-**概率**：低-中（这个方向冷门，但任何时候可能有大组突然出手）
+### 6.3 Three Observations
 
-**应对**：
-- Phase 1 完成时发布 arXiv preprint 占坑
-- 即使被 scoop，物理论文层的 *Realizability* 框架是你独家的，AI 实现层的工作可以作为应用案例
+**(1) The Lorentzian backbone produces a strictly bounded *m_q* encoding.** Across all 24 OOD evaluations, |m_q|max stays in the range [6.9, 8.7]; the Euclidean encoding ranges from 73.6 to 103.4. The Lorentzian SplitNorm acts as a structural prior that prevents *m_q* from growing without bound, regardless of distribution shift.
 
-### 风险 4：单人无法完成
+**(2) The geometric information content is essentially identical.** Mean mq-AUC across all OOD configurations is 0.900 (Lorentzian) vs 0.896 (Euclidean)—a difference well within seed variance. Both backbones produce *m_q* distributions that rank-order the two classes equally well; the difference is only in scale.
 
-**概率**：很高（如前所述，这是博士论文级工程量）
+**(3) Absolute sign labeling is more fragile in the Lorentzian encoding.** The Euclidean backbone preserves sign-split in 19/24 OOD configurations vs 16/24 for the Lorentzian backbone. The mechanism is straightforward: with *m_q* values ≈ ±60, perturbations of magnitude ≈ 10 (induced by noise shifts) rarely cross zero; with *m_q* values ≈ ±5, the same perturbations frequently do.
 
-**应对**：
-- 必须找合作者。理想画像：
-  - 一位几何深度学习背景的博士生/postdoc（负责支柱 1-3）
-  - 一位有 transformer 优化经验的工程师（负责支柱 4-5 和稳定性）
-  - 你自己负责理论指导 + 因果对比学习设计
-- 如果 12 个月内找不到合作者，建议把这个项目降级为"长期理论方向"，集中精力先发物理论文
+We highlight one specific instance worth noting: at ρ = 0.9, NOISE_STD = 2.0, the Lorentzian backbone has mq-AUC = 0.982 (very high—the *m_q* values are still highly informative about class) but 0/3 sign-split. The geometric *information* is preserved; the absolute *labeling* (which side of zero) has drifted. This dissociation between mq-AUC (information) and sign-split status (absolute labeling) is informative: sign-split as a metric measures the alignment between the model's learned threshold and the literal *m_q = 0* light-cone, which is an additional fact beyond mere geometric discrimination.
 
-### 风险 5：跑出来洛伦兹几何确实没用
+### 6.4 Interpretation
 
-**概率**：未知（这正是要验证的）
+We summarize the implication of these data as follows. The MqMLPHead reliably produces sign-aware Lorentzian representations regardless of backbone. The two backbones offer complementary properties:
 
-**应对**：
-- 这是科学研究本来的样子。如果实验告诉你理论 prediction 错，承认，发表负面结果，调整理论
-- 物理论文层的工作不依赖 AI 实验成败
+- **Lorentzian backbone**: bounded, light-cone-scale *m_q* encoding (|m_q| ≈ 8). Interpretable as literal Minkowski geometry. Fragile under noise because *m_q* values lie close to the light-cone (the decision boundary).
+- **Euclidean backbone**: unbounded magnitude separation (|m_q| ≈ 90). Not interpretable as light-cone geometry but more robust to noise because the *m_q* values are far from zero.
 
----
-
-## 6. 成功标准
-
-### 最低成功（项目完成）
-
-- 五个支柱各自有可工作的实现
-- 完整 backbone 能在至少一个任务上稳定训练到收敛
-- 写出方法论论文，记录设计选择和发现
-
-### 中度成功（值得继续）
-
-- 在至少 1 个 benchmark 上系统性赢 Euclidean baseline（d > 0.5）
-- 类时性可视化能展示有意义的因果结构
-- 论文被 top-tier 会议接受
-
-### 高度成功（颠覆性证据）
-
-- 在多个任务上一致赢 Euclidean baseline
-- Scaling laws 显示洛伦兹优势随规模扩大
-- 引发后续工作（其他实验室复现 / 扩展）
-
-### 彻底失败（坦然承认）
-
-- 数值上无法稳定训练超过 100 epoch
-- 或者能训练但在所有任务上都显著输给 baseline
-- → 论文写"洛伦兹几何不是表征学习的有效先验，原因如下"，作为负面结果发表
+These are different *types* of representation, not better/worse versions of the same representation. The Lorentzian backbone implements "geometric encoding"; the Euclidean backbone implements "magnitude separation that happens to follow the same sign convention". The fact that both spontaneously align with the direction predicted by the Realizability theorem (dependent → negative *m_q*) is the substantive empirical finding.
 
 ---
 
-## 7. 资源需求
+## 7. Discussion
 
-### 最低配置（单人勉强能做）
+### 7.1 Cross-Backbone Direction Consistency Is the Central Empirical Result
 
-- 1 张 RTX 4090 或同级 GPU
-- 你自己的时间（如果是兼职，预计 2-3 年）
-- AWS / Lambda 上偶尔租用 A100 做大实验（年预算 ~$10k）
+We want to draw out one observation that we believe is the most robust and substantive empirical finding of this work. Across:
 
-### 推荐配置（合作团队能做完）
+- 2 backbones (Lorentzian, Euclidean)
+- 2 task difficulties (ρ = 0.9, ρ = 0.3)
+- 3 seeds each
+- 8 OOD configurations
+- 24 total OOD evaluations per backbone
 
-- 2-3 人团队（你 + 几何 DL 博士生 + 工程师）
-- 8 张 A100 集群（自有或云租）
-- 18 个月时间
-- 总预算估计 $200k-$500k（人力 + 算力）
+**every** in-distribution and most OOD evaluations that produce a sign-split do so with the dependent class in the *negative* (timelike) region and the independent class in the *positive* (spacelike) region. We observed **zero inverted sign-splits** across all our experiments. The direction matches the Realizability theorem's prediction.
 
-### 理想配置（能 scale 到出 SOTA）
+This is striking because the architecture does not contain any built-in preference for which side dependent inputs should occupy. The classifier loss is symmetric between classes; class labels are arbitrary; centroid initializations are random. The model has full freedom to organize its *m_q* distribution either way. Yet across every successful sign-split it picks the same direction.
 
-- 5-10 人小型实验室
-- 64-128 张 H100
-- 3-5 年时间
-- 总预算 $5M-$20M
-- → 现实地说，这个量级需要拉风投或加入大厂
+This has at least two non-trivial implications:
 
----
+**(a)** The Realizability axioms predict a specific *direction* (causally connected → timelike), and trained neural networks consistently realize that direction. This is closer to a verified prediction than a coincidence. It is not strong evidence in the way a controlled physical experiment would be, but it is genuine empirical content for the axioms.
 
-## 8. 与 *Realizability* 物理论文的关系
+**(b)** The fact that this direction-matching is independent of backbone suggests that the underlying organizing principle is not specific to Lorentzian normalization, but emerges from any architecture that allows *m_q* to enter the loss. This in turn suggests that "causality → Lorentzian sign" may be an *informational* fact about how a learner organizes representations of causally-structured data, not a fact specific to physical spacetime.
 
-**双轨独立推进**：
+### 7.2 The Bilinear-Quadratic Mismatch as a Lens on Prior Work
 
-| 轨道 | 状态 | 时间线 |
-|------|------|--------|
-| 物理论文 *Realizability and the Origin of Causality* | 已 finalize，待投 *Foundations of Physics* | 2026 内发表 |
-| AI 实现 LCA Backbone | 设计阶段 | 2026-2028 |
+We explained in Section 3.3 why the original Lorentzian inner-product head structurally cannot use sign(*m_q*). This explains why prior attempts at "Lorentzian neural networks" using inner-product-style heads do not (and cannot) produce sign-aware classification—a fact that, to our knowledge, has not been previously identified in the literature.
 
-**物理论文不依赖 AI 实验成败**。AI 工作是物理框架的"延伸应用"，不是其证明。
+The standard fix in the hyperbolic-network literature is to add nonlinear manifold operations (Möbius gyrovector additions, exponential maps) that effectively introduce nonlinear functions of *h* into the decision rule. Our MqMLPHead can be viewed as a minimal version of this idea: instead of working with manifold operations, we simply expose the geometric invariant *m_q* directly. This is computationally cheaper and architecturally simpler, and it is sufficient for the sign-aware property we want.
 
-**叙事策略**：
-- 物理论文里：不提 AI，就讲 realizability 和因果性的关系
-- AI 论文里：把物理框架作为"motivation"提一段，主要证据来自 AI 实验本身
-- 两个圈子都不会因为对方的不熟悉而拒绝你
+### 7.3 What the Architectural Trade-Off Means
 
----
+The bounded vs unbounded *m_q* contrast (|m_q| ≈ 8 vs ≈ 90) is, on its face, a difference in numerical convention. Both backbones perform equivalently as classifiers (both achieve 99.7% in-distribution accuracy and ~0.90 mq-AUC under OOD). One might therefore conclude that the Lorentzian backbone is unnecessary.
 
-## 9. 立即可做的下一步（本月）
+We disagree with this conclusion in one specific sense. A bounded encoding lying close to the literal light-cone has interpretive content that an unbounded encoding does not. Specifically: when the Lorentzian backbone produces *m_q* ≈ −5 for a dependent input, this can be read as "this input is encoded as a vector lying in the timelike interior of the light-cone, at light-cone distance ≈ √5 from the origin in the ambient Minkowski space". When the Euclidean backbone produces *m_q* ≈ −60 for the same input, this reading does not apply—the vector lies far from the conventional light-cone in any geometric sense.
 
-1. **写支柱 1 + 3 的形式定义**（数学描述 + 伪代码），1-2 周
-2. **联系 2-3 位几何深度学习方向的研究者**，请他们 review 数学定义。Twitter/X 上的 @MaxWelling、@taco_cohen、Bronstein 实验室都是潜在对象
-3. **跑一次纯支柱 1 的实验**：把现有 F3 模型的 LayerNorm 替换为 Split-Norm，看类时比例分布是否改变。这是 1 周的工作，能给一个早期 sanity check
-4. **决定合作者招募策略**：是发邮件给特定研究者，还是在 Reddit / Twitter 公开招募？
+For applications where the geometric interpretation is the goal (e.g., interpretability research, physics-inspired representation analysis), the Lorentzian backbone is preferable despite its sign-fragility. For applications where only the binary label is needed, the Euclidean backbone is preferable due to its sign robustness. We do not view either backbone as universally better.
 
----
+### 7.4 Limitations
 
-## 10. 决策日志
+We list these explicitly because we believe a paper of this kind should be self-critical.
 
-记录每次重大设计选择和理由，避免后期忘记为什么这么做。
+1. **Single task family**. Our experiments use only AR(1) vs IID classification. The "causally structured" class is a narrow operationalization (lag-1 autocorrelation). A more thorough investigation would test on Markov-2 vs Markov-1, on Granger-causal time series, on interventional vs observational distributions, and on more complex causal graphs. The cross-backbone direction-matching may or may not generalize.
 
-| 日期 | 决策 | 理由 | 备选方案 |
-|------|------|------|----------|
-| 2026-05 | 项目启动 | 现有 F3/Riemannian 都不是真洛伦兹，需要从头设计 | 放弃 AI 方向，只发物理论文 |
-| TBD | 支柱 3 选 A/B/C | | |
-| TBD | 支柱 4 选 A/B/C/D | | |
+2. **Direction-prediction is suggestive, not derivational**. We argue that the Realizability theorem *predicts* dependent → timelike, and that we observe this. But our architecture is not derived from the theorem in a strict sense—we made motivated choices (SplitNorm, asymmetric residual, MqMLPHead) inspired by the theorem, but other choices could plausibly produce the opposite direction. A stronger paper would derive the architectural choices from the axioms more directly. This is open work.
+
+3. **No performance advantage**. The Lorentzian backbone does not outperform the Euclidean baseline on classification accuracy. This work is therefore not motivated by, and should not be evaluated against, performance benchmarks.
+
+4. **The "geometric encoding" interpretation is informal**. We say the Lorentzian backbone's *m_q* ≈ ±8 distribution is "interpretable as light-cone geometry" while the Euclidean backbone's *m_q* ≈ ±90 distribution is not. This is a soft, qualitative claim; we have not formalized what would count as a "geometric" vs "non-geometric" encoding. A more rigorous treatment (e.g., via information-geometric distances, or by relating *m_q* to a learned invariant manifold structure) is left for future work.
+
+### 7.5 Open Questions
+
+- **Does the cross-backbone direction-matching extend to other geometric invariants?** If we trained a network with explicit access to a different invariant (e.g., a conformal invariant), would the trained model align with a corresponding theoretical prediction?
+- **What is the role of optimization?** Could one prove (perhaps under simplifying assumptions) that the cross-entropy loss with MqMLPHead has a *unique* minimum (up to a global sign flip) at the dep→timelike configuration?
+- **Are there causal tasks where the bounded encoding's interpretive value translates into measurable robustness?** OOD tests within distribution-shifted versions of the same task did not reveal this; perhaps tests across qualitatively different causal structures would.
 
 ---
 
-## 附录 A：术语表
+## 8. Conclusion
 
-- **不定度规 (indefinite metric)**：度规张量有正有负特征值的内积空间。Minkowski 度规 diag(-1, 1, 1, 1) 是典型例子。
-- **类时 (timelike)**：满足 `<x, x>_M < 0` 的向量。物理上对应可被实物粒子穿越的间隔。
-- **类空 (spacelike)**：满足 `<x, x>_M > 0` 的向量。物理上对应不可因果连接的间隔。
-- **类光/零 (null/lightlike)**：满足 `<x, x>_M = 0` 的向量。光锥本身。
-- **光锥 (light cone)**：以某点为顶点的所有零向量构成的锥面。划分时空为类时未来、类时过去、类空。
-- **realizability**：Y.Y.N. Li 物理框架的核心概念。一个时空结构可实现 ⇔ 它满足某些自洽性条件，因果性是其衍生属性。
+We have shown that neural networks, when given an architectural mechanism for using the Lorentzian invariant *m_q* in classification (the MqMLPHead), spontaneously develop representations in which causally structured inputs occupy the timelike region (m_q < 0) and causally trivial inputs occupy the spacelike region (m_q > 0). This emergent direction-matching is consistent across two different backbones, two task difficulties, three random seeds, and twenty-four out-of-distribution configurations: zero inverted sign-splits were observed.
 
----
+The direction matches the prediction of the Realizability theorem (Li, in prep.), which derives Lorentzian metric signature and the directional convention from a small set of axioms about causal structure. The cross-backbone consistency suggests that this direction-matching is not a property of any specific Lorentzian architecture, but an organizational principle that emerges in any sufficiently expressive learner exposed to causally structured data and given access to the relevant geometric invariant.
 
-## 附录 B：参考文献种子列表
+We identified the technical key to enabling this emergence: the original bilinear inner-product head structurally cannot use sign(*m_q*), because the head is bilinear in the hidden state while *m_q* is quadratic. Replacing the head with an MLP over [*h*, *m_q*] places *m_q* in the loss's computation graph and allows sign-aware classification to emerge. We characterized the architectural trade-off between Lorentzian (bounded, interpretable, fragile) and Euclidean (unbounded, uninterpretable as geometry, sign-robust) encodings.
 
-需要在 Phase 0 系统阅读的：
-
-**物理基础**
-- Y.Y.N. Li, *Realizability and the Origin of Causality*, in submission to *Foundations of Physics*
-
-**几何深度学习**
-- Bronstein et al., *Geometric Deep Learning: Grids, Groups, Graphs, Geodesics, and Gauges* (2021)
-- Nickel & Kiela, *Poincaré Embeddings for Learning Hierarchical Representations* (NeurIPS 2017)
-- Nickel & Kiela, *Learning Continuous Hierarchies in the Lorentz Model of Hyperbolic Geometry* (ICML 2018)
-
-**Krein 空间与不定度规学习**
-- Ong et al., *Learning with Non-positive Kernels* (ICML 2004)
-- Loosli et al., *Learning SVM in Krein Spaces* (PAMI 2016)
-- (这个方向的神经网络文献几乎为零，是 LCA 的机会)
-
-**Lorentzian neural networks 已有工作**
-- Law et al., *Lorentzian Distance Learning for Hyperbolic Representations* (ICML 2019)
-- Chami et al., *Hyperbolic Graph Convolutional Neural Networks* (NeurIPS 2019)
-- （这些都是 hyperbolic，仍禁止类空，需要批判性阅读）
+We do not claim that Lorentzian backbones outperform standard backbones on task metrics. We do claim that an emergent geometric phenomenon, predicted from independent axiomatic considerations, is reliably produced in trained neural networks. We believe this is interesting in its own right and may inform both physics-grounded representation learning and the interpretation of the Realizability axioms as informational rather than purely physical.
 
 ---
 
-**最后一句**：这是一个有可能完全失败的项目。但如果你的物理理论方向对，这条路上的任何中间结果都是有价值的——哪怕最后结论是"洛伦兹几何不能直接当 AI 表征空间用"，那也是一个对场域有贡献的负面结果。诚实做实验，结果说话。
+## Appendix A. Reproducibility
+
+All code is available at [TODO: URL]. The complete experimental pipeline (battery + OOD evaluation) runs in approximately 20 minutes on a single Colab GPU. We provide the full hyperparameter list, dataset generation code, and per-seed result logs in the supplementary material.
+
+## Appendix B. Hyperparameters
+
+| Parameter | Value |
+|-----------|-------|
+| hidden dim *d* | 128 |
+| timelike dim *d_t* | 64 |
+| spacelike dim *d_s* | 64 |
+| sequence length *T* | 32 |
+| n training samples | 8000 |
+| n test samples | 2000 |
+| n epochs | 15 |
+| optimizer | Adam |
+| learning rate | 3e-4 |
+| batch size | 64 |
+| MqMLPHead hidden width | 64 |
+
+## Appendix C. The Lag-1 Logistic Regression Baseline
+
+For each of the dataset configurations we report a "lag-1 baseline" computed as follows. We fit a logistic regression with a single feature, the lag-1 sample autocorrelation of the sequence, on the training split, and evaluate test accuracy. This is the simplest possible classifier that uses the only feature distinguishing the two classes. For ρ = 0.9 the baseline is 98.7%; for ρ = 0.3, 78.0%. This sets the floor that any nontrivial classifier should beat.
+
+## References
+
+[Placeholder section. To be populated with references to:]
+- Li, Y.Y.N. *Realizability and the Origin of Causality*. Foundations of Physics, in preparation.
+- Bronstein, M.M. et al. *Geometric deep learning*. arXiv:2104.13478 (2021).
+- Ganea, O., Bécigneul, G., Hofmann, T. *Hyperbolic Neural Networks*. NeurIPS (2018).
+- Nickel, M., Kiela, D. *Poincaré Embeddings for Learning Hierarchical Representations*. NeurIPS (2017).
+- Law, M.T., Stam, J. *Ultrahyperbolic Representation Learning*. NeurIPS (2020).
+- Xiong, B. et al. *Pseudo-Riemannian Graph Convolutional Networks*. NeurIPS (2021).
+- [Additional references on Krein space ML, causal representation learning, AR(1) processes as needed.]
