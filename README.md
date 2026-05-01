@@ -1,4 +1,4 @@
-# 真正的洛伦兹 Backbone 设计工作计划
+洛伦兹因果残差网络
 
 **项目代号**：Lorentzian Cognition Architecture (LCA)
 **理论依托**：*Realizability and the Origin of Causality* (Y.Y.N. Li)
