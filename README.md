@@ -8,7 +8,7 @@
 
 ## Abstract
 
-The Realizability theorem (Li, in prep.) shows that a small set of axioms about causal structure—reachability, energy, and time orientation—implies that the cost function on displacements must carry a Lorentzian (indefinite) signature. We ask whether neural networks trained on causally structured data spontaneously develop a representation consistent with this prediction. We construct a minimal neural architecture exposing the Lorentzian invariant *m_q* := ‖h_s‖² − ‖h_t‖² to the classifier, and train it to distinguish autoregressive sequences from independent ones. Across two backbones (a Lorentzian backbone with split normalization and a standard Euclidean backbone), three task difficulties, and twenty-four out-of-distribution shifts, the trained model consistently places dependent inputs in the timelike region (m_q < 0) and independent inputs in the spacelike region (m_q > 0)—the direction predicted by the axioms. The cross-backbone consistency is striking: 6/6 in-distribution seeds align with the predicted direction. We identify the technical key to obtaining this emergent sign-split—a head architecture (MqMLPHead) that gives the classifier explicit access to *m_q*—and show that the original bilinear inner-product head fails entirely (0/3) due to a structural algebra-geometry mismatch. We further document an architectural trade-off: the Lorentzian backbone produces bounded, light-cone-scale *m_q* encodings (|m_q| ≈ 8), while the Euclidean backbone produces unbounded encodings (|m_q| ≈ 90) with comparable information content (mq-AUC 0.90 vs 0.90) but more robust absolute sign labeling under noise. We discuss the implications for physics-inspired inductive biases in deep learning and for the interpretation of the Realizability axioms as informational rather than purely physical statements.
+The Realizability theorem (Li, in prep.) shows that a small set of axioms about causal structure—reachability, energy, and time orientation—implies that the cost function on displacements must carry a Lorentzian (indefinite) signature. We ask whether neural networks trained on causally structured data spontaneously develop a representation consistent with this prediction. We construct a minimal neural architecture exposing the Lorentzian invariant *m_q* := ‖h_s‖² − ‖h_t‖² to the classifier, and train it to distinguish autoregressive sequences from independent ones. Across two backbones (a Lorentzian backbone with split normalization and a standard Euclidean backbone), three task difficulties, and twenty-four out-of-distribution shifts, the trained model consistently places dependent inputs in the timelike region (m_q < 0) and independent inputs in the spacelike region (m_q > 0)—the direction predicted by the axioms. The cross-backbone consistency is striking: 6/6 in-distribution seeds align with the predicted direction, with zero inverted sign-splits across all natural-training configurations. We identify the technical key to obtaining this emergent sign-split—a head architecture (MqMLPHead) that gives the classifier explicit access to *m_q*—and show that the original bilinear inner-product head fails entirely (0/3) due to a structural algebra-geometry mismatch between bilinear heads and the quadratic invariant. Under sample-level OOD metrics, the two backbones are essentially indistinguishable (mq-AUC 0.901 vs 0.898; strong sign-split 11/24 vs 11/24), reaching the same generalization performance through what turn out to be different mechanisms: the Lorentzian backbone produces bounded, light-cone-scale encodings (|m_q| ≈ 8) while the Euclidean backbone produces unbounded magnitude separation (|m_q| ≈ 90). A calibration test forcing the Lorentzian backbone to operate at Euclidean's scale destroys its sign-aware encoding entirely (0/24 strong sign-split, AUC below chance), demonstrating that the two backbones' sign-split solutions are not interchangeable by scale adjustment and that the Lorentzian encoding is structurally tied to its natural scale. We discuss the implications for physics-inspired inductive biases in deep learning and for the interpretation of the Realizability axioms as informational rather than purely physical statements.
 
 ---
 
@@ -24,7 +24,7 @@ The answer is yes, with high reliability. Across three random seeds at AR coeffi
 
 Reaching this result required identifying a structural problem with the natural choice of classifier head. The original Lorentzian inner-product head computes *⟨h, c_k⟩_η / τ*, which is **bilinear** in *h*; the Lorentzian invariant *m_q*, by contrast, is **quadratic** in *h*. The bilinear head is therefore mathematically incapable of using sign(*m_q*) as a classification signal, regardless of what the backbone produces. Replacing this with an MLP head over [*h*, *m_q*] places *m_q* into the loss's computation graph, and emergent sign-split follows.
 
-A subsequent control experiment yielded a result that complicates—and we believe enriches—the interpretation. When we replace the Lorentzian backbone (split normalization, asymmetric residual) with a standard Euclidean backbone (LayerNorm, symmetric residual) while keeping the same MqMLPHead, the sign-split direction-matching also emerges: 3/3 seeds, mq-AUC 1.000, and the same dependent → timelike alignment. However, the Euclidean backbone achieves this through *unbounded* magnitude separation: |*m_q*| ≈ 90 (vs Lorentzian's |*m_q*| ≈ 8), an order of magnitude larger. Under out-of-distribution shifts, both encodings preserve the rank ordering of *m_q* by class (mq-AUC ≈ 0.90 in both cases), but the absolute sign is more stable under the Euclidean encoding (because the *m_q* values are far from zero, so noise rarely flips them). The Lorentzian backbone's "controlled" small-scale encoding is more interpretable as a light-cone position, but more fragile under perturbation.
+A subsequent control experiment yielded a result that complicates—and we believe enriches—the interpretation. When we replace the Lorentzian backbone (split normalization, asymmetric residual) with a standard Euclidean backbone (LayerNorm, symmetric residual) while keeping the same MqMLPHead, the sign-split direction-matching also emerges: 3/3 seeds, mq-AUC 1.000, and the same dependent → timelike alignment. However, the Euclidean backbone achieves this through *unbounded* magnitude separation: |*m_q*| ≈ 90 (vs Lorentzian's |*m_q*| ≈ 8), an order of magnitude larger. Under out-of-distribution shifts, both encodings preserve the rank ordering of *m_q* by class (mq-AUC ≈ 0.90 for both) and reach the same sample-level sign-split rate (11/24). The two backbones reach equivalent OOD performance, but a calibration test we introduce in Section 6.5 shows they reach it through different mechanisms: forcing the Lorentzian backbone to operate at Euclidean's |m_q| scale by an auxiliary loss does not yield "Euclidean-like sign-split with smaller numerical labels"—it destroys sign-split entirely. The Lorentzian backbone's small-scale, opposite-sides encoding is structurally tied to the SplitNorm normalization and cannot be transplanted to a larger scale by adjusting the loss.
 
 This paper contributes:
 
@@ -34,7 +34,7 @@ This paper contributes:
 
 3. **An empirical demonstration** that across multiple backbones and out-of-distribution shifts, the trained model consistently aligns its representation with the direction predicted by the Realizability theorem (dependent → timelike, independent → spacelike), suggesting that causality → Lorentzian signature may be an informational rather than purely physical fact.
 
-4. **A characterization of the architectural trade-off** between bounded Lorentzian encoding (interpretable, fragile) and unbounded Euclidean encoding (robust, uninterpretable as light-cone geometry).
+4. **A demonstration that the two backbones reach equivalent OOD performance through different mechanisms.** Sample-level OOD metrics show no robustness gap between Lorentzian and Euclidean backbones (11/24 strong sign-split each, mq-AUC 0.90 vs 0.90). Calibration testing shows the Lorentzian backbone's small-scale opposite-sides encoding is *not* a small-scale variant of the Euclidean encoding: forcing it to large scale destroys it. This identifies the bounded encoding as a distinct representational mode tied to SplitNorm's structural prior, rather than a stylistic choice within a continuous family of equivalent solutions.
 
 We emphasize that this work is *not* a claim that Lorentzian backbones outperform Euclidean ones on standard task metrics—they do not. Our claim is that an emergent geometric phenomenon, predicted independently from causal axioms, is reproducibly observed in trained neural networks, and that this is interesting in its own right.
 
@@ -241,55 +241,87 @@ The pattern is clear: **MqMLPHead is the necessary and sufficient architectural 
 
 ## 6. Out-of-Distribution Behavior
 
-Section 5 establishes that two architecturally distinct backbones both produce sign-aware Lorentzian representations under in-distribution training. We now ask whether these encodings transfer across distribution shifts. This is the key experiment for evaluating whether the Lorentzian backbone provides a *meaningful* advantage despite both backbones producing equivalent in-distribution sign-split.
+Section 5 establishes that two architecturally distinct backbones both produce sign-aware Lorentzian representations under in-distribution training. We now ask whether these encodings transfer across distribution shifts. This section addresses two questions in sequence: (i) whether the in-distribution emergence transfers OOD, and (ii) whether the bounded |m_q| of the Lorentzian backbone is *itself* the cause of any OOD differences—or whether it reflects a deeper property of the SplitNorm architecture that a simple scale change cannot reproduce.
 
-### 6.1 OOD Panel
+### 6.1 OOD Panel and Sample-Level Sign Metrics
 
-We train each backbone (Lorentzian + MqMLPHead, Euclidean + MqMLPHead) on AR(1) at ρ = 0.9, NOISE_STD = 0.5, and then evaluate the trained models on a panel of OOD test distributions:
+We train each backbone (Lorentzian + MqMLPHead, Euclidean + MqMLPHead) on AR(1) at ρ = 0.9, NOISE_STD = 0.5, and evaluate the trained models on a panel of OOD test distributions:
 
-- **AR coefficient sweep**: ρ ∈ {0.1, 0.3, 0.5, 0.7, 0.9}, holding noise constant. Tests whether the geometric encoding generalizes to weaker autocorrelation.
-- **Noise sweep**: NOISE_STD ∈ {0.25, 0.5, 1.0, 2.0}, holding ρ at 0.9. Tests whether the encoding is robust to amplitude shifts.
+- **AR coefficient sweep**: ρ ∈ {0.1, 0.3, 0.5, 0.7, 0.9}, holding noise constant.
+- **Noise sweep**: NOISE_STD ∈ {0.25, 0.5, 1.0, 2.0}, holding ρ at 0.9.
 
-For each (backbone, OOD config) pair we measure: classification accuracy, mq-AUC (rank-based geometric information content), *m_q* mean per class, sign-split status, and max |m_q|. Averaged over 3 seeds.
+For each (backbone, OOD config) pair, three random seeds, we measure:
 
-### 6.2 Results
+- **mq-AUC**: rank-sum AUC of *m_q* predicting class. Captures geometric *information content*—how well *m_q* values rank-order the two classes—independent of the absolute zero-crossing.
+- **Mean-level sign-split**: whether `mean(m_q[class 0]) < 0 < mean(m_q[class 1])`. The metric we used in earlier drafts; equivalent to "the class centroids in *m_q*-space lie on opposite sides of the light-cone".
+- **Sample-level sign accuracy** (`sgnAcc`): fraction of individual samples on the predicted side of zero, defined as `0.5·(P[m_q<0 | class 0] + P[m_q>0 | class 1])`. We treat sgnAcc > 0.9 as a *strong* sign-split.
+- **|m_q| distribution shape**: p10, median, p90, max. Reveals whether |m_q| has tight margins or just a few outliers.
 
-| OOD config | L: split | L: AUC | L: |m_q|max | acc | E: split | E: AUC | E: |m_q|max | acc |
-|------------|----------|--------|-----------|-----|----------|--------|-----------|-----|
-| ρ=0.1, n=0.5 (very weak) | 0/3 | 0.583 | 7.7 | 56% | 0/3 | 0.586 | 91.4 | 56% |
-| ρ=0.3, n=0.5 | 2/3 | 0.743 | 7.9 | 69% | 2/3 | 0.745 | 92.4 | 68% |
-| ρ=0.5, n=0.5 | 3/3 | 0.906 | 7.9 | 83% | 3/3 | 0.906 | 91.3 | 83% |
-| ρ=0.7, n=0.5 | 3/3 | 0.991 | 8.0 | 96% | 3/3 | 0.991 | 97.1 | 96% |
-| **ρ=0.9, n=0.5** (in-dist) | 3/3 | 1.000 | 8.2 | 99.7% | 3/3 | 1.000 | 98.9 | 99.8% |
-| ρ=0.9, n=0.25 | 3/3 | 0.997 | 8.0 | 92% | 3/3 | 1.000 | 100.5 | 92% |
-| ρ=0.9, n=1.0 | 2/3 | 0.997 | 7.9 | 95% | 3/3 | 0.996 | 87.7 | 95% |
-| ρ=0.9, n=2.0 | 0/3 | 0.982 | 7.6 | 81% | 2/3 | 0.947 | 76.5 | 82% |
+We report sample-level metrics as the primary headline because mean-level sign-split can be satisfied by class means barely crossing zero while many individual samples sit on the wrong side. As we will see, this distinction matters: the two backbones differ on mean-level sign-split rate but are essentially identical on sample-level metrics.
 
-**Headline metrics:**
+### 6.2 Per-Configuration Results
 
-| | sign-split rate | mean mq-AUC | mean |m_q|max |
-|-|-----------------|-------------|---------------|
-| Lorentzian + MqMLPHead | 16/24 | 0.900 | **7.9 ± 0.5** |
-| Euclidean + MqMLPHead  | 19/24 | 0.896 | **92.0 ± 7.5** |
+| OOD config | L: m-split | L: AUC | L: sgnAcc | L: p10 |m_q| | E: m-split | E: AUC | E: sgnAcc | E: p10 |m_q| |
+|------------|-----------|--------|-----------|--------------|-----------|--------|-----------|--------------|
+| ρ=0.1, n=0.5 (very weak)   | 0/3 | 0.573 | 0.547 | 0.8 | 0/3 | 0.576 | 0.548 | 4.4 |
+| ρ=0.3, n=0.5               | 2/3 | 0.753 | 0.670 | 0.8 | 2/3 | 0.754 | 0.678 | 4.2 |
+| ρ=0.5, n=0.5               | 3/3 | 0.915 | 0.830 | 0.9 | 3/3 | 0.918 | 0.832 | 5.8 |
+| ρ=0.7, n=0.5               | 3/3 | 0.989 | 0.943 | 2.1 | 3/3 | 0.988 | 0.948 | 13.8 |
+| **ρ=0.9, n=0.5** (in-dist) | 3/3 | 1.000 | 0.995 | 3.6 | 3/3 | 1.000 | 0.996 | 36.7 |
+| ρ=0.9, n=0.25              | 3/3 | 0.997 | 0.930 | 2.3 | 3/3 | 1.000 | 0.917 | 12.8 |
+| ρ=0.9, n=1.0               | 2/3 | 0.998 | 0.844 | 1.2 | 3/3 | 0.997 | 0.945 | 10.5 |
+| ρ=0.9, n=2.0               | 1/3 | 0.981 | 0.689 | 1.0 | 2/3 | 0.948 | 0.796 | 4.4 |
+
+**Headline metrics (n_total = 24):**
+
+| Config                         | mean-level sign-split | strong sign-split (sgnAcc > 0.9) | mean mq-AUC | mean p10 \|m_q\| |
+|--------------------------------|----------------------:|----------------------------------:|------------:|-----------------:|
+| Lorentzian + MqMLPHead         |                17/24 |                            11/24 |       0.901 |              1.6 |
+| Euclidean + MqMLPHead          |                19/24 |                            11/24 |       0.898 |             11.6 |
 
 ### 6.3 Three Observations
 
-**(1) The Lorentzian backbone produces a strictly bounded *m_q* encoding.** Across all 24 OOD evaluations, |m_q|max stays in the range [6.9, 8.7]; the Euclidean encoding ranges from 73.6 to 103.4. The Lorentzian SplitNorm acts as a structural prior that prevents *m_q* from growing without bound, regardless of distribution shift.
+**(1) Geometric information content is essentially identical across backbones.** Mean mq-AUC over all 24 OOD configurations is 0.901 (Lorentzian) vs 0.898 (Euclidean)—a difference well within seed variance. Both backbones produce *m_q* distributions that rank-order the two classes equally well. The earlier impression that one backbone might carry more transferable geometric information is not supported by the data.
 
-**(2) The geometric information content is essentially identical.** Mean mq-AUC across all OOD configurations is 0.900 (Lorentzian) vs 0.896 (Euclidean)—a difference well within seed variance. Both backbones produce *m_q* distributions that rank-order the two classes equally well; the difference is only in scale.
+**(2) Sample-level sign-split rates are also identical: 11/24 each.** This is the more surprising result. Earlier drafts reported a 16/24 vs 19/24 split based on the class-mean criterion, suggesting the Euclidean backbone preserved sign-split more reliably under distribution shift. We had previously hypothesized that this was because Euclidean's larger |m_q| ≈ 90 made its class means harder to push across zero than Lorentzian's |m_q| ≈ 8. **When we replace the class-mean criterion with the sample-level sgnAcc > 0.9 criterion, the gap vanishes**: both backbones achieve the same 11/24 strong sign-split rate, and the same number of those (11/24) also have classification accuracy above 90%. The 2-configuration difference at the mean level (17/24 vs 19/24) reflects two borderline cases (ρ=0.9, n=1.0 and ρ=0.9, n=2.0) where Lorentzian's class means happen to land just on the same side of zero while Euclidean's barely cross. Treating this as a robustness gap is a class-mean artifact, not a real difference in encoding quality.
 
-**(3) Absolute sign labeling is more fragile in the Lorentzian encoding.** The Euclidean backbone preserves sign-split in 19/24 OOD configurations vs 16/24 for the Lorentzian backbone. The mechanism is straightforward: with *m_q* values ≈ ±60, perturbations of magnitude ≈ 10 (induced by noise shifts) rarely cross zero; with *m_q* values ≈ ±5, the same perturbations frequently do.
+**(3) The two encodings differ sharply in scale, and Lorentzian preserves bounded scale across all OOD shifts.** Across all 24 OOD evaluations, Lorentzian's mean p10|m_q| stays at 1.6; Euclidean's varies from 4.2 to 38.5 depending on the noise level. Lorentzian's SplitNorm acts as a structural prior: it caps |m_q| close to the light-cone scale (≈ 8) regardless of distribution shift. Euclidean has no such prior, and its |m_q| simply scales with input amplitude. This is a real architectural distinction—it just doesn't translate into an OOD performance advantage in either direction.
 
-We highlight one specific instance worth noting: at ρ = 0.9, NOISE_STD = 2.0, the Lorentzian backbone has mq-AUC = 0.982 (very high—the *m_q* values are still highly informative about class) but 0/3 sign-split. The geometric *information* is preserved; the absolute *labeling* (which side of zero) has drifted. This dissociation between mq-AUC (information) and sign-split status (absolute labeling) is informative: sign-split as a metric measures the alignment between the model's learned threshold and the literal *m_q = 0* light-cone, which is an additional fact beyond mere geometric discrimination.
+### 6.4 The mq-AUC vs Sign-Split Dissociation
 
-### 6.4 Interpretation
+A useful diagnostic emerges when we look at the rows where the two metrics disagree. At ρ=0.9, n=2.0 (high-noise OOD), Lorentzian has mq-AUC = 0.981 (very high—the *m_q* values still rank-order the classes nearly perfectly) but only 1/3 mean-level sign-split and sgnAcc = 0.689. The geometric *information* about class membership is preserved; what has drifted is the absolute zero-crossing of the *m_q* distribution. This says something general about sign-split as a metric: it measures alignment between the model's learned *m_q* distribution and the literal `m_q = 0` light-cone, which is a stricter property than mere class-discriminative *m_q* ranking. We use sample-level sgnAcc as our primary sign metric because it tracks this alignment directly rather than via class means, but both metrics measure something different from mq-AUC, and all three together describe the encoding more completely than any single one.
 
-We summarize the implication of these data as follows. The MqMLPHead reliably produces sign-aware Lorentzian representations regardless of backbone. The two backbones offer complementary properties:
+### 6.5 Calibration Test: Can Scale Reproduce Sign-Split?
 
-- **Lorentzian backbone**: bounded, light-cone-scale *m_q* encoding (|m_q| ≈ 8). Interpretable as literal Minkowski geometry. Fragile under noise because *m_q* values lie close to the light-cone (the decision boundary).
-- **Euclidean backbone**: unbounded magnitude separation (|m_q| ≈ 90). Not interpretable as light-cone geometry but more robust to noise because the *m_q* values are far from zero.
+Sections 6.2 and 6.3 establish that the two backbones reach equivalent OOD sign-split performance, with the only architectural difference being |m_q| scale (Lorentzian ≈ 5, Euclidean ≈ 60). A natural question is whether the bounded scale is *causally* responsible for any properties of the Lorentzian encoding, or whether it is incidental.
 
-These are different *types* of representation, not better/worse versions of the same representation. The Lorentzian backbone implements "geometric encoding"; the Euclidean backbone implements "magnitude separation that happens to follow the same sign convention". The fact that both spontaneously align with the direction predicted by the Realizability theorem (dependent → negative *m_q*) is the substantive empirical finding.
+We test this by adding a calibration loss to Lorentzian training that pushes |m_q| up to match Euclidean's natural scale. The loss combines two terms: a mean penalty that drives `mean(|m_q|)` toward `target = 50`, and a margin penalty that drives `p10(|m_q|)` above `30` so the *whole* distribution—not just outliers—moves away from zero:
+
+```
+L_total = CE(logits, y)
+        + λ_scale · ((mean(|m_q|) - 50) / 50)²
+        + λ_margin · mean( ReLU(30 - |m_q|) ) / 30
+```
+
+A single-seed λ-sweep dry run selects the smallest `λ_scale` that satisfies both `mean(|m_q|) ≥ 0.85·target` and `p10(|m_q|) ≥ 0.5·target_margin` on a held-out epoch. We find `λ_scale = 0.5` suffices; the resulting calibrated model has in-distribution mean|m_q| = 50.0 and p10 = 48.1, confirming the calibration takes effect on the *whole* distribution rather than via a few outliers.
+
+We then compare three configurations × 3 seeds × 8 OOD configs (n_total = 24 each):
+
+| Config                            | in-dist mean\|m_q\| | in-dist p10\|m_q\| | OOD strong sign-split | OOD mq-AUC | OOD sgnAcc |
+|-----------------------------------|------------------:|------------------:|----------------------:|-----------:|-----------:|
+| Lorentzian uncalibrated           |               5.4 |               3.6 |                11/24 |      0.901 |      0.806 |
+| **Lorentzian calibrated** (target 50) | **50.0**          | **48.1**          |                **0/24** |  **0.452** |  **0.500** |
+| Euclidean uncalibrated            |              57.7 |              37.4 |                11/24 |      0.898 |      0.833 |
+
+The result is striking. Forcing the Lorentzian backbone to operate at Euclidean's natural |m_q| scale **completely destroys the sign-aware encoding**: 0/24 strong sign-split, mean OOD mq-AUC of 0.452 (below chance, indicating active inversion), and sample sign accuracy of exactly 0.500 (chance). At the same time, in-distribution classification accuracy stays at 99.87%, so the model is still solving the task—it has just stopped using sign(*m_q*) to do so.
+
+Inspection of the training trajectories clarifies the mechanism. Calibrated Lorentzian seed 42 spends epochs 1–3 with both class means in the negative (timelike) region (`mq[c0] = -10.92, mq[c1] = -9.92` initially), and they simply both get pushed toward `mq ≈ -50` as the calibration loss kicks in, retaining a gap of about 1.0. Calibrated seed 44 inverts mid-training: at epoch 2 the gap flips from +0.74 to −0.11, and stays inverted thereafter, ending at AUC ≈ 0.34. The MqMLPHead exploits the small (but nonzero) magnitude difference between the two same-side clusters to maintain task accuracy, but the geometric content of "which side of the light-cone" is gone. These trajectories are unstable in a way the uncalibrated runs are not.
+
+We interpret this as follows. The Lorentzian backbone's natural-scale sign-split (|m_q| ≈ 5, classes on opposite sides of zero) is *not* a small-scale version of the Euclidean backbone's large-scale sign-split. They are different *solutions*. SplitNorm strongly couples the timelike and spacelike block norms—each block is L2-normalized to roughly √64 ≈ 8, leaving little room for either norm to grow much larger. To produce |m_q| ≈ 50 within this constraint, the model has to use both blocks at near-maximum scale on *every* sample, which leaves no remaining degrees of freedom for distinguishing classes by which side of the light-cone they sit on. The optimizer's least-resistance solution is to push everything to the same side and use small magnitude differences for the actual classification.
+
+The Euclidean backbone has no such coupling: ‖h_t‖ and ‖h_s‖ are free to grow independently, so two clusters can sit at large |m_q| on opposite sides of zero without conflict. Sign-split at large scale is therefore stable for Euclidean and unstable for Lorentzian. The two backbones reach the same OOD performance through different mechanisms: Lorentzian via a small-scale, geometrically interpretable Lorentzian configuration tightly coupled to its normalization; Euclidean via large-scale, normalization-free magnitude separation that happens to land on the same sign convention.
+
+We interpret these results carefully. The calibration penalty does not just rescale |m_q|—it also changes the optimization trajectory. Some of the calibrated Lorentzian's collapse may be due to optimization difficulty rather than a structural impossibility. We cannot, from this experiment alone, claim that a Lorentzian backbone *cannot in principle* sign-split at large scale. What we can claim is the empirical statement: under matched optimizer/loss/training protocol, applying a calibration pressure sufficient to move both `mean(|m_q|)` and `p10(|m_q|)` to Euclidean-like values causes the Lorentzian backbone to abandon sign-split entirely, while Euclidean's natural-trajectory training reaches the same OOD performance with sign-split intact. The two architectures' sign-split solutions are not interchangeable by simple scale adjustment.
 
 ---
 
@@ -321,13 +353,19 @@ We explained in Section 3.3 why the original Lorentzian inner-product head struc
 
 The standard fix in the hyperbolic-network literature is to add nonlinear manifold operations (Möbius gyrovector additions, exponential maps) that effectively introduce nonlinear functions of *h* into the decision rule. Our MqMLPHead can be viewed as a minimal version of this idea: instead of working with manifold operations, we simply expose the geometric invariant *m_q* directly. This is computationally cheaper and architecturally simpler, and it is sufficient for the sign-aware property we want.
 
-### 7.3 What the Architectural Trade-Off Means
+### 7.3 What the Architectural Difference Means: Same OOD Content, Different Mechanisms
 
-The bounded vs unbounded *m_q* contrast (|m_q| ≈ 8 vs ≈ 90) is, on its face, a difference in numerical convention. Both backbones perform equivalently as classifiers (both achieve 99.7% in-distribution accuracy and ~0.90 mq-AUC under OOD). One might therefore conclude that the Lorentzian backbone is unnecessary.
+The bounded vs unbounded *m_q* contrast (≈ 8 vs ≈ 90) might at first look like a difference in numerical convention. Both backbones reach essentially the same in-distribution accuracy, the same OOD mq-AUC (0.901 vs 0.898), and—as Section 6.3 showed at the sample level—the same OOD strong sign-split rate (11/24 each). On the metrics that actually matter for OOD generalization, the two backbones are indistinguishable. We had originally framed this as a "complementary trade-off" between an interpretable but fragile Lorentzian encoding and a robust but uninterpretable Euclidean encoding. The data do not support that framing: there is no robustness gap to trade interpretability against.
 
-We disagree with this conclusion in one specific sense. A bounded encoding lying close to the literal light-cone has interpretive content that an unbounded encoding does not. Specifically: when the Lorentzian backbone produces *m_q* ≈ −5 for a dependent input, this can be read as "this input is encoded as a vector lying in the timelike interior of the light-cone, at light-cone distance ≈ √5 from the origin in the ambient Minkowski space". When the Euclidean backbone produces *m_q* ≈ −60 for the same input, this reading does not apply—the vector lies far from the conventional light-cone in any geometric sense.
+What the data *do* support is a more interesting claim, established by the calibration test in Section 6.5. The two backbones reach the same OOD performance through *different mechanisms*. The Lorentzian backbone's natural-scale solution (|m_q| ≈ 5, classes on opposite sides of zero) and the Euclidean backbone's natural-scale solution (|m_q| ≈ 60, classes on opposite sides of zero) look superficially like the same kind of representation at different scales. They are not. Forcing the Lorentzian backbone to operate at Euclidean's scale via a calibration penalty does not yield "Euclidean-like sign-split with smaller numerical labels"—it yields *no* sign-split at all (0/24), with the model collapsing onto a same-side configuration that uses small magnitude differences to maintain task accuracy. A direct attempt to translate one representation into the other by scale change destroys it.
 
-For applications where the geometric interpretation is the goal (e.g., interpretability research, physics-inspired representation analysis), the Lorentzian backbone is preferable despite its sign-fragility. For applications where only the binary label is needed, the Euclidean backbone is preferable due to its sign robustness. We do not view either backbone as universally better.
+The likely mechanism is the structural coupling that SplitNorm imposes. With each block separately L2-normalized to roughly √(d/2), the backbone has limited capacity to make ‖h_t‖ and ‖h_s‖ differ by large amounts on a single sample. Producing |m_q| ≈ 50 within this constraint requires both blocks at near-maximal scale on every sample, leaving no remaining degrees of freedom for placing classes on opposite sides of the light-cone. The optimizer's path of least resistance is to let everything sit on one side and use a small magnitude difference for classification. The Euclidean backbone has no such coupling: independent block norms can grow to whatever scale the loss prefers, and two clusters can sit at large |m_q| on opposite sides of zero without any conflict.
+
+This means the Lorentzian backbone's natural sign-split is not "a small-scale version of Euclidean sign-split". It is its own representational mode, tied to the SplitNorm bound. When the bound is in effect (natural training), the model finds an opposite-sides configuration with small |m_q|. When the bound is broken (calibration pressure), the opposite-sides configuration is no longer optimal under the joint loss, and the model abandons it. A plausible reading is that the small-scale opposite-sides solution is the genuinely Lorentzian-geometric configuration the SplitNorm architecture supports; pushing it to large scale leaves the model in a regime where SplitNorm's prior fights against the sign-aware solution rather than supporting it.
+
+We are careful about how strong a claim this licenses. The calibration penalty changes optimization trajectory as well as endpoint, so we cannot claim that a Lorentzian backbone *cannot in principle* sign-split at large scale. What we can claim is the empirical statement: under matched training, applying calibration pressure sufficient to move both `mean(|m_q|)` and `p10(|m_q|)` to Euclidean-like values causes the Lorentzian backbone to abandon sign-split, while Euclidean training reaches the same OOD performance with sign-split intact. The two backbones' sign-split solutions are not interchangeable by scale adjustment. Whether they would become interchangeable under a different optimizer, a longer schedule, or a different penalty form is a question we leave open.
+
+For applications, the picture is therefore: if all you need is OOD class discrimination via a sign-aware *m_q* feature, both backbones work equally well. If you additionally want the *m_q* values to admit interpretation as light-cone position—values near zero meaning near the cone, |m_q| ≲ 10 in line with the actual hidden-norm scale of the network—then the Lorentzian backbone is the one to use, and it does so naturally without any auxiliary loss. The interpretive content does not come at a cost in OOD performance; it comes at the cost of accepting a small-scale encoding that, as we have seen, cannot be enlarged without breaking.
 
 ### 7.4 Limitations
 
@@ -345,19 +383,22 @@ We list these explicitly because we believe a paper of this kind should be self-
 
 - **Does the cross-backbone direction-matching extend to other geometric invariants?** If we trained a network with explicit access to a different invariant (e.g., a conformal invariant), would the trained model align with a corresponding theoretical prediction?
 - **What is the role of optimization?** Could one prove (perhaps under simplifying assumptions) that the cross-entropy loss with MqMLPHead has a *unique* minimum (up to a global sign flip) at the dep→timelike configuration?
-- **Are there causal tasks where the bounded encoding's interpretive value translates into measurable robustness?** OOD tests within distribution-shifted versions of the same task did not reveal this; perhaps tests across qualitatively different causal structures would.
+- **Does the Lorentzian backbone's small-scale sign-split solution become unique to it?** A reverse experiment—forcing a Euclidean backbone to small |m_q| ≈ 5 via a max-norm constraint—would tell us whether sign-split at small scale is generic to any backbone or specifically what SplitNorm provides. If Euclidean also sign-splits at small scale, then the Lorentzian backbone's role is mainly to *pin* the encoding to that scale by structural prior. If Euclidean cannot sign-split at small scale, then SplitNorm's normalization coupling is what enables sign-split-at-small-scale in the first place. Either outcome would sharpen the mechanistic picture in Section 7.3.
+- **What does the calibration trajectory tell us about the loss landscape?** The fact that some calibrated Lorentzian seeds invert the sign convention mid-training (seed 44 in our experiments) suggests that opposite-sides and same-side solutions sit in distinct basins, and calibration pressure makes the sign-aware basin no longer attractive. Mapping these basins explicitly—e.g., by tracking sign-split status as a function of `λ_scale` swept continuously from 0 to large—would clarify whether the transition is sharp or gradual.
 
 ---
 
 ## 8. Conclusion
 
-We have shown that neural networks, when given an architectural mechanism for using the Lorentzian invariant *m_q* in classification (the MqMLPHead), spontaneously develop representations in which causally structured inputs occupy the timelike region (m_q < 0) and causally trivial inputs occupy the spacelike region (m_q > 0). This emergent direction-matching is consistent across two different backbones, two task difficulties, three random seeds, and twenty-four out-of-distribution configurations: zero inverted sign-splits were observed.
+We have shown that neural networks, when given an architectural mechanism for using the Lorentzian invariant *m_q* in classification (the MqMLPHead), spontaneously develop representations in which causally structured inputs occupy the timelike region (m_q < 0) and causally trivial inputs occupy the spacelike region (m_q > 0). This emergent direction-matching is consistent across two different backbones, two task difficulties, three random seeds, and twenty-four out-of-distribution configurations: zero inverted sign-splits were observed under natural training.
 
 The direction matches the prediction of the Realizability theorem (Li, in prep.), which derives Lorentzian metric signature and the directional convention from a small set of axioms about causal structure. The cross-backbone consistency suggests that this direction-matching is not a property of any specific Lorentzian architecture, but an organizational principle that emerges in any sufficiently expressive learner exposed to causally structured data and given access to the relevant geometric invariant.
 
-We identified the technical key to enabling this emergence: the original bilinear inner-product head structurally cannot use sign(*m_q*), because the head is bilinear in the hidden state while *m_q* is quadratic. Replacing the head with an MLP over [*h*, *m_q*] places *m_q* in the loss's computation graph and allows sign-aware classification to emerge. We characterized the architectural trade-off between Lorentzian (bounded, interpretable, fragile) and Euclidean (unbounded, uninterpretable as geometry, sign-robust) encodings.
+We identified the technical key to enabling this emergence: the original bilinear inner-product head structurally cannot use sign(*m_q*), because the head is bilinear in the hidden state while *m_q* is quadratic. Replacing the head with an MLP over [*h*, *m_q*] places *m_q* in the loss's computation graph and allows sign-aware classification to emerge.
 
-We do not claim that Lorentzian backbones outperform standard backbones on task metrics. We do claim that an emergent geometric phenomenon, predicted from independent axiomatic considerations, is reliably produced in trained neural networks. We believe this is interesting in its own right and may inform both physics-grounded representation learning and the interpretation of the Realizability axioms as informational rather than purely physical.
+Under sample-level OOD metrics, the Lorentzian and Euclidean backbones are indistinguishable: they reach the same strong sign-split rate (11/24), the same mq-AUC (≈ 0.90), and the same task accuracy. The only persistent architectural difference is encoding scale—Lorentzian's |m_q| ≈ 5 vs Euclidean's ≈ 60. A direct calibration test shows that this scale difference is not incidental: forcing the Lorentzian backbone to operate at Euclidean-like scale destroys its sign-aware encoding entirely (0/24 strong sign-split, OOD AUC below chance), suggesting that the two backbones reach equivalent OOD performance through structurally distinct mechanisms. The Lorentzian backbone's sign-aware encoding is tied to its small natural |m_q| scale, which is in turn enforced by SplitNorm's structural prior; it cannot be transplanted to a larger scale by a simple loss adjustment.
+
+We do not claim that Lorentzian backbones outperform standard backbones on task metrics, and we have shown explicitly that they do not on OOD sign-split rate either. We do claim that an emergent geometric phenomenon, predicted from independent axiomatic considerations, is reliably produced in trained neural networks; that the bilinear-quadratic mismatch in earlier head designs explains why prior attempts at sign-aware Lorentzian classification have failed; and that the bounded, light-cone-scale Lorentzian encoding is a distinct representational mode rather than a small-scale variant of standard sign-aware classification. We believe this is interesting in its own right and may inform both physics-grounded representation learning and the interpretation of the Realizability axioms as informational rather than purely physical.
 
 ---
 
