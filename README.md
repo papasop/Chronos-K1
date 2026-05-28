@@ -1,9 +1,6 @@
 # K=1 Chronogeometrodynamics
 
-This repository contains two linked tracks:
-
-- `k1-manifold-core`: the publication-oriented mathematical and numerical core for the K=1 framework.
-- `k1-jepa-experiment`: an exploratory application track for K=1 constraints in JEPA-style representation learning.
+This repository contains the publication-oriented mathematical and numerical core for the K=1 framework.
 
 The core package implements the point-level bridge from realizability axioms to Lorentzian signature, the induced symplectic generator, symplectic-dissipative dynamics, local OU thermodynamics, and the spherical-sector algebraic reformulation of vacuum Einstein equations.
 
@@ -20,11 +17,6 @@ k1-manifold-core/
   tests/
   docs/
   lean4/
-
-k1-jepa-experiment/
-  notebooks/
-  src/
-  experiments/
 ```
 
 ## Quick Start

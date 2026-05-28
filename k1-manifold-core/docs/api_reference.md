@@ -11,3 +11,4 @@ Primary entry points:
 - `k1_manifold_core.spacetime.rindler.rindler_cost_form`
 - `k1_manifold_core.spacetime.spherical.K1`
 - `k1_manifold_core.spacetime.spherical.K2`
+- `k1_manifold_core.spacetime.spherical.ricci_components`
