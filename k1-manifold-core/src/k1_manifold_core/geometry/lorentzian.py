@@ -56,3 +56,18 @@ def lorentzian_interval(G: Array, dx: Array) -> float:
     """Return the signed interval ``dx.T @ G @ dx``."""
 
     return QuadraticForm2D(G).K(dx)
+
+
+def causal_classification(G: Array, x: Array, *, atol: float = 1e-12) -> str:
+    """Classify ``x`` by the sign of ``x.T @ G @ x``.
+
+    In the cost-sign convention used by the core package, positive values are
+    timelike, zero values are lightlike, and negative values are spacelike.
+    """
+
+    K = lorentzian_interval(G, x)
+    if abs(K) <= atol:
+        return "lightlike"
+    if K > 0.0:
+        return "timelike"
+    return "spacelike"
