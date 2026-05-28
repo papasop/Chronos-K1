@@ -1,0 +1,58 @@
+{
+  "benchmark": "v0.3 constrained K=1 rollout",
+  "description": "Euclidean unit-sphere baseline vs Chronos-K1 Lorentzian dynamics on a K=1 constraint task.",
+  "parameters": {
+    "dt": 0.001,
+    "steps": 10000,
+    "tail": 1000,
+    "G": [
+      [
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        -1.0
+      ]
+    ],
+    "initial_states": [
+      [
+        1.2,
+        0.0
+      ],
+      [
+        0.0,
+        0.8
+      ],
+      [
+        1.1,
+        0.1
+      ],
+      [
+        1.4,
+        0.2
+      ],
+      [
+        1.3,
+        -0.4
+      ]
+    ]
+  },
+  "metrics": {
+    "lower_is_better": [
+      "k_stability_tail_mae",
+      "causal_violation_rate",
+      "long_horizon_rollout_error"
+    ],
+    "euclidean_baseline": {
+      "k_stability_tail_mae": 0.4458732831191748,
+      "causal_violation_rate": 0.2,
+      "long_horizon_rollout_error": 0.4458732831191748
+    },
+    "chronos_k1_lorentzian": {
+      "k_stability_tail_mae": 1.1658125487201686e-11,
+      "causal_violation_rate": 0.00387961203879612,
+      "long_horizon_rollout_error": 2.5164537120758724e-12
+    }
+  }
+}
