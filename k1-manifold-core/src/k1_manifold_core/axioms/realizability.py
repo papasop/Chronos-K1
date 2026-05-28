@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Optional
 
 import numpy as np
 
@@ -53,7 +54,7 @@ def find_zero_threshold_witness(
     *,
     samples: int = 2048,
     tolerance: float = 1e-8,
-) -> RealizabilityWitness | None:
+) -> Optional[RealizabilityWitness]:
     """Search forward directions with nonzero spatial part and near-zero cost ratio.
 
     This is a numerical proxy for Axiom R. It scans the forward unit semicircle
@@ -62,7 +63,7 @@ def find_zero_threshold_witness(
 
     G = np.asarray(G, dtype=float)
     angles = np.linspace(-np.pi / 2.0 + 1e-6, np.pi / 2.0 - 1e-6, samples)
-    best: RealizabilityWitness | None = None
+    best: Optional[RealizabilityWitness] = None
     for theta in angles:
         direction = np.array([np.cos(theta), np.sin(theta)], dtype=float)
         if direction[0] <= 0.0 or abs(direction[1]) <= 1e-12:
