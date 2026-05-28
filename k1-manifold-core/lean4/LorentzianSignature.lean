@@ -1,0 +1,2 @@
+-- Placeholder theorem target:
+-- Axioms R, E, T plus nondegenerate 2D leading form imply signature (1,1).

@@ -1,0 +1,1 @@
+"""Spacetime-sector formulas."""
