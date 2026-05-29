@@ -8,9 +8,9 @@ Committed result notes:
 EXP5_COLAB_REPRODUCTION_2026-05-29.md
 ```
 
-This note records the supplied Colab console result for the `N=10` full sanity
-reproduction. It is a summary note, not a replacement for the raw generated
-CSV/JSON/PNG artifacts.
+This note records the supplied Colab console result for the `N=10` extended
+fixed-v2 reproduction. It is a summary note, not a replacement for the raw
+generated CSV/JSON/PNG artifacts.
 
 The maintained script generates the result files:
 
@@ -35,6 +35,9 @@ Historical Colab filenames such as:
 exp5_reproduction_results.csv
 exp5_reproduction_results.png
 exp5_reproduction_config.json
+exp5_extended_fixed_v2_results.csv
+exp5_extended_fixed_v2_results.png
+exp5_mechanism_analysis_v2.json
 ```
 
 refer to raw files generated in the external Colab session. They are not

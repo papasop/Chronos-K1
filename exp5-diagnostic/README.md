@@ -23,13 +23,15 @@ This diagnostic directory provides:
 - `COLAB_INSTRUCTIONS.md`: step-by-step Colab usage guide.
 - `guides/COLAB_COPY_PASTE_VERSION.md`: direct copy-paste Colab cell version
   of the Experiment 5 reproduction, with cautious interpretation wording.
+- `guides/COLAB_EXTENDED_FIXED_V2.md`: extended 8-lambda Colab guide matching
+  the latest supplied run, with the mechanism-analysis CUDA/NumPy issue fixed.
 - `results/`: target directory for full reproduction artifacts.
 - `results/EXP5_COLAB_REPRODUCTION_2026-05-29.md`: committed summary of the
-  supplied Colab `N=10` reproduction console output.
+  supplied extended Colab `N=10` reproduction console output.
 
 ## Headline Result
 
-Full sanity reproduction (`N=10`, CUDA, `lambda=0.1`):
+Extended fixed-v2 Colab reproduction (`N=10`, CUDA, `lambda=0.1`):
 
 | Setting | Euclidean violation | Chronos violation | Reduction | p-value |
 | --- | ---: | ---: | ---: | ---: |
@@ -38,6 +40,11 @@ Full sanity reproduction (`N=10`, CUDA, `lambda=0.1`):
 
 The `box=32` result is important because the reduction persists under OOD
 extrapolation rather than appearing only at the training-scale distribution.
+
+The extended fixed-v2 run used the lambda grid
+`[0.0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0]` and collected 800 rollout
+results. Its attempted mechanism analysis did not complete because of a CUDA
+tensor-to-NumPy conversion error, so that part should be treated as incomplete.
 
 ## Interpretation Boundary
 
@@ -96,9 +103,11 @@ CHRONOS_DEVICE=cuda python exp5-diagnostic/chronos_k1_complete_colab.py --full -
 ```
 
 The historical Colab raw files `exp5_reproduction_results.csv`,
-`exp5_reproduction_results.png`, and `exp5_reproduction_config.json` should be
-copied into `exp5-diagnostic/results/` if you want to preserve that exact
-external session output. They are not fabricated from summary statistics.
+`exp5_reproduction_results.png`, `exp5_reproduction_config.json`,
+`exp5_extended_fixed_v2_results.csv`, `exp5_extended_fixed_v2_results.png`,
+and `exp5_mechanism_analysis_v2.json` should be copied into
+`exp5-diagnostic/results/` if you want to preserve the exact external session
+output. They are not fabricated from summary statistics.
 
 The supplied Colab console result is recorded in:
 
@@ -109,5 +118,6 @@ exp5-diagnostic/results/EXP5_COLAB_REPRODUCTION_2026-05-29.md
 See also:
 
 - `exp5-diagnostic/guides/COLAB_COPY_PASTE_VERSION.md`
+- `exp5-diagnostic/guides/COLAB_EXTENDED_FIXED_V2.md`
 - `k1-manifold-core/docs/experiment_5_reproduction_protocol.md`
 - `k1-manifold-core/docs/benchmark_report.md`

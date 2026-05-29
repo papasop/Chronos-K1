@@ -1,9 +1,9 @@
-# Experiment 5 Colab Reproduction Result
+# Experiment 5 Extended Colab Reproduction Result
 
 Date recorded: 2026-05-29
 
 Source: external Google Colab console output supplied after a completed
-Experiment 5 full sanity reproduction.
+Experiment 5 extended fixed-v2 run.
 
 This note records the numeric result from that run. It does not fabricate the
 raw Colab artifacts (`exp5_reproduction_results.csv`,
@@ -37,7 +37,7 @@ t_obs: 10
 roll_steps: 50
 train_box: 2.0
 test_boxes: [2.0, 4.0, 8.0, 16.0, 32.0]
-lambda_grid: [0.0, 0.1, 0.2, 0.5]
+lambda_grid: [0.0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0]
 lambda_k1: 0.02
 device: cuda
 ```
@@ -59,12 +59,12 @@ Examples:
 | 1 | 50001 | 60201 | 60401 | 60801 | 61601 | 63201 |
 | 2 | 50002 | 60202 | 60402 | 60802 | 61602 | 63202 |
 
-## Main Result
+## Extended Run
 
-The run collected 400 results:
+The run collected 800 results:
 
 ```text
-4 lambda values * 10 seeds * 2 models * 5 test boxes = 400
+8 lambda values * 10 seeds * 2 models * 5 test boxes = 800
 ```
 
 For `box=2.0`, `lambda=0.1`:
@@ -85,6 +85,30 @@ Paired Wilcoxon p-value:
 ```text
 p = 0.0840
 ```
+
+The extended lambda grid reproduced the same headline `lambda=0.1` result as
+the earlier full sanity reproduction:
+
+```text
+Euclidean violation: 0.2866 +/- 0.2321
+Chronos violation: 0.1475 +/- 0.1452
+Relative reduction: 48.5%
+Wilcoxon p-value: 0.083984375
+```
+
+## Mechanism Analysis Status
+
+This v2 run attempted interval-preservation and latent-geometry mechanism
+analysis for seed 0 at `box=2.0`, but that diagnostic failed for every lambda
+with the same CUDA tensor conversion error:
+
+```text
+can't convert cuda:0 device type tensor to numpy
+```
+
+Therefore, the rollout/causal-violation sweep is usable, but the mechanism
+analysis output from this run should be treated as incomplete. Do not cite this
+run as successful mechanism evidence.
 
 ## Interpretation Boundary
 
@@ -109,16 +133,9 @@ significance but does not meet p<0.05.
 The external Colab session reported the following saved files:
 
 ```text
-rng_seeding_documentation.json
-exp5_reproduction_results.csv
-exp5_reproduction_results.png
-exp5_reproduction_config.json
-diagnostic_summary.txt
-experiment_5_full_sanity_summary.csv
-experiment_5_full_sanity_payload.json
-experiment_5_full_sanity_violation_vs_box.png
-experiment_5_full_sanity_mse_vs_box.png
-experiment_5_full_sanity_violation_by_step.png
+exp5_extended_fixed_v2_results.png
+exp5_extended_fixed_v2_results.csv
+exp5_mechanism_analysis_v2.json
 ```
 
 Only this summary note is currently committed here unless those generated files

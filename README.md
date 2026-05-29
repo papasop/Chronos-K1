@@ -246,10 +246,17 @@ CHRONOS_DEVICE=cuda python benchmarks/experiment_5_full_sanity_reproduction.py -
 
 Current headline AI phenomenon:
 
-An independent full sanity reproduction of the original Experiment 5 design
-was run on CUDA with `n_seeds=10`, `n_train=3000`, `n_test=512`, and
-`epochs=250`. It reproduced a substantial causal-violation reduction for the
-Chronos latent predictor while keeping rollout MSE approximately unchanged.
+An independent extended Colab reproduction of the Experiment 5 design was run
+on CUDA with `n_seeds=10`, `n_train=3000`, `n_test=512`, `epochs=250`, and an
+8-point lambda grid:
+
+```text
+[0.0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0]
+```
+
+It collected 800 rollout results and reproduced a substantial
+causal-violation reduction for the Chronos latent predictor while keeping
+rollout MSE approximately unchanged.
 
 Main result at `lambda=0.1`:
 
@@ -284,10 +291,14 @@ additional local artifacts when run externally, including
 `experiment_5_full_sanity_mse_vs_box.png`, and
 `experiment_5_full_sanity_violation_by_step.png`.
 
-The supplied Colab console result for this `N=10` reproduction is recorded in
-`exp5-diagnostic/results/EXP5_COLAB_REPRODUCTION_2026-05-29.md`. The raw
-Colab-generated CSV/JSON/PNG files should be copied into
-`exp5-diagnostic/results/` separately if exact session artifacts are needed.
+The supplied extended Colab console result for this `N=10` reproduction is
+recorded in
+`exp5-diagnostic/results/EXP5_COLAB_REPRODUCTION_2026-05-29.md`. The mechanism
+diagnostic attempted in that Colab run did not complete because of a CUDA
+tensor-to-NumPy conversion error, so it should not be cited as successful
+mechanism evidence. The raw Colab-generated CSV/JSON/PNG files should be copied
+into `exp5-diagnostic/results/` separately if exact session artifacts are
+needed.
 
 See `k1-manifold-core/docs/experiment_5_reproduction_protocol.md` for the
 exact seed strategy and full reproduction configuration.
@@ -301,6 +312,12 @@ exp5-diagnostic/
 It contains a Colab-friendly launcher, verification report, usage guide, and
 copy-paste Colab cell version for the same maintained Experiment 5 reproduction
 benchmark.
+
+For the extended 8-lambda Colab variant, see:
+
+```text
+exp5-diagnostic/guides/COLAB_EXTENDED_FIXED_V2.md
+```
 
 ### AI Benchmark 3 - Mechanism Diagnostic Benchmark
 
