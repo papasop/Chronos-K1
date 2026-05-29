@@ -1,0 +1,38 @@
+{
+  "benchmark": "world_model_v01_latent_k1_prediction",
+  "description": "Affine latent transition vs the same transition with a K=1 projection regularizer on a toy hyperbolic sequence dataset.",
+  "scope": "Minimal latent regularizer benchmark; not a large world-model claim.",
+  "parameters": {
+    "seed": 2026,
+    "target_noise": 0.015,
+    "steps": 60,
+    "action": 0.035,
+    "G": [
+      [
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        -1.0
+      ]
+    ]
+  },
+  "metrics": {
+    "lower_is_better": [
+      "prediction_mse",
+      "long_horizon_rollout_mse",
+      "mean_abs_k_drift"
+    ],
+    "euclidean_linear": {
+      "prediction_mse": 4.388046052760771e-06,
+      "long_horizon_rollout_mse": 0.02309369115619453,
+      "mean_abs_k_drift": 0.05194926228709974
+    },
+    "chronos_k1_projected": {
+      "prediction_mse": 2.64342215362475e-06,
+      "long_horizon_rollout_mse": 0.001799266582236734,
+      "mean_abs_k_drift": 5.215545663838466e-16
+    }
+  }
+}

@@ -115,6 +115,29 @@ are an independent ansatz; the point-level null-flow result above provides
 dynamical *motivation* for `K = 1`-type conditions but does **not** derive the
 field-level `K_i = 1` from them.
 
+### AI World Model Baseline
+
+The first world-model interface is intentionally small: a 2D latent state
+`z_t`, an action input `a_t`, an affine transition baseline, and the same
+transition wrapped with a `K=1` projection regularizer. The v0.1 benchmark uses
+a toy hyperbolic latent sequence with radial off-manifold target noise and
+compares:
+
+- one-step prediction MSE,
+- long-horizon rollout MSE,
+- mean absolute `K` drift.
+
+Run it with:
+
+```
+cd k1-manifold-core
+python examples/benchmark_world_model_v01.py
+```
+
+The result is written to `k1-manifold-core/results/world_model_v01.json`. This
+is a minimal latent regularizer benchmark, not a claim about video, robotics,
+or large-scale world models.
+
 ## Repository Layout
 
 ```
@@ -125,6 +148,7 @@ k1-manifold-core/
     dynamics/
     thermodynamics/
     spacetime/
+    world_model/
   tests/
   examples/
   docs/
@@ -159,6 +183,7 @@ python examples/demo_01_information_time.py
 python examples/demo_02_causal_cone.py
 python examples/demo_03_k1_attractor.py
 python examples/demo_04_recovery_scaling.py
+python examples/benchmark_world_model_v01.py
 ```
 
 The demos generate figures in `k1-manifold-core/examples/outputs/`.
@@ -205,7 +230,8 @@ mathematics are treated as hypotheses under investigation.
 - Curved, state-dependent metrics.
 - Lean4 formalization of the realizability signature theorem (R/E/T =>
   `Sig(G) = (1,1)`) and the rank-one / first-integral structure.
-- World-model benchmarks after a baseline implementation exists.
+- Extend the world-model v0.1 latent regularizer benchmark beyond the current
+  toy hyperbolic dataset.
 - Long-horizon prediction experiments.
 
 See `k1-manifold-core/docs/v0_3_roadmap.md` for the current v0.3

@@ -22,9 +22,9 @@ pytest -v k1-manifold-core
 Expected result:
 
 ```text
-collected 26 items
+collected 29 items
 ...
-26 passed
+29 passed
 ```
 
 This covers:
@@ -39,6 +39,8 @@ This covers:
   first-integral conservation, leaf probability, and inverse-square recovery
   scaling.
 - `tests/test_einstein.py`: symbolic spherical-sector reformulation checks.
+- `tests/test_world_model_v01.py`: minimal latent world-model regularizer
+  checks.
 
 ## 3. Reproduce The Null-Flow Figure And Numbers
 
@@ -63,6 +65,34 @@ The figure is written to:
 k1-manifold-core/examples/outputs/demo_04_recovery_scaling.png
 ```
 
+## 4. Reproduce The Latent World-Model v0.1 Benchmark
+
+```bash
+cd k1-manifold-core
+python examples/benchmark_world_model_v01.py
+```
+
+Expected output fields:
+
+```text
+euclidean_linear.prediction_mse
+euclidean_linear.long_horizon_rollout_mse
+euclidean_linear.mean_abs_k_drift
+chronos_k1_projected.prediction_mse
+chronos_k1_projected.long_horizon_rollout_mse
+chronos_k1_projected.mean_abs_k_drift
+```
+
+The result is written to:
+
+```text
+k1-manifold-core/results/world_model_v01.json
+```
+
+This is a toy latent regularizer benchmark: the Chronos-K1 variant is the same
+affine transition as the Euclidean baseline, followed by a `K=1` projection.
+It is not a claim about large-scale world models.
+
 ## Paper Mapping
 
 | Paper object | Script / test | What to check |
@@ -74,6 +104,7 @@ k1-manifold-core/examples/outputs/demo_04_recovery_scaling.png
 | Leaf probability scaling | `tests/test_null_flow.py` and `examples/demo_04_recovery_scaling.py` | `ratio = 1.0000` for the ideal `4c^2` law |
 | Recovery-time scaling figure | `examples/demo_04_recovery_scaling.py` | slope near `-2`, with `R^2` near `1` |
 | Spherical-sector reformulation | `tests/test_einstein.py` | Schwarzschild, Reissner-Nordstrom asymmetry, and Schwarzschild-de Sitter symbolic checks |
+| Latent world-model regularizer | `tests/test_world_model_v01.py` and `examples/benchmark_world_model_v01.py` | prediction MSE, rollout MSE, and `K` drift on a toy hyperbolic dataset |
 
 The companion paper may report finite-sample visual-fit values such as
 `slope = -1.986` and `R^2 = 0.99998`. The current demo also prints the

@@ -67,6 +67,9 @@ implemented checks, runnable demos, and explicitly marked assumptions.
 - `examples/demo_04_recovery_scaling.py`: reproduces the null-flow rank check,
   first-integral conservation, ideal `4c^2` leaf scaling, and log-log recovery
   slope.
+- `examples/benchmark_world_model_v01.py`: compares a Euclidean affine latent
+  transition with the same transition wrapped by a `K=1` projection regularizer
+  on a toy hyperbolic sequence dataset.
 - `examples/benchmark_v03.py`: writes `results/benchmark_v03.json` for the
   narrow noisy `K=1` recovery benchmark.
 - `experiments/causal_projection_demo.py`: exploratory causal projection
@@ -78,6 +81,8 @@ implemented checks, runnable demos, and explicitly marked assumptions.
   `G = diag(1, -1)` case.
 - Tighten benchmark baselines and separate deterministic recovery from noisy
   rollout behavior.
+- Extend the world-model v0.1 benchmark beyond radial off-manifold latent noise
+  before making stronger AI-world-model claims.
 - Add generated result snapshots only when they are tied to a reproducible
   script and test.
 - Keep JEPA/world-model integration out of the core claim path until a real

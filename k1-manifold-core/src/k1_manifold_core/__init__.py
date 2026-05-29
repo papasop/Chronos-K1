@@ -6,4 +6,5 @@ __all__ = [
     "dynamics",
     "thermodynamics",
     "spacetime",
+    "world_model",
 ]
