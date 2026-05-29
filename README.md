@@ -6,150 +6,191 @@ Chronos-K1 is a Lorentzian structural dynamics framework in which time is
 modeled as the cost of structural change and causal structure is encoded
 directly into the geometry of a state space.
 
-The current repository is a reproducible research prototype. It contains the
-numerical core, tests, and demos needed to inspect the implemented
-mathematics. It does **not** claim to derive physical reality, solve world
+The current repository is a reproducible research prototype. It contains
+deterministic theory checks, dynamical validation benchmarks, and early AI
+benchmarks. It does **not** claim to derive physical reality, solve world
 modeling, or derive general relativity from first principles.
 
-> Companion paper: *K=1 Chronogeometrodynamics — Lorentzian Geometry from
+> Companion paper: *K=1 Chronogeometrodynamics - Lorentzian Geometry from
 > Information Time, with a Self-Contained Realizability Foundation*
 > (see `Chronos-K1.txt` / arXiv / Zenodo). This repository implements and
-> numerically verifies the constructions of that paper; it does not extend
-> the theoretical claims beyond it.
+> numerically checks constructions from that paper; it does not extend the
+> theoretical claims beyond it.
+
+## Project Structure
+
+Chronos-K1 currently contains three active layers plus one archive layer:
+
+1. **Theory**
+   - Lorentzian Signature Theorem
+   - Information time, `dt_info = dPhi / H`
+   - `K=1` null flow
+   - recovery-time scaling, `T ~ c^-2`
+
+2. **Dynamical Benchmarks**
+   - `benchmark_v03`: noisy `K=1` recovery under Euclidean and Chronos-K1
+     dynamics
+
+3. **AI Benchmarks**
+   - OOD light-cone classification
+   - world-model causality stress test, Experiment 5
+
+4. **Archive**
+   - `world_model_v01`: minimal affine latent-transition prototype retained for
+     historical comparison
 
 ## Core Idea
 
 Most AI world models learn temporal structure and causality from data.
 Chronos-K1 explores a different structural starting point:
 
-- Information time is represented by `dt_info = dPhi / H`.
 - Causality is represented by a Lorentzian quadratic form `G`.
-- Local structural consistency is the `K=1` manifold, where `K(x) = x.T @ G @ x`.
-- Dynamics are a symplectic-dissipative flow, `xdot = (J_G - D) grad V`.
-- The critical-damping choice `D = d_c I` is studied as the selection
-  mechanism for `K=1` (see *Critical-damping null flow* below).
+- Local structural consistency is the `K=1` manifold,
+  `K(x) = x.T @ G @ x`.
+- Dynamics are a symplectic-dissipative flow,
+  `xdot = (J_G - D) grad V`.
+- The critical-damping choice `D = d_c I` is studied as the selection mechanism
+  for `K=1`.
 
-The single conceptual claim the framework actually argues for is **point-level**:
-under realizability axioms (R, E, T) plus nondegeneracy, the leading cost form
-`G` is forced to be Lorentzian, `Sig(G) = (1,1)`. Everything downstream
-(dynamics, thermodynamics, field-equation reformulation) is either an
-algebraic consequence, an added consistency condition, or an explicitly
-conditional bridge requiring external inputs.
+The central mathematical claim is point-level: under realizability axioms
+`R, E, T` plus nondegeneracy, the leading cost form `G` is forced to be
+Lorentzian, `Sig(G) = (1,1)`. Dynamics, thermodynamics, field-equation
+reformulation, and AI experiments are separate layers built around that
+structure.
 
-## What Has Been Implemented
+## Part I - Core Theory
 
-### Lorentzian Signature Verification
+### Lorentzian Signature
 
-Two-dimensional signature checks used by the core package:
+Two-dimensional signature checks verify:
 
 - `Sig(G) = (1, 1)`
 - `det(G) < 0`
 - real spectral threshold `d_c = alpha * sqrt(-1/det(G))`
 
-Tested for canonical and non-diagonal Lorentzian forms.
+These tests cover canonical and non-diagonal Lorentzian forms.
 
 ### Information Time
 
-Verification of `dt_info = dPhi / H` for scalar and vector inputs, with
-positive `H`.
+The information-time helper verifies:
+
+```text
+dt_info = dPhi / H
+```
+
+for scalar and vector inputs with positive `H`.
 
 ### Causal Cone Classification
 
-Classification by the sign of `K(x) = x.T @ G @ x` into timelike, lightlike,
-and spacelike, for canonical and non-diagonal Lorentzian forms.
+The causal-cone checks classify vectors by the sign of:
 
-### K=1 Dynamics and the Critical-Damping Null Flow
+```text
+K(x) = x.T @ G @ x
+```
 
-The framework's Law II / Law III dynamics is `xdot = (J_G - D) grad V` with
-`V = 1/2 (K - 1)^2`. At critical damping `D = d_c I`, the generator
-`A_c = J_G - d_c I` is **rank-one**, and the implemented tests reproduce the
-following structure (canonical form `G = diag(1, -1)`, `alpha = 1`, `d_c = 1`):
+using the cost-sign convention: positive is timelike, zero is lightlike, and
+negative is spacelike.
 
-- **Null flow.** `A_c = [[-1, 1], [1, -1]]` has `det = 0`, `rank = 1`, and its
-  image is the null direction `span{(-1, 1)}`. The drift is therefore confined
-  to a null ray:
+### K=1 Null Flow And `T ~ c^-2`
 
-  ```
-  xdot = 2 (K - 1)(x1 + x2) (-1, 1)
-  ```
+For the canonical form `G = diag(1, -1)` at critical damping, the generator
+`A_c = J_G - d_c I` is rank-one:
 
-- **First integral.** `c = x1 + x2` is conserved exactly along the flow
-  (`d/dt (x1 + x2) = 0`), foliating the plane into invariant leaves
-  `{x1 + x2 = c}`. Tests confirm conservation to machine precision.
+```text
+A_c = [[-1, 1], [1, -1]]
+```
 
-- **Exact leaf dynamics.** On each leaf the `K`-dynamics is the *linear* ODE
+The flow has a conserved leaf coordinate `c = x1 + x2`. On each non-degenerate
+leaf, the `K`-dynamics satisfies:
 
-  ```
-  d/dt (K - 1) = -4 c^2 (K - 1)   =>   K(t) - 1 = (K0 - 1) exp(-4 c^2 t)
-  ```
+```text
+d/dt (K - 1) = -4 c^2 (K - 1)
+```
 
-  Tests fit the decay rate on fixed leaves and recover `4 c^2` with `R^2 = 1`.
+so recovery time scales as:
 
-- **Freeze leaf.** The single leaf `Sigma_0 = {x1 + x2 = 0}` is exceptional:
-  the rate vanishes and `K = 0` everywhere on it, so `K = 1` is never reached.
-  `K = 1` is a global attractor on every non-degenerate leaf (`c != 0`) but
-  not on all of `R^2`; attraction fails on the measure-zero leaf `Sigma_0`.
+```text
+T_recover(c) = Theta(c^-2)
+```
 
-- **Recovery-time scaling.** The recovery time to a fixed tolerance scales as
+`examples/demo_04_recovery_scaling.py` reproduces the rank check,
+first-integral conservation, ideal `4c^2` leaf scaling, and log-log recovery
+slope.
 
-  ```
-  T_recover(c) = (1 / (4 c^2)) * log(|K0 - 1| / eps) = Theta(c^{-2})
-  ```
-
-  A log-log fit over `c in [0.03, 1]` gives slope `~= -1.99`, `R^2 ~= 1.0`,
-  consistent with the `c^{-2}` law up to the logarithmic offset factor.
-
-> These results are established **only** for the canonical 2x2 form. Whether
-> `A_c` remains rank-one, with an analogous first integral and `Theta(c^{-2})`
-> scaling, for a general 2x2 Lorentzian `G` is an open question (see Roadmap).
+![Null-flow recovery scaling](k1-manifold-core/examples/outputs/demo_04_recovery_scaling.png)
 
 ### Spherical-Sector Reformulation
 
-The `spacetime` tests use symbolic differentiation to verify the spherical-sector
-identities `K_i := sigma_2^2 * Box(ln sigma_i) = 1  <=>  R_mu_nu = 0` for the
-Schwarzschild, Reissner-Nordstrom, and Schwarzschild-de Sitter examples.
+The `spacetime` tests use symbolic differentiation to verify spherical-sector
+identities for Schwarzschild, Reissner-Nordstrom, and Schwarzschild-de Sitter
+examples.
 
 These are symbolic reformulation checks of an algebraic equivalence, **not** a
 general derivation of Einstein gravity. The field-level conditions `K_i = 1`
-are an independent ansatz; the point-level null-flow result above provides
-dynamical *motivation* for `K = 1`-type conditions but does **not** derive the
-field-level `K_i = 1` from them.
+are an independent ansatz.
 
-### AI World Model Baseline
+## Part II - Dynamical Validation
 
-The first world-model interface is intentionally small: a 2D latent state
-`z_t`, an action input `a_t`, an affine transition baseline, and the same
-transition wrapped with a `K=1` projection regularizer. The v0.1 benchmark uses
-a toy hyperbolic latent sequence with radial off-manifold target noise and
-compares:
+### `benchmark_v03`: Noisy K=1 Recovery
 
-- one-step prediction MSE,
-- long-horizon rollout MSE,
-- mean absolute `K` drift.
+This benchmark compares:
 
-Run it with:
+- Euclidean gradient dynamics, `xdot = -grad V`
+- Chronos-K1 Lorentzian dynamics, `xdot = (J_G - D) grad V`
 
-```
+under shared Gaussian perturbations.
+
+It reports:
+
+- tail `|K(t)-1|`,
+- tail potential `V(t)`,
+- recovery time,
+- long-horizon rollout error.
+
+Run:
+
+```bash
 cd k1-manifold-core
-python examples/benchmark_world_model_v01.py
+python examples/benchmark_v03.py
 ```
 
-The result is written to `k1-manifold-core/results/world_model_v01.json`. This
-is a minimal latent regularizer benchmark, not a claim about video, robotics,
-or large-scale world models.
+Result:
 
-### AI Benchmarks
-
-The first training-based AI benchmark is an OOD light-cone classification task.
-Models are trained on synthetic event differences from `box=2` and evaluated
-on larger boxes.
-
+```text
+k1-manifold-core/results/benchmark_v03.json
 ```
+
+## Part III - AI Benchmarks
+
+AI benchmarks are research benchmarks, not pytest unit tests. They may involve
+training, randomness, optional ML dependencies, and statistical comparisons.
+
+Install optional benchmark dependencies:
+
+```bash
+cd k1-manifold-core
+python -m pip install -r requirements-benchmarks.txt
+```
+
+### AI Benchmark 1 - OOD Light-Cone Classification
+
+This benchmark trains classifiers on synthetic event differences from `box=2`
+and evaluates OOD extrapolation on larger boxes.
+
+Models:
+
+- explicit Lorentzian score,
+- Euclidean Mahalanobis baseline,
+- Euclidean MLP baseline.
+
+Run:
+
+```bash
 cd k1-manifold-core
 python benchmarks/ood_extrapolation.py
 ```
 
-Current OOD AUC summary:
+Current AUC summary:
 
 | Test box | Lorentz | Euclid Mahalanobis | Euclid MLP | Lorentz - MLP gap |
 | --- | ---: | ---: | ---: | ---: |
@@ -158,28 +199,100 @@ Current OOD AUC summary:
 | 8 | 1.0000 | 0.7213 | 0.9996 | +0.0004 |
 | 12 | 1.0000 | 0.7217 | 0.9995 | +0.0005 |
 
-The full output is saved to `k1-manifold-core/results/ood_extrapolation.json`
-and the figure to `k1-manifold-core/results/ood_extrapolation_auc.png`. This is
-a research benchmark, not a pytest unit test; see
-`k1-manifold-core/docs/benchmark_report.md`.
+Artifacts:
 
-Experiment 5 is a causal stress-test for Chronos-JEPA on Lorentzian oscillator
-trajectories:
-
+```text
+k1-manifold-core/results/ood_extrapolation.json
+k1-manifold-core/results/ood_extrapolation_auc.png
 ```
+
+### AI Benchmark 2 - World-Model Causality Stress Test
+
+Experiment 5 studies long-horizon rollout prediction under distribution shift
+on synthetic Lorentzian oscillator trajectories.
+
+It compares:
+
+- Euclidean JEPA,
+- Chronos-JEPA with Lorentzian latent geometry,
+- multiple Chronos causal-regularization strengths.
+
+It evaluates:
+
+- final rollout MSE,
+- causal-violation rate,
+- Lorentz-interval drift,
+- latent `K` drift,
+- OOD extrapolation from `box=2` to `box=32`.
+
+Run:
+
+```bash
 cd k1-manifold-core
 python benchmarks/experiment_5_causal_stress_test.py
 ```
 
-The current quick result is intentionally reported as an ablation result, not a
-win: in this configuration, Chronos-JEPA keeps rollout MSE comparable but
-increases decoded causal-violation rates relative to Euclidean JEPA. That makes
-it useful as a stress-test target for future regularizer design rather than a
-claim of world-model superiority.
+Current quick result: this is a negative ablation. Chronos-JEPA keeps rollout
+MSE roughly comparable but does **not** reduce decoded causal-violation rates in
+the current configuration. Stronger causal regularization increases decoded
+causal violations on this stress test. It is included as a reproducible failure
+mode and design target for future Chronos world-model regularizers.
 
-## Repository Layout
+Artifacts:
 
+```text
+k1-manifold-core/results/experiment_5_ablation_stress_summary.csv
+k1-manifold-core/results/experiment_5_ablation_stress_raw.json
+k1-manifold-core/results/experiment_5_violation_vs_box.png
+k1-manifold-core/results/experiment_5_mse_vs_box.png
+k1-manifold-core/results/experiment_5_violation_by_step.png
+k1-manifold-core/results/experiment_5_K_drift_by_step.png
 ```
+
+## Archived Benchmarks
+
+### `world_model_v01`
+
+`world_model_v01` is a minimal affine latent-transition benchmark retained for
+historical comparison. It tests a simple `K=1` projection regularizer on a toy
+hyperbolic latent dataset. It is not treated as current headline evidence.
+
+Run:
+
+```bash
+cd k1-manifold-core
+python examples/benchmark_world_model_v01.py
+```
+
+Result:
+
+```text
+k1-manifold-core/results/world_model_v01.json
+```
+
+## Repository Organization
+
+```text
+Chronos-K1
+├── Theory
+│   ├── Lorentz Signature
+│   ├── K=1 Null Flow
+│   └── T ~ c^-2
+│
+├── Benchmarks
+│   ├── benchmark_v03
+│   ├── ood_extrapolation
+│   └── experiment_5_causal_stress
+│
+├── Archive
+│   └── world_model_v01
+│
+└── Docs
+```
+
+On disk:
+
+```text
 k1-manifold-core/
   src/k1_manifold_core/
     axioms/
@@ -192,12 +305,13 @@ k1-manifold-core/
   benchmarks/
   examples/
   docs/
+  results/
   lean4/
 ```
 
 ## Quick Start
 
-```
+```bash
 cd k1-manifold-core
 python -m pip install -e ".[dev]"
 pytest -v
@@ -206,7 +320,7 @@ pytest -v
 If your system Python blocks editable installs because of site-package
 permissions, use a virtual environment:
 
-```
+```bash
 cd k1-manifold-core
 python -m venv .venv
 source .venv/bin/activate
@@ -215,69 +329,47 @@ python -m pip install -e ".[dev]"
 pytest -v
 ```
 
-## Run The Demos
+Expected test status:
 
-```
-cd k1-manifold-core
-python examples/demo_01_information_time.py
-python examples/demo_02_causal_cone.py
-python examples/demo_03_k1_attractor.py
-python examples/demo_04_recovery_scaling.py
-python examples/benchmark_world_model_v01.py
+```text
+29 passed
 ```
 
-The demos generate figures in `k1-manifold-core/examples/outputs/`.
-`demo_04_recovery_scaling.py` reproduces the null-flow / freeze-leaf /
-`Theta(c^{-2})` results above (rank check, first-integral conservation,
-per-leaf exponential fit, log-log recovery scaling).
+## Reproduce
 
-![Null-flow recovery scaling](k1-manifold-core/examples/outputs/demo_04_recovery_scaling.png)
+For a one-page reproduction guide, see [REPRODUCE.md](REPRODUCE.md).
+
+For the benchmark narrative and current result tables, see
+`k1-manifold-core/docs/benchmark_report.md`.
 
 ## Theory Boundary
 
-The repository distinguishes theorem-level code checks, assumptions, and
-numerical experiments:
+The repository distinguishes theorem-level checks, assumptions, and numerical
+experiments:
 
 - **Theorem-level checks:** 2D Lorentzian signature tests; `K(x)` evaluation;
-  Law II matrix form; rank-one structure of `A_c` and exact-leaf decay rate
-  `4 c^2`; spherical-sector symbolic identities.
-- **Assumptions:** Axioms R/E/T, nondegeneracy, the added `K=1` consistency
-  condition, Law II, Law III, and thermodynamic identifications such as
-  `T_eff = T_tol`.
-- **Numerical experiments:** local `K=1` attractor trajectories, recovery-time
-  scaling, and visualization demos.
+  Law II matrix form; rank-one structure of `A_c`; exact-leaf decay rate
+  `4c^2`; spherical-sector symbolic identities.
+- **Assumptions:** Axioms `R/E/T`, nondegeneracy, the added `K=1` consistency
+  condition, Law II, Law III, field-level `K_i = 1`, and thermodynamic
+  identifications such as `T_eff = T_tol`.
+- **Numerical experiments:** local `K=1` trajectories, noisy recovery,
+  light-cone classification, and world-model stress tests.
 
 No claim is made that the present code derives the full physical spacetime
 metric, the matter sector, or general relativity from first principles. The
-thermodynamic (Clausius / Jacobson) bridge in the paper is explicitly
-conditional on external inputs (`T_eff = T_tol`, `S ~ A`) and is not presented
-here as an autonomous derivation.
+thermodynamic bridge in the paper is explicitly conditional on external inputs
+(`T_eff = T_tol`, `S ~ A`) and is not presented here as an autonomous
+derivation.
 
-## Current Status
+## Next AI Milestones
 
-Chronos-K1 is an experimental research framework. Implemented components are
-computational and numerical. Physical interpretations beyond the implemented
-mathematics are treated as hypotheses under investigation.
-
-## Roadmap
-
-- General 2x2 Lorentzian `G`: determine whether `A_c` stays rank-one, with an
-  analogous first integral and `Theta(c^{-2})` recovery scaling (closing or
-  refining the canonical-only results above).
-- Characterize the freeze leaf `Sigma_0` and convergence on its complement for
-  non-canonical `G`.
-- Higher-dimensional Lorentzian state spaces.
-- Curved, state-dependent metrics.
-- Lean4 formalization of the realizability signature theorem (R/E/T =>
-  `Sig(G) = (1,1)`) and the rank-one / first-integral structure.
-- Extend the world-model v0.1 latent regularizer benchmark beyond the current
-  toy hyperbolic dataset.
-- Long-horizon prediction experiments.
-
-See `k1-manifold-core/docs/v0_3_roadmap.md` for the current v0.3
-implementation map.
-
-For a one-page reproduction guide, see [REPRODUCE.md](REPRODUCE.md).
+- Lorenz attractor benchmark.
+- Pendulum benchmark.
+- Double-pendulum benchmark.
+- N-body benchmark.
+- Chronos-JEPA regularizer redesign for Experiment 5.
+- Chronos-JEPA scaling study after the stress-test failure mode is addressed.
 
 ## Citation
 
