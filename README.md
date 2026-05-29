@@ -284,6 +284,11 @@ additional local artifacts when run externally, including
 `experiment_5_full_sanity_mse_vs_box.png`, and
 `experiment_5_full_sanity_violation_by_step.png`.
 
+The supplied Colab console result for this `N=10` reproduction is recorded in
+`exp5-diagnostic/results/EXP5_COLAB_REPRODUCTION_2026-05-29.md`. The raw
+Colab-generated CSV/JSON/PNG files should be copied into
+`exp5-diagnostic/results/` separately if exact session artifacts are needed.
+
 See `k1-manifold-core/docs/experiment_5_reproduction_protocol.md` for the
 exact seed strategy and full reproduction configuration.
 

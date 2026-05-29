@@ -2,6 +2,16 @@
 
 This directory is reserved for full Experiment 5 reproduction artifacts.
 
+Committed result notes:
+
+```text
+EXP5_COLAB_REPRODUCTION_2026-05-29.md
+```
+
+This note records the supplied Colab console result for the `N=10` full sanity
+reproduction. It is a summary note, not a replacement for the raw generated
+CSV/JSON/PNG artifacts.
+
 The maintained script generates the result files:
 
 ```text

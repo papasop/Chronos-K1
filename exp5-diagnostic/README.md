@@ -24,6 +24,8 @@ This diagnostic directory provides:
 - `guides/COLAB_COPY_PASTE_VERSION.md`: direct copy-paste Colab cell version
   of the Experiment 5 reproduction, with cautious interpretation wording.
 - `results/`: target directory for full reproduction artifacts.
+- `results/EXP5_COLAB_REPRODUCTION_2026-05-29.md`: committed summary of the
+  supplied Colab `N=10` reproduction console output.
 
 ## Headline Result
 
@@ -97,6 +99,12 @@ The historical Colab raw files `exp5_reproduction_results.csv`,
 `exp5_reproduction_results.png`, and `exp5_reproduction_config.json` should be
 copied into `exp5-diagnostic/results/` if you want to preserve that exact
 external session output. They are not fabricated from summary statistics.
+
+The supplied Colab console result is recorded in:
+
+```text
+exp5-diagnostic/results/EXP5_COLAB_REPRODUCTION_2026-05-29.md
+```
 
 See also:
 
