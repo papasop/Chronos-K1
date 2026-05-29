@@ -166,6 +166,8 @@ The demos generate figures in `k1-manifold-core/examples/outputs/`.
 `Theta(c^{-2})` results above (rank check, first-integral conservation,
 per-leaf exponential fit, log-log recovery scaling).
 
+![Null-flow recovery scaling](k1-manifold-core/examples/outputs/demo_04_recovery_scaling.png)
+
 ## Theory Boundary
 
 The repository distinguishes theorem-level code checks, assumptions, and
@@ -206,7 +208,7 @@ mathematics are treated as hypotheses under investigation.
 - World-model benchmarks after a baseline implementation exists.
 - Long-horizon prediction experiments.
 
-See `k1-manifold-core/docs/v0_2_roadmap.md` for the current v0.2
+See `k1-manifold-core/docs/v0_3_roadmap.md` for the current v0.3
 implementation map.
 
 For a one-page reproduction guide, see [REPRODUCE.md](REPRODUCE.md).
