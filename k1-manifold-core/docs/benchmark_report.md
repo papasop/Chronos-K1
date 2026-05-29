@@ -66,9 +66,11 @@ cd k1-manifold-core
 python benchmarks/experiment_5_causal_stress_test.py
 ```
 
-Use `--full` for the larger configuration:
+Use `--smoke` for a tiny CPU-friendly run and `--full` for the larger
+configuration:
 
 ```bash
+python benchmarks/experiment_5_causal_stress_test.py --smoke
 python benchmarks/experiment_5_causal_stress_test.py --full
 ```
 
@@ -81,24 +83,28 @@ python benchmarks/experiment_5_causal_stress_test.py --full
 - `results/experiment_5_violation_by_step.png`
 - `results/experiment_5_K_drift_by_step.png`
 
-**Current quick result.** The quick benchmark is deliberately small
-(`n_seeds=2`) and should be read as a smoke-test ablation, not a final result.
-In this configuration, Chronos latent predictor does **not** improve rollout MSE and
-increases decoded causal-violation rates relative to Euclidean latent predictor. This is
-useful negative evidence: the current latent regularizer is not yet a reliable
-causality-preserving world-model route on this oscillator stress test.
+**Representative Colab result.** The run below used the default benchmark
+configuration on CUDA (`n_seeds=5`, `n_train=1000`, `n_test=256`,
+`epochs=100`). Chronos latent predictor keeps final rollout MSE essentially
+unchanged while reducing decoded causal-violation rates by roughly an order of
+magnitude across OOD boxes. The Wilcoxon p-values are not stable enough at
+`n=5` to claim statistical significance; this should be read as mechanistic
+benchmark evidence, not a final statistical result.
 
-| Lambda | Test box | MSE improvement vs Euclid | Violation improvement vs Euclid | p(MSE) | p(violation) |
-| ---: | ---: | ---: | ---: | ---: | ---: |
-| 0.0 | 2 | -0.30% | -161.10% | 0.5000 | 1.0000 |
-| 0.0 | 8 | -0.07% | -147.39% | 0.5000 | 1.0000 |
-| 0.0 | 32 | -0.02% | -285.17% | 0.5000 | 1.0000 |
-| 0.5 | 2 | -0.36% | -734.37% | 0.5000 | 1.0000 |
-| 0.5 | 8 | -0.08% | -661.37% | 0.5000 | 1.0000 |
-| 0.5 | 32 | -0.02% | -1207.78% | 0.5000 | 1.0000 |
+| Lambda | Test box | Euclid violation | Chronos violation | MSE improvement vs Euclid | p(MSE) | p(violation) |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 0.0 | 2 | 0.3562 | 0.0188 | +0.0910% | 0.1875 | 0.3125 |
+| 0.0 | 8 | 0.3806 | 0.0276 | +0.0023% | 0.8125 | 0.4375 |
+| 0.0 | 32 | 0.3764 | 0.0257 | +0.0020% | 0.4375 | 0.4375 |
+| 0.1 | 2 | 0.3562 | 0.0109 | +0.0924% | 0.0625 | 0.6250 |
+| 0.1 | 8 | 0.3806 | 0.0216 | +0.0022% | 1.0000 | 0.6250 |
+| 0.1 | 32 | 0.3764 | 0.0181 | +0.0015% | 0.8125 | 0.8125 |
+| 0.5 | 2 | 0.3562 | 0.0168 | +0.0766% | 0.0625 | 0.8125 |
+| 0.5 | 8 | 0.3806 | 0.0261 | -0.0011% | 1.0000 | 0.8125 |
+| 0.5 | 32 | 0.3764 | 0.0217 | +0.0015% | 0.8125 | 0.8125 |
 
 **Interpretation boundary.** This benchmark should not be cited as evidence
-that Chronos latent predictor improves world-model prediction. It is included because it
-exposes a concrete failure mode and gives the project a reproducible target:
-future Chronos regularizers should reduce causal violations without sacrificing
-rollout accuracy on this stress test.
+that Chronos latent predictor improves world-model prediction accuracy.
+Instead, it supports the narrower claim that Chronos constraints can act as a
+causality-preserving world-model regularizer while maintaining comparable
+rollout error on this synthetic stress test.

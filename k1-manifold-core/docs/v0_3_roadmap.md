@@ -79,8 +79,11 @@ implemented checks, runnable demos, and explicitly marked assumptions.
 - `benchmarks/experiment_5_causal_stress_test.py`: scans Chronos latent
   predictor causal regularizer strength on Lorentzian oscillator rollouts.
   These are JEPA-style latent predictors, not Meta/LeCun JEPA implementations.
-  The current quick result is a negative ablation: it exposes higher decoded
-  causal violation rates for the present regularizer.
+  The representative Colab default run keeps rollout MSE approximately
+  unchanged while reducing decoded causal-violation rates under OOD stress.
+  The p-values are not stable enough at `n=5` to claim statistical
+  significance, so the result is presented as causal-consistency benchmark
+  evidence rather than a forecasting-accuracy claim.
 - `experiments/causal_projection_demo.py`: exploratory causal projection
   experiment. It is not presented as a superiority benchmark.
 
@@ -90,9 +93,9 @@ implemented checks, runnable demos, and explicitly marked assumptions.
   `G = diag(1, -1)` case.
 - Tighten benchmark baselines and separate deterministic recovery from noisy
   rollout behavior.
-- Extend the world-model v0.1 benchmark beyond radial off-manifold latent noise
+- Extend the world-model benchmarks beyond synthetic oscillator trajectories
   before making stronger AI-world-model claims.
 - Add generated result snapshots only when they are tied to a reproducible
   script and test.
-- Keep JEPA-style/world-model integration out of the core claim path until a
-  stronger baseline reproduction exists.
+- Keep JEPA-style/world-model integration out of the core theorem claim path;
+  present it as benchmark evidence and mechanism probing only.

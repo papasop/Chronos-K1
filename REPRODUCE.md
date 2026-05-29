@@ -135,6 +135,12 @@ python benchmarks/ood_extrapolation.py
 python benchmarks/experiment_5_causal_stress_test.py
 ```
 
+For a tiny CPU-friendly smoke check of Experiment 5, run:
+
+```bash
+python benchmarks/experiment_5_causal_stress_test.py --smoke
+```
+
 It writes:
 
 ```text

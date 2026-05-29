@@ -235,11 +235,30 @@ cd k1-manifold-core
 python benchmarks/experiment_5_causal_stress_test.py
 ```
 
-Current quick result: this is a negative ablation. Chronos latent predictor keeps rollout
-MSE roughly comparable but does **not** reduce decoded causal-violation rates in
-the current configuration. Stronger causal regularization increases decoded
-causal violations on this stress test. It is included as a reproducible failure
-mode and design target for future Chronos world-model regularizers.
+Use `--smoke` for a tiny CPU-friendly run and `--full` for the larger sweep.
+
+Representative Colab default run (`cuda`, `n_seeds=5`, `n_train=1000`,
+`n_test=256`, `epochs=100`) shows:
+
+- final rollout MSE remains approximately unchanged,
+- decoded causal-violation rate drops from roughly `0.36-0.38` to
+  `0.01-0.03`,
+- the reduction persists under OOD extrapolation from `box=2` to `box=32`,
+- Lorentz-interval drift remains comparable.
+
+For example, at `lambda=0.1`:
+
+| Test box | Euclidean violation | Chronos violation | Final MSE change |
+| ---: | ---: | ---: | ---: |
+| 2 | 0.3562 | 0.0109 | +0.0924% |
+| 8 | 0.3806 | 0.0216 | +0.0022% |
+| 32 | 0.3764 | 0.0181 | +0.0015% |
+
+The paired Wilcoxon p-values in this `n=5` run are not stable enough to claim
+statistical significance. The appropriate interpretation is narrower:
+Chronos-K1 constraints act here as a causality-preserving latent world-model
+regularizer while maintaining comparable prediction error, not as evidence of
+superior forecasting accuracy.
 
 Artifacts:
 
@@ -371,9 +390,9 @@ derivation.
 - Pendulum benchmark.
 - Double-pendulum benchmark.
 - N-body benchmark.
-- Chronos latent predictor regularizer redesign for Experiment 5.
-- JEPA-style latent-predictor scaling study after the stress-test failure mode
-  is addressed.
+- Chronos latent predictor mechanism ablations for Experiment 5.
+- JEPA-style latent-predictor scaling study across stronger dynamical
+  baselines.
 
 ## Citation
 

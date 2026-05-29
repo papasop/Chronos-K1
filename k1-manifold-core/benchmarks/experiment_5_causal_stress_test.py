@@ -11,6 +11,7 @@ embeddings. They are not implementations of Meta/LeCun JEPA.
 Run from ``k1-manifold-core``:
 
     python benchmarks/experiment_5_causal_stress_test.py
+    python benchmarks/experiment_5_causal_stress_test.py --smoke
     python benchmarks/experiment_5_causal_stress_test.py --full
 """
 
@@ -42,18 +43,27 @@ RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run Chronos-K1 Experiment 5 causal stress benchmark.")
+    parser.add_argument("--smoke", action="store_true", help="Run a tiny CPU-friendly smoke configuration.")
     parser.add_argument("--full", action="store_true", help="Run the larger benchmark configuration.")
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.smoke and args.full:
+        parser.error("--smoke and --full cannot be used together")
+    return args
 
 
 ARGS = parse_args()
-QUICK = not ARGS.full
+RUN_MODE = "smoke" if ARGS.smoke else "full" if ARGS.full else "default"
 
-if QUICK:
+if RUN_MODE == "smoke":
     N_SEEDS = 2
     N_TRAIN = 250
     N_TEST = 96
     EPOCHS = 20
+elif RUN_MODE == "default":
+    N_SEEDS = 5
+    N_TRAIN = 1000
+    N_TEST = 256
+    EPOCHS = 100
 else:
     N_SEEDS = 10
     N_TRAIN = 3000
@@ -71,9 +81,9 @@ T_OBS = 10
 ROLL_STEPS = 50
 
 TRAIN_BOX = 2.0
-TEST_BOXES = (2.0, 8.0, 32.0) if QUICK else (2.0, 4.0, 8.0, 16.0, 32.0)
+TEST_BOXES = (2.0, 8.0, 32.0) if RUN_MODE == "smoke" else (2.0, 4.0, 8.0, 16.0, 32.0)
 
-LAMBDA_GRID = (0.0, 0.5) if QUICK else (0.0, 0.1, 0.2, 0.5)
+LAMBDA_GRID = (0.0, 0.5) if RUN_MODE == "smoke" else (0.0, 0.1, 0.2, 0.5)
 LAMBDA_K1 = 0.02
 
 REQUESTED_DEVICE = os.environ.get("CHRONOS_DEVICE", "cpu")
@@ -482,7 +492,7 @@ def run_experiment_5() -> tuple[pd.DataFrame, dict[str, object], dict[str, objec
             "Lorentz-normalized latent steps remain active for Chronos latent predictor."
         ),
         "config": {
-            "quick": QUICK,
+            "run_mode": RUN_MODE,
             "n_seeds": N_SEEDS,
             "n_train": N_TRAIN,
             "n_test": N_TEST,
