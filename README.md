@@ -216,5 +216,4 @@ the moving `main` branch.
 
 ## License
 
-See `LICENSE` (add one if not present — MIT or Apache-2.0 recommended for a
-research prototype).
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
