@@ -16,11 +16,12 @@ intentionally separate from `tests/`.
 - `experiment_5_full_sanity_reproduction.py`: dedicated reproduction script
   for the original Experiment 5 two-model lambda scan. It records RNG seeding,
   mean/final rollout MSE, causal violation, interval drift, and paired
-  Wilcoxon p-values.
+  Wilcoxon p-values. This is the primary world-model phenomenon benchmark.
 - `experiment_5b_causal_mechanism_ablation.py`: decompose Experiment 5 into
   Euclidean, Chronos geometry-only, Chronos causal-only, Chronos interval-only,
   and Chronos full latent-predictor variants. It writes summary CSV, raw JSON,
-  and diagnostic PNG artifacts under `results/`.
+  and diagnostic PNG artifacts under `results/`. This is the mechanism
+  diagnostic benchmark.
 
 Run from `k1-manifold-core`:
 

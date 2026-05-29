@@ -56,7 +56,7 @@ Examples:
 | 1 | 50001 | 60201 | 60401 | 60801 | 61601 | 63201 |
 | 2 | 50002 | 60202 | 60402 | 60802 | 61602 | 63202 |
 
-## Headline Result
+## Primary Phenomenon Result
 
 The `N=10` CUDA reproduction gave:
 
@@ -65,7 +65,9 @@ The `N=10` CUDA reproduction gave:
 | `lambda=0.1`, `box=2` | 0.2866 | 0.1475 | 48.5% | 0.0840 |
 | `lambda=0.1`, `box=32` | 0.4306 | 0.3155 | about 27% | not reported |
 
-Rollout MSE was approximately unchanged in this run.
+Rollout MSE was approximately unchanged in this run. The `box=32` reduction is
+important because it suggests that the observed effect is not confined to the
+training-scale distribution.
 
 ## Interpretation Boundary
 
@@ -73,8 +75,9 @@ This result is evidence that the Chronos latent predictor can reduce decoded
 causal-violation rates on this synthetic Lorentzian oscillator benchmark while
 preserving comparable rollout error. The `box=2` Wilcoxon value is close to,
 but does not meet, the conventional `p<0.05` threshold. It should therefore be
-reported as reproducible benchmark evidence, not as a final statistical
-significance claim and not as a broad forecasting-accuracy claim.
+reported as the primary world-model phenomenon benchmark for Chronos-K1: a
+substantial effect size with OOD persistence, not a final statistical
+significance claim and not a broad forecasting-accuracy claim.
 
 ## Artifacts
 

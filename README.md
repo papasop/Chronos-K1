@@ -207,7 +207,7 @@ k1-manifold-core/results/ood_extrapolation.json
 k1-manifold-core/results/ood_extrapolation_auc.png
 ```
 
-### AI Benchmark 2 - World-Model Causality Stress Test
+### AI Benchmark 2 - Primary World-Model Phenomenon Benchmark
 
 Experiment 5 studies long-horizon rollout prediction under distribution shift
 on synthetic Lorentzian oscillator trajectories.
@@ -243,12 +243,12 @@ For the dedicated `N=10` reproduction script, run:
 CHRONOS_DEVICE=cuda python benchmarks/experiment_5_full_sanity_reproduction.py --full
 ```
 
-Current headline AI result:
+Current headline AI phenomenon:
 
 An independent full sanity reproduction of the original Experiment 5 design
 was run on CUDA with `n_seeds=10`, `n_train=3000`, `n_test=512`, and
-`epochs=250`. It reproduced causal-violation suppression for the Chronos
-latent predictor while keeping rollout MSE approximately unchanged.
+`epochs=250`. It reproduced a substantial causal-violation reduction for the
+Chronos latent predictor while keeping rollout MSE approximately unchanged.
 
 Main result at `lambda=0.1`:
 
@@ -259,9 +259,10 @@ Main result at `lambda=0.1`:
 
 For the in-distribution result, the paired Wilcoxon p-value is `p=0.0840`.
 This is close to, but does not meet, the conventional `p<0.05` threshold.
-The appropriate interpretation is therefore precise: Chronos-K1 provides
-evidence of a causality-preserving latent world-model regularizer, not a proven
-forecasting-accuracy advantage.
+The appropriate interpretation is therefore precise: Experiment 5 is the
+primary world-model phenomenon benchmark for Chronos-K1. It shows a substantial
+effect size and OOD persistence, but statistical significance has not yet been
+established and it is not evidence of a forecasting-accuracy advantage.
 
 Artifacts:
 
@@ -285,7 +286,7 @@ additional local artifacts when run externally, including
 See `k1-manifold-core/docs/experiment_5_reproduction_protocol.md` for the
 exact seed strategy and full reproduction configuration.
 
-### AI Benchmark 3 - Causal Mechanism Ablation
+### AI Benchmark 3 - Mechanism Diagnostic Benchmark
 
 Experiment 5b decomposes the Experiment 5 Chronos latent predictor into
 mechanism variants:
@@ -300,8 +301,9 @@ This benchmark is meant to answer a narrower question: which part of the
 Chronos constraint stack contributes to causal consistency in long-horizon
 rollouts?
 
-It is the diagnostic follow-up to Experiment 5. Experiment 5 establishes that
-causal-violation suppression can reproduce in the original two-model setting;
+It is the diagnostic follow-up to Experiment 5. Experiment 5 records the
+primary phenomenon: causal-violation suppression reproduces in the original
+two-model setting;
 Experiment 5b asks whether that effect is driven mainly by Lorentz-normalized
 latent-step geometry, the causal loss, the interval-matching loss, or the
 combined full constraint stack.

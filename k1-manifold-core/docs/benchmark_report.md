@@ -49,7 +49,7 @@ OOD edge over a strong MLP baseline, while a radial Euclidean quadratic
 baseline does not capture the task geometry. It is not evidence for broad
 world-model superiority.
 
-## Experiment 5: Causal Stress Test
+## Experiment 5: Primary World-Model Phenomenon Benchmark
 
 **Task.** Train a Euclidean latent predictor (ELP) and Chronos latent predictor
 (CLP) on synthetic Lorentzian oscillator trajectories, then evaluate rollout
@@ -102,8 +102,9 @@ The exact seed strategy is documented in
 | OOD, `box=32` | 0.4306 | 0.3155 | about 27% | not reported |
 
 The in-distribution Wilcoxon value is close to, but does not meet, the
-conventional `p<0.05` threshold. This should be read as reproducible benchmark
-evidence for causal-consistency preservation, not as a final statistical claim.
+conventional `p<0.05` threshold. This should be read as a primary phenomenon
+benchmark with substantial effect size and OOD persistence, not as a final
+statistical significance claim.
 
 **Interpretation boundary.** This benchmark should not be cited as evidence
 that Chronos latent predictor improves world-model prediction accuracy.
@@ -111,7 +112,7 @@ Instead, it supports the narrower claim that Chronos constraints can act as a
 causality-preserving world-model regularizer while maintaining comparable
 rollout error on this synthetic stress test.
 
-## Experiment 5b: Causal Mechanism Ablation
+## Experiment 5b: Mechanism Diagnostic Benchmark
 
 **Task.** Decompose the Chronos latent predictor into mechanism variants and
 measure which parts of the constraint stack affect decoded causal consistency.

@@ -82,15 +82,17 @@ implemented checks, runnable demos, and explicitly marked assumptions.
   The full sanity reproduction (`n_seeds=10`) keeps rollout MSE approximately
   unchanged while reducing decoded causal-violation rates under OOD stress. At
   `lambda=0.1`, `box=2`, violation drops from `0.2866` to `0.1475`
-  (`p=0.0840`), so the result is presented as causal-consistency benchmark
-  evidence rather than a final significance claim.
+  (`p=0.0840`), so the result is presented as the primary world-model
+  phenomenon benchmark: substantial effect size, close to significance, and
+  OOD persistence rather than a final significance claim.
 - `benchmarks/experiment_5_full_sanity_reproduction.py`: dedicated
   reproduction script for the original Experiment 5 lambda scan, including RNG
   seed documentation and mean/final rollout metrics.
 - `benchmarks/experiment_5b_causal_mechanism_ablation.py`: decomposes
   Experiment 5 into Euclidean, Chronos geometry-only, Chronos causal-only,
   Chronos interval-only, and Chronos full latent-predictor variants to probe
-  which constraints contribute to causal-consistency preservation.
+  which constraints contribute to causal-consistency preservation. It is the
+  mechanism diagnostic benchmark, not the headline phenomenon benchmark.
 - `experiments/causal_projection_demo.py`: exploratory causal projection
   experiment. It is not presented as a superiority benchmark.
 
