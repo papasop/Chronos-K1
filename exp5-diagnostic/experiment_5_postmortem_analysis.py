@@ -9,6 +9,10 @@ Preferred use:
         --csv exp5-diagnostic/results/exp5_extended_fixed_v2_results.csv \
         --out-dir exp5-diagnostic/results
 
+When a CSV contains multiple `box` values, the script defaults to the primary
+task `box == 2.0`. Pass `--box 32.0` for an OOD slice or `--box nan` to skip
+box filtering.
+
 If the raw CSV is unavailable, an explicitly marked demo dataset can be used:
 
     python exp5-diagnostic/experiment_5_postmortem_analysis.py \
@@ -52,6 +56,8 @@ EMBEDDED_DEMO_DATA = {
 @dataclass
 class AnalysisSummary:
     data_source: str
+    data_source_id: str
+    box_filter: float | None
     n_lambda: int
     negative_count: int
     positive_count: int
@@ -64,6 +70,9 @@ class AnalysisSummary:
     trend_r2: float
     trend_p_value: float
     has_per_seed_data: bool
+
+
+LAMBDA_COL = "lambda"
 
 
 def safe_wilcoxon(a: Iterable[float], b: Iterable[float]) -> float:
@@ -87,11 +96,24 @@ def canonical_model_name(name: str) -> str:
     return lower
 
 
-def load_summary_from_raw_csv(path: Path) -> tuple[pd.DataFrame, pd.DataFrame | None]:
+def filter_box(df: pd.DataFrame, box_filter: float | None) -> pd.DataFrame:
+    if box_filter is None or "box" not in df.columns:
+        return df
+    filtered = df[np.isclose(df["box"].astype(float), float(box_filter))].copy()
+    if filtered.empty:
+        available = sorted(df["box"].dropna().unique().tolist())
+        raise ValueError(f"No rows found for box={box_filter}. Available boxes: {available}")
+    return filtered
+
+
+def load_summary_from_raw_csv(
+    path: Path,
+    box_filter: float | None,
+) -> tuple[pd.DataFrame, pd.DataFrame | None]:
     raw = pd.read_csv(path)
     if "model" not in raw.columns:
         raise ValueError("Raw CSV must contain a 'model' column.")
-    if "lambda" not in raw.columns:
+    if LAMBDA_COL not in raw.columns:
         raise ValueError("Raw CSV must contain a 'lambda' column.")
 
     metric = "violation_rate" if "violation_rate" in raw.columns else None
@@ -101,13 +123,14 @@ def load_summary_from_raw_csv(path: Path) -> tuple[pd.DataFrame, pd.DataFrame | 
         raise ValueError("Raw CSV must contain 'violation_rate' or 'causal_violation_rate'.")
 
     raw = raw.copy()
+    raw = filter_box(raw, box_filter)
     raw["model"] = raw["model"].map(canonical_model_name)
     raw = raw[raw["model"].isin(["euclid", "chronos"])]
 
     means = (
-        raw.groupby(["lambda", "model"], as_index=False)[metric]
+        raw.groupby([LAMBDA_COL, "model"], as_index=False)[metric]
         .mean()
-        .pivot(index="lambda", columns="model", values=metric)
+        .pivot(index=LAMBDA_COL, columns="model", values=metric)
         .reset_index()
     )
     if not {"euclid", "chronos"}.issubset(means.columns):
@@ -115,44 +138,57 @@ def load_summary_from_raw_csv(path: Path) -> tuple[pd.DataFrame, pd.DataFrame | 
 
     summary = means.rename(columns={"euclid": "euclid_mean", "chronos": "chronos_mean"})
 
-    n_by_lambda = raw.groupby("lambda").size().rename("n_records").reset_index()
-    summary = summary.merge(n_by_lambda, on="lambda", how="left")
+    n_by_lambda = raw.groupby(LAMBDA_COL).size().rename("n_records").reset_index()
+    summary = summary.merge(n_by_lambda, on=LAMBDA_COL, how="left")
     summary["n_seeds"] = np.nan
     summary["p_value"] = np.nan
 
     per_seed = None
     if "seed" in raw.columns:
         pivot = raw.pivot_table(
-            index=["lambda", "seed"],
+            index=[LAMBDA_COL, "seed"],
             columns="model",
             values=metric,
             aggfunc="mean",
         ).reset_index()
         if {"euclid", "chronos"}.issubset(pivot.columns):
+            pivot["improvement"] = (
+                (pivot["euclid"] - pivot["chronos"]) / pivot["euclid"] * 100.0
+            )
             p_values = []
             seed_counts = []
-            for lam, group in pivot.groupby("lambda"):
-                p_values.append((lam, safe_wilcoxon(group["euclid"], group["chronos"])))
-                seed_counts.append((lam, int(group[["euclid", "chronos"]].dropna().shape[0])))
-            p_df = pd.DataFrame(p_values, columns=["lambda", "p_value"])
-            n_df = pd.DataFrame(seed_counts, columns=["lambda", "n_seeds"])
-            summary = summary.drop(columns=["p_value", "n_seeds"]).merge(p_df, on="lambda", how="left")
-            summary = summary.merge(n_df, on="lambda", how="left")
+            for lambda_value, group in pivot.groupby(LAMBDA_COL):
+                p_values.append((lambda_value, safe_wilcoxon(group["euclid"], group["chronos"])))
+                seed_counts.append(
+                    (lambda_value, int(group[["euclid", "chronos"]].dropna().shape[0]))
+                )
+            p_df = pd.DataFrame(p_values, columns=[LAMBDA_COL, "p_value"])
+            n_df = pd.DataFrame(seed_counts, columns=[LAMBDA_COL, "n_seeds"])
+            summary = summary.drop(columns=["p_value", "n_seeds"]).merge(
+                p_df, on=LAMBDA_COL, how="left"
+            )
+            summary = summary.merge(n_df, on=LAMBDA_COL, how="left")
             per_seed = pivot
 
     return summary, per_seed
 
 
-def load_summary_table(path: Path | None, use_embedded_demo_data: bool) -> tuple[pd.DataFrame, pd.DataFrame | None, str]:
+def load_summary_table(
+    path: Path | None,
+    use_embedded_demo_data: bool,
+    box_filter: float | None,
+) -> tuple[pd.DataFrame, pd.DataFrame | None, str, str]:
     if path is not None:
         df = pd.read_csv(path)
-        if {"lambda", "model"}.issubset(df.columns):
-            summary, per_seed = load_summary_from_raw_csv(path)
+        if {LAMBDA_COL, "model"}.issubset(df.columns):
+            summary, per_seed = load_summary_from_raw_csv(path, box_filter)
             source = f"raw CSV: {path}"
-        elif {"lambda", "euclid_mean", "chronos_mean"}.issubset(df.columns):
-            summary = df.copy()
+            source_id = "raw_csv"
+        elif {LAMBDA_COL, "euclid_mean", "chronos_mean"}.issubset(df.columns):
+            summary = filter_box(df.copy(), box_filter)
             per_seed = None
             source = f"summary CSV: {path}"
+            source_id = "summary_csv"
         else:
             raise ValueError(
                 "CSV must be either raw rows with lambda/model/violation_rate "
@@ -162,6 +198,7 @@ def load_summary_table(path: Path | None, use_embedded_demo_data: bool) -> tuple
         summary = pd.DataFrame(EMBEDDED_DEMO_DATA)
         per_seed = None
         source = "embedded demo data manually entered from supplied experiment notes"
+        source_id = "embedded_demo_data"
     else:
         raise ValueError("Provide --csv or explicitly pass --use-embedded-demo-data.")
 
@@ -173,13 +210,19 @@ def load_summary_table(path: Path | None, use_embedded_demo_data: bool) -> tuple
         summary["p_value"] = np.nan
     if "n_seeds" not in summary.columns:
         summary["n_seeds"] = np.nan
-    summary = summary.sort_values("lambda").reset_index(drop=True)
-    return summary, per_seed, source
+    summary = summary.sort_values(LAMBDA_COL).reset_index(drop=True)
+    return summary, per_seed, source, source_id
 
 
-def build_summary(summary: pd.DataFrame, per_seed: pd.DataFrame | None, source: str) -> AnalysisSummary:
+def build_summary(
+    summary: pd.DataFrame,
+    per_seed: pd.DataFrame | None,
+    source: str,
+    source_id: str,
+    box_filter: float | None,
+) -> AnalysisSummary:
     slope, intercept, r_value, p_trend, _ = stats.linregress(
-        summary["lambda"].to_numpy(dtype=float),
+        summary[LAMBDA_COL].to_numpy(dtype=float),
         summary["improvement"].to_numpy(dtype=float),
     )
     p_values = summary["p_value"].to_numpy(dtype=float)
@@ -187,6 +230,8 @@ def build_summary(summary: pd.DataFrame, per_seed: pd.DataFrame | None, source: 
     marginal = np.isfinite(p_values) & (p_values >= 0.05) & (p_values < 0.10)
     return AnalysisSummary(
         data_source=source,
+        data_source_id=source_id,
+        box_filter=box_filter,
         n_lambda=int(summary.shape[0]),
         negative_count=int((summary["improvement"] < 0).sum()),
         positive_count=int((summary["improvement"] > 0).sum()),
@@ -227,6 +272,9 @@ def write_report(
     lines.append("## Data Source")
     lines.append("")
     lines.append(analysis.data_source)
+    if analysis.box_filter is not None:
+        lines.append("")
+        lines.append(f"Primary-task filter: `box == {analysis.box_filter}`.")
     if analysis.data_source.startswith("embedded demo"):
         lines.append("")
         lines.append(
@@ -242,7 +290,7 @@ def write_report(
         p_value = float(row["p_value"]) if "p_value" in row else float("nan")
         p_text = f"{p_value:.4f}" if np.isfinite(p_value) else "n/a"
         lines.append(
-            f"| {row['lambda']:.4g} | {row['euclid_mean']:.4f} | "
+            f"| {row[LAMBDA_COL]:.4g} | {row['euclid_mean']:.4f} | "
             f"{row['chronos_mean']:.4f} | {row['improvement']:.2f}% | "
             f"{p_text} | {significance_label(p_value)} |"
         )
@@ -301,10 +349,19 @@ def write_report(
     return report_path
 
 
-def plot_results(summary: pd.DataFrame, analysis: AnalysisSummary, out_dir: Path) -> Path:
+def plot_results(
+    summary: pd.DataFrame,
+    analysis: AnalysisSummary,
+    per_seed: pd.DataFrame | None,
+    out_dir: Path,
+) -> Path:
     plot_path = out_dir / "experiment_5_postmortem_analysis.png"
-    fig = plt.figure(figsize=(15, 10))
-    gs = fig.add_gridspec(2, 2, hspace=0.35, wspace=0.28)
+    if per_seed is None:
+        fig = plt.figure(figsize=(15, 10))
+        gs = fig.add_gridspec(2, 2, hspace=0.35, wspace=0.28)
+    else:
+        fig = plt.figure(figsize=(16, 13))
+        gs = fig.add_gridspec(3, 2, hspace=0.42, wspace=0.28)
 
     colors = [
         "tab:red" if np.isfinite(p) and p < 0.05 else "tab:orange" if np.isfinite(p) and p < 0.10 else "tab:gray"
@@ -315,16 +372,16 @@ def plot_results(summary: pd.DataFrame, analysis: AnalysisSummary, out_dir: Path
     ax1.bar(range(len(summary)), summary["improvement"], color=colors, alpha=0.75, edgecolor="black")
     ax1.axhline(0, color="black", linewidth=1)
     ax1.set_xticks(range(len(summary)))
-    ax1.set_xticklabels([f"{x:.4g}" for x in summary["lambda"]], rotation=45, ha="right")
+    ax1.set_xticklabels([f"{x:.4g}" for x in summary[LAMBDA_COL]], rotation=45, ha="right")
     ax1.set_ylabel("Improvement (%)")
     ax1.set_xlabel("lambda")
     ax1.set_title("Experiment 5 Postmortem: Chronos vs Euclid")
     ax1.grid(True, alpha=0.25, axis="y")
 
     ax2 = fig.add_subplot(gs[1, 0])
-    ax2.scatter(summary["lambda"], summary["improvement"], s=90, edgecolor="black", alpha=0.75)
-    x_line = np.linspace(summary["lambda"].min(), summary["lambda"].max(), 100)
-    y_line = analysis.mean_improvement + analysis.trend_slope * (x_line - summary["lambda"].mean())
+    ax2.scatter(summary[LAMBDA_COL], summary["improvement"], s=90, edgecolor="black", alpha=0.75)
+    x_line = np.linspace(summary[LAMBDA_COL].min(), summary[LAMBDA_COL].max(), 100)
+    y_line = analysis.mean_improvement + analysis.trend_slope * (x_line - summary[LAMBDA_COL].mean())
     ax2.plot(x_line, y_line, "r--", label=f"R^2={analysis.trend_r2:.3f}, p={analysis.trend_p_value:.3f}")
     ax2.axhline(0, color="black", linewidth=1)
     ax2.set_xlabel("lambda")
@@ -339,12 +396,28 @@ def plot_results(summary: pd.DataFrame, analysis: AnalysisSummary, out_dir: Path
     ax3.bar(x - width / 2, summary["euclid_mean"], width, label="Euclid", alpha=0.75)
     ax3.bar(x + width / 2, summary["chronos_mean"], width, label="Chronos", alpha=0.75)
     ax3.set_xticks(x)
-    ax3.set_xticklabels([f"{val:.4g}" for val in summary["lambda"]], rotation=45, ha="right")
+    ax3.set_xticklabels([f"{val:.4g}" for val in summary[LAMBDA_COL]], rotation=45, ha="right")
     ax3.set_ylabel("Violation rate")
     ax3.set_xlabel("lambda")
     ax3.set_title("Absolute Violation Rates")
     ax3.legend()
     ax3.grid(True, alpha=0.25, axis="y")
+
+    if per_seed is not None:
+        ax4 = fig.add_subplot(gs[2, :])
+        for lambda_value, group in per_seed.groupby(LAMBDA_COL):
+            ax4.scatter(
+                np.full(group.shape[0], float(lambda_value)),
+                group["improvement"],
+                alpha=0.65,
+                edgecolor="black",
+                linewidth=0.5,
+            )
+        ax4.axhline(0, color="black", linewidth=1)
+        ax4.set_xlabel("lambda")
+        ax4.set_ylabel("Per-seed improvement (%)")
+        ax4.set_title("Per-Seed Paired Improvement (raw CSV only)")
+        ax4.grid(True, alpha=0.25)
 
     fig.savefig(plot_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
@@ -356,6 +429,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--csv", type=Path, help="Raw or summary CSV to analyze.")
     parser.add_argument("--out-dir", type=Path, default=Path("exp5-diagnostic/results"))
     parser.add_argument(
+        "--box",
+        type=float,
+        default=2.0,
+        help="Primary-task box value to analyze when CSV contains a box column. Use --box nan to skip filtering.",
+    )
+    parser.add_argument(
         "--use-embedded-demo-data",
         action="store_true",
         help="Use manually entered demo data when a CSV is unavailable.",
@@ -366,20 +445,27 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     args.out_dir.mkdir(parents=True, exist_ok=True)
+    box_filter = None if np.isnan(args.box) else args.box
 
-    summary, per_seed, source = load_summary_table(args.csv, args.use_embedded_demo_data)
-    analysis = build_summary(summary, per_seed, source)
+    summary, per_seed, source, source_id = load_summary_table(
+        args.csv,
+        args.use_embedded_demo_data,
+        box_filter,
+    )
+    analysis = build_summary(summary, per_seed, source, source_id, box_filter)
 
     summary_path = args.out_dir / "experiment_5_postmortem_summary.csv"
     json_path = args.out_dir / "experiment_5_postmortem_summary.json"
     summary.to_csv(summary_path, index=False)
     json_path.write_text(json.dumps(asdict(analysis), indent=2), encoding="utf-8")
     report_path = write_report(summary, analysis, per_seed, args.out_dir)
-    plot_path = plot_results(summary, analysis, args.out_dir)
+    plot_path = plot_results(summary, analysis, per_seed, args.out_dir)
 
     print("Experiment 5 Postmortem")
     print("=" * 80)
     print(f"Data source: {analysis.data_source}")
+    print(f"Data source id: {analysis.data_source_id}")
+    print(f"Box filter: {analysis.box_filter}")
     print(f"Negative improvement: {analysis.negative_count}/{analysis.n_lambda}")
     print(f"p<0.05 settings: {analysis.significant_count}/{analysis.n_lambda}")
     print(f"Mean improvement: {analysis.mean_improvement:.2f}%")

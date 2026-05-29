@@ -78,6 +78,16 @@ python exp5-diagnostic/experiment_5_postmortem_analysis.py \
   --out-dir exp5-diagnostic/results
 ```
 
+When the CSV contains multiple OOD boxes, the postmortem script analyzes the
+primary in-distribution task by default:
+
+```text
+box == 2.0
+```
+
+Use `--box 32.0` for a specific OOD slice, or `--box nan` to skip box
+filtering.
+
 When the raw CSV is unavailable, the script can reproduce a clearly marked
 demo analysis from manually entered values:
 
