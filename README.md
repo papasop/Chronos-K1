@@ -34,6 +34,7 @@ Chronos-K1 currently contains three active layers plus one archive layer:
 3. **AI Benchmarks**
    - OOD light-cone classification
    - world-model causality stress test, Experiment 5
+   - causal mechanism ablation, Experiment 5b
 
 4. **Archive**
    - `world_model_v01`: minimal affine latent-transition prototype retained for
@@ -237,28 +238,25 @@ python benchmarks/experiment_5_causal_stress_test.py
 
 Use `--smoke` for a tiny CPU-friendly run and `--full` for the larger sweep.
 
-Representative Colab default run (`cuda`, `n_seeds=5`, `n_train=1000`,
-`n_test=256`, `epochs=100`) shows:
+Current headline AI result:
 
-- final rollout MSE remains approximately unchanged,
-- decoded causal-violation rate drops from roughly `0.36-0.38` to
-  `0.01-0.03`,
-- the reduction persists under OOD extrapolation from `box=2` to `box=32`,
-- Lorentz-interval drift remains comparable.
+An independent full sanity reproduction of the original Experiment 5 design
+was run on CUDA with `n_seeds=10`, `n_train=3000`, `n_test=512`, and
+`epochs=250`. It reproduced causal-violation suppression for the Chronos
+latent predictor while keeping rollout MSE approximately unchanged.
 
-For example, at `lambda=0.1`:
+Main result at `lambda=0.1`:
 
-| Test box | Euclidean violation | Chronos violation | Final MSE change |
-| ---: | ---: | ---: | ---: |
-| 2 | 0.3562 | 0.0109 | +0.0924% |
-| 8 | 0.3806 | 0.0216 | +0.0022% |
-| 32 | 0.3764 | 0.0181 | +0.0015% |
+| Setting | Euclidean violation | Chronos violation | Reduction |
+| --- | ---: | ---: | ---: |
+| In-distribution, `box=2` | 0.2866 | 0.1475 | 48.5% |
+| OOD, `box=32` | 0.4306 | 0.3155 | about 27% |
 
-The paired Wilcoxon p-values in this `n=5` run are not stable enough to claim
-statistical significance. The appropriate interpretation is narrower:
-Chronos-K1 constraints act here as a causality-preserving latent world-model
-regularizer while maintaining comparable prediction error, not as evidence of
-superior forecasting accuracy.
+For the in-distribution result, the paired Wilcoxon p-value is `p=0.0840`.
+This is close to, but does not meet, the conventional `p<0.05` threshold.
+The appropriate interpretation is therefore precise: Chronos-K1 provides
+evidence of a causality-preserving latent world-model regularizer, not a proven
+forecasting-accuracy advantage.
 
 Artifacts:
 
@@ -270,6 +268,14 @@ k1-manifold-core/results/experiment_5_mse_vs_box.png
 k1-manifold-core/results/experiment_5_violation_by_step.png
 k1-manifold-core/results/experiment_5_K_drift_by_step.png
 ```
+
+The full sanity reproduction uses the same benchmark family and writes
+additional local artifacts when run externally, including
+`experiment_5_full_sanity_summary.csv`,
+`experiment_5_full_sanity_payload.json`,
+`experiment_5_full_sanity_violation_vs_box.png`,
+`experiment_5_full_sanity_mse_vs_box.png`, and
+`experiment_5_full_sanity_violation_by_step.png`.
 
 ### AI Benchmark 3 - Causal Mechanism Ablation
 
@@ -285,6 +291,12 @@ mechanism variants:
 This benchmark is meant to answer a narrower question: which part of the
 Chronos constraint stack contributes to causal consistency in long-horizon
 rollouts?
+
+It is the diagnostic follow-up to Experiment 5. Experiment 5 establishes that
+causal-violation suppression can reproduce in the original two-model setting;
+Experiment 5b asks whether that effect is driven mainly by Lorentz-normalized
+latent-step geometry, the causal loss, the interval-matching loss, or the
+combined full constraint stack.
 
 Run:
 
@@ -305,8 +317,9 @@ It evaluates:
 - OOD extrapolation from `box=2` to `box=32`.
 
 Interpretation boundary: Experiment 5b is a mechanism probe, not a theorem and
-not a unit test. It should be used to localize which Chronos constraints are
-doing useful work before making broader world-model claims.
+not a unit test. It is not the headline performance claim; it exists to
+localize which Chronos constraints are doing useful work before making broader
+world-model claims.
 
 Artifacts:
 
@@ -353,7 +366,8 @@ Chronos-K1
 ├── Benchmarks
 │   ├── benchmark_v03
 │   ├── ood_extrapolation
-│   └── experiment_5_causal_stress
+│   ├── experiment_5_causal_stress
+│   └── experiment_5b_mechanism_ablation
 │
 ├── Archive
 │   └── world_model_v01
@@ -439,9 +453,11 @@ derivation.
 - Pendulum benchmark.
 - Double-pendulum benchmark.
 - N-body benchmark.
-- Full Experiment 5b mechanism-ablation report across stronger baselines.
-- JEPA-style latent-predictor scaling study across stronger dynamical
-  baselines.
+- Increase Experiment 5 full sanity reproduction beyond `N=10` seeds to test
+  whether `p=0.0840` crosses the conventional `p<0.05` threshold.
+- Complete the Experiment 5b mechanism-ablation report and identify which
+  constraint contributes most to causal-violation suppression.
+- JEPA-style latent-predictor scaling study across stronger dynamical baselines.
 
 ## Citation
 

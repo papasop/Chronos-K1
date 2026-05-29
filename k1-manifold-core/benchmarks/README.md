@@ -11,8 +11,8 @@ intentionally separate from `tests/`.
   regularizer strength on Lorentzian oscillator trajectories and write
   CSV/JSON/PNG artifacts under `results/`. The model is JEPA-style because it
   predicts future embeddings, but it is not a Meta/LeCun JEPA implementation.
-  The default run is the representative `n_seeds=5` configuration; use
-  `--smoke` for a tiny CPU-friendly check or `--full` for the larger sweep.
+  Use `--smoke` for a tiny CPU-friendly check or `--full` for the larger
+  `n_seeds=10` sanity reproduction.
 - `experiment_5b_causal_mechanism_ablation.py`: decompose Experiment 5 into
   Euclidean, Chronos geometry-only, Chronos causal-only, Chronos interval-only,
   and Chronos full latent-predictor variants. It writes summary CSV, raw JSON,

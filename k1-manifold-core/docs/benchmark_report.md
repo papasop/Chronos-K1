@@ -83,25 +83,19 @@ python benchmarks/experiment_5_causal_stress_test.py --full
 - `results/experiment_5_violation_by_step.png`
 - `results/experiment_5_K_drift_by_step.png`
 
-**Representative Colab result.** The run below used the default benchmark
-configuration on CUDA (`n_seeds=5`, `n_train=1000`, `n_test=256`,
-`epochs=100`). Chronos latent predictor keeps final rollout MSE essentially
-unchanged while reducing decoded causal-violation rates by roughly an order of
-magnitude across OOD boxes. The Wilcoxon p-values are not stable enough at
-`n=5` to claim statistical significance; this should be read as mechanistic
-benchmark evidence, not a final statistical result.
+**Full sanity reproduction.** A reproduction of the original Experiment 5
+design was run on CUDA with `n_seeds=10`, `n_train=3000`, `n_test=512`, and
+`epochs=250`. At `lambda=0.1`, Chronos latent predictor keeps final rollout
+MSE approximately unchanged while reducing decoded causal-violation rates.
 
-| Lambda | Test box | Euclid violation | Chronos violation | MSE improvement vs Euclid | p(MSE) | p(violation) |
-| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| 0.0 | 2 | 0.3562 | 0.0188 | +0.0910% | 0.1875 | 0.3125 |
-| 0.0 | 8 | 0.3806 | 0.0276 | +0.0023% | 0.8125 | 0.4375 |
-| 0.0 | 32 | 0.3764 | 0.0257 | +0.0020% | 0.4375 | 0.4375 |
-| 0.1 | 2 | 0.3562 | 0.0109 | +0.0924% | 0.0625 | 0.6250 |
-| 0.1 | 8 | 0.3806 | 0.0216 | +0.0022% | 1.0000 | 0.6250 |
-| 0.1 | 32 | 0.3764 | 0.0181 | +0.0015% | 0.8125 | 0.8125 |
-| 0.5 | 2 | 0.3562 | 0.0168 | +0.0766% | 0.0625 | 0.8125 |
-| 0.5 | 8 | 0.3806 | 0.0261 | -0.0011% | 1.0000 | 0.8125 |
-| 0.5 | 32 | 0.3764 | 0.0217 | +0.0015% | 0.8125 | 0.8125 |
+| Setting | Euclid violation | Chronos violation | Reduction | p(violation) |
+| --- | ---: | ---: | ---: | ---: |
+| In-distribution, `box=2` | 0.2866 | 0.1475 | 48.5% | 0.0840 |
+| OOD, `box=32` | 0.4306 | 0.3155 | about 27% | not reported |
+
+The in-distribution Wilcoxon value is close to, but does not meet, the
+conventional `p<0.05` threshold. This should be read as reproducible benchmark
+evidence for causal-consistency preservation, not as a final statistical claim.
 
 **Interpretation boundary.** This benchmark should not be cited as evidence
 that Chronos latent predictor improves world-model prediction accuracy.

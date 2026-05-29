@@ -79,11 +79,11 @@ implemented checks, runnable demos, and explicitly marked assumptions.
 - `benchmarks/experiment_5_causal_stress_test.py`: scans Chronos latent
   predictor causal regularizer strength on Lorentzian oscillator rollouts.
   These are JEPA-style latent predictors, not Meta/LeCun JEPA implementations.
-  The representative Colab default run keeps rollout MSE approximately
-  unchanged while reducing decoded causal-violation rates under OOD stress.
-  The p-values are not stable enough at `n=5` to claim statistical
-  significance, so the result is presented as causal-consistency benchmark
-  evidence rather than a forecasting-accuracy claim.
+  The full sanity reproduction (`n_seeds=10`) keeps rollout MSE approximately
+  unchanged while reducing decoded causal-violation rates under OOD stress. At
+  `lambda=0.1`, `box=2`, violation drops from `0.2866` to `0.1475`
+  (`p=0.0840`), so the result is presented as causal-consistency benchmark
+  evidence rather than a final significance claim.
 - `benchmarks/experiment_5b_causal_mechanism_ablation.py`: decomposes
   Experiment 5 into Euclidean, Chronos geometry-only, Chronos causal-only,
   Chronos interval-only, and Chronos full latent-predictor variants to probe
