@@ -1,7 +1,7 @@
 {
   "benchmark": "experiment_5_causal_stress_test",
   "scope": "research benchmark, not unit test",
-  "description": "Constraint ablation and OOD causal stress test for Chronos-JEPA. Lambda scans interval/causal losses only; K1 regularization and Lorentz-normalized latent steps remain active for Chronos-JEPA.",
+  "description": "Constraint ablation and OOD causal stress test for Chronos latent predictor. Lambda scans interval/causal losses only; K1 regularization and Lorentz-normalized latent steps remain active for Chronos latent predictor.",
   "config": {
     "quick": true,
     "n_seeds": 2,
@@ -32,7 +32,7 @@
     {
       "lambda": 0.0,
       "box": 2.0,
-      "model": "euclid_jepa",
+      "model": "euclidean_latent_predictor",
       "final_mse_mean": 9504.19287109375,
       "final_mse_std": 158.50830078125,
       "violation_mean": 0.379375,
@@ -43,7 +43,7 @@
     {
       "lambda": 0.0,
       "box": 2.0,
-      "model": "chronos_jepa",
+      "model": "chronos_latent_predictor",
       "final_mse_mean": 9532.455078125,
       "final_mse_std": 163.5166015625,
       "violation_mean": 0.4188541666666667,
@@ -71,7 +71,7 @@
     {
       "lambda": 0.0,
       "box": 8.0,
-      "model": "euclid_jepa",
+      "model": "euclidean_latent_predictor",
       "final_mse_mean": 158287.8203125,
       "final_mse_std": 5854.4453125,
       "violation_mean": 0.38302083333333337,
@@ -82,7 +82,7 @@
     {
       "lambda": 0.0,
       "box": 8.0,
-      "model": "chronos_jepa",
+      "model": "chronos_latent_predictor",
       "final_mse_mean": 158400.9921875,
       "final_mse_std": 5878.6171875,
       "violation_mean": 0.42291666666666666,
@@ -110,7 +110,7 @@
     {
       "lambda": 0.0,
       "box": 32.0,
-      "model": "euclid_jepa",
+      "model": "euclidean_latent_predictor",
       "final_mse_mean": 2354152.25,
       "final_mse_std": 181465.5,
       "violation_mean": 0.36885416666666676,
@@ -121,7 +121,7 @@
     {
       "lambda": 0.0,
       "box": 32.0,
-      "model": "chronos_jepa",
+      "model": "chronos_latent_predictor",
       "final_mse_mean": 2354605.625,
       "final_mse_std": 181492.125,
       "violation_mean": 0.4136458333333334,
@@ -149,7 +149,7 @@
     {
       "lambda": 0.5,
       "box": 2.0,
-      "model": "euclid_jepa",
+      "model": "euclidean_latent_predictor",
       "final_mse_mean": 9504.19287109375,
       "final_mse_std": 158.50830078125,
       "violation_mean": 0.379375,
@@ -160,7 +160,7 @@
     {
       "lambda": 0.5,
       "box": 2.0,
-      "model": "chronos_jepa",
+      "model": "chronos_latent_predictor",
       "final_mse_mean": 9537.9482421875,
       "final_mse_std": 156.375,
       "violation_mean": 0.7180208333333333,
@@ -188,7 +188,7 @@
     {
       "lambda": 0.5,
       "box": 8.0,
-      "model": "euclid_jepa",
+      "model": "euclidean_latent_predictor",
       "final_mse_mean": 158287.8203125,
       "final_mse_std": 5854.4453125,
       "violation_mean": 0.38302083333333337,
@@ -199,7 +199,7 @@
     {
       "lambda": 0.5,
       "box": 8.0,
-      "model": "chronos_jepa",
+      "model": "chronos_latent_predictor",
       "final_mse_mean": 158411.484375,
       "final_mse_std": 5861.359375,
       "violation_mean": 0.7161458333333333,
@@ -227,7 +227,7 @@
     {
       "lambda": 0.5,
       "box": 32.0,
-      "model": "euclid_jepa",
+      "model": "euclidean_latent_predictor",
       "final_mse_mean": 2354152.25,
       "final_mse_std": 181465.5,
       "violation_mean": 0.36885416666666676,
@@ -238,7 +238,7 @@
     {
       "lambda": 0.5,
       "box": 32.0,
-      "model": "chronos_jepa",
+      "model": "chronos_latent_predictor",
       "final_mse_mean": 2354700.0,
       "final_mse_std": 181610.75,
       "violation_mean": 0.7070833333333333,
@@ -266,7 +266,7 @@
   ],
   "raw": {
     "0.0": {
-      "euclid_jepa": {
+      "euclidean_latent_predictor": {
         "2.0": [
           {
             "mean_rollout_mse": 2353.760498046875,
@@ -1258,7 +1258,7 @@
           }
         ]
       },
-      "chronos_jepa": {
+      "chronos_latent_predictor": {
         "2.0": [
           {
             "mean_rollout_mse": 2366.702392578125,
@@ -2251,7 +2251,7 @@
         ]
       },
       "history": {
-        "euclid_jepa": [
+        "euclidean_latent_predictor": [
           {
             "loss": [
               6149.54248046875,
@@ -2345,7 +2345,7 @@
             ]
           }
         ],
-        "chronos_jepa": [
+        "chronos_latent_predictor": [
           {
             "loss": [
               6147.92041015625,
@@ -2442,7 +2442,7 @@
       }
     },
     "0.5": {
-      "euclid_jepa": {
+      "euclidean_latent_predictor": {
         "2.0": [
           {
             "mean_rollout_mse": 2353.760498046875,
@@ -3434,7 +3434,7 @@
           }
         ]
       },
-      "chronos_jepa": {
+      "chronos_latent_predictor": {
         "2.0": [
           {
             "mean_rollout_mse": 2366.059814453125,
@@ -4427,7 +4427,7 @@
         ]
       },
       "history": {
-        "euclid_jepa": [
+        "euclidean_latent_predictor": [
           {
             "loss": [
               6149.54248046875,
@@ -4521,7 +4521,7 @@
             ]
           }
         ],
-        "chronos_jepa": [
+        "chronos_latent_predictor": [
           {
             "loss": [
               6914.326171875,

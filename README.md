@@ -213,9 +213,12 @@ on synthetic Lorentzian oscillator trajectories.
 
 It compares:
 
-- Euclidean JEPA,
-- Chronos-JEPA with Lorentzian latent geometry,
+- Euclidean latent predictor (ELP),
+- Chronos latent predictor (CLP) with Lorentzian latent geometry,
 - multiple Chronos causal-regularization strengths.
+
+These are JEPA-style latent predictors because they predict future embeddings,
+but they are not implementations of Meta/LeCun JEPA.
 
 It evaluates:
 
@@ -232,7 +235,7 @@ cd k1-manifold-core
 python benchmarks/experiment_5_causal_stress_test.py
 ```
 
-Current quick result: this is a negative ablation. Chronos-JEPA keeps rollout
+Current quick result: this is a negative ablation. Chronos latent predictor keeps rollout
 MSE roughly comparable but does **not** reduce decoded causal-violation rates in
 the current configuration. Stronger causal regularization increases decoded
 causal violations on this stress test. It is included as a reproducible failure
@@ -368,8 +371,9 @@ derivation.
 - Pendulum benchmark.
 - Double-pendulum benchmark.
 - N-body benchmark.
-- Chronos-JEPA regularizer redesign for Experiment 5.
-- Chronos-JEPA scaling study after the stress-test failure mode is addressed.
+- Chronos latent predictor regularizer redesign for Experiment 5.
+- JEPA-style latent-predictor scaling study after the stress-test failure mode
+  is addressed.
 
 ## Citation
 

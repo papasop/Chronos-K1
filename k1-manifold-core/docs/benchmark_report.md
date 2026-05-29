@@ -51,9 +51,13 @@ world-model superiority.
 
 ## Experiment 5: Causal Stress Test
 
-**Task.** Train Euclidean JEPA and Chronos-JEPA on synthetic Lorentzian
-oscillator trajectories, then evaluate rollout MSE, decoded causal violation,
-interval drift, and latent `K` drift under OOD box extrapolation.
+**Task.** Train a Euclidean latent predictor (ELP) and Chronos latent predictor
+(CLP) on synthetic Lorentzian oscillator trajectories, then evaluate rollout
+MSE, decoded causal violation, interval drift, and latent `K` drift under OOD
+box extrapolation.
+
+These models are JEPA-style in the narrow sense that they predict future
+embeddings. They are not implementations of Meta/LeCun JEPA.
 
 **Command.**
 
@@ -79,8 +83,8 @@ python benchmarks/experiment_5_causal_stress_test.py --full
 
 **Current quick result.** The quick benchmark is deliberately small
 (`n_seeds=2`) and should be read as a smoke-test ablation, not a final result.
-In this configuration, Chronos-JEPA does **not** improve rollout MSE and
-increases decoded causal-violation rates relative to Euclidean JEPA. This is
+In this configuration, Chronos latent predictor does **not** improve rollout MSE and
+increases decoded causal-violation rates relative to Euclidean latent predictor. This is
 useful negative evidence: the current latent regularizer is not yet a reliable
 causality-preserving world-model route on this oscillator stress test.
 
@@ -94,7 +98,7 @@ causality-preserving world-model route on this oscillator stress test.
 | 0.5 | 32 | -0.02% | -1207.78% | 0.5000 | 1.0000 |
 
 **Interpretation boundary.** This benchmark should not be cited as evidence
-that Chronos-JEPA improves world-model prediction. It is included because it
+that Chronos latent predictor improves world-model prediction. It is included because it
 exposes a concrete failure mode and gives the project a reproducible target:
 future Chronos regularizers should reduce causal violations without sacrificing
 rollout accuracy on this stress test.

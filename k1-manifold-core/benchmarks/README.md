@@ -7,9 +7,10 @@ intentionally separate from `tests/`.
 - `ood_extrapolation.py`: train light-cone classifiers on event differences
   from `box=2`, then evaluate OOD extrapolation on larger boxes. It writes
   `results/ood_extrapolation.json` and `results/ood_extrapolation_auc.png`.
-- `experiment_5_causal_stress_test.py`: scan Chronos-JEPA causal regularizer
-  strength on Lorentzian oscillator trajectories and write CSV/JSON/PNG
-  artifacts under `results/`.
+- `experiment_5_causal_stress_test.py`: scan Chronos latent predictor causal
+  regularizer strength on Lorentzian oscillator trajectories and write
+  CSV/JSON/PNG artifacts under `results/`. The model is JEPA-style because it
+  predicts future embeddings, but it is not a Meta/LeCun JEPA implementation.
 
 Run from `k1-manifold-core`:
 

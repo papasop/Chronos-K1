@@ -76,10 +76,11 @@ implemented checks, runnable demos, and explicitly marked assumptions.
 - `benchmarks/ood_extrapolation.py`: trains Lorentzian and Euclidean
   classifiers on light-cone labels from `box=2`, evaluates OOD boxes, and
   writes `results/ood_extrapolation.json`.
-- `benchmarks/experiment_5_causal_stress_test.py`: scans Chronos-JEPA causal
-  regularizer strength on Lorentzian oscillator rollouts. The current quick
-  result is a negative ablation: it exposes higher decoded causal violation
-  rates for the present regularizer.
+- `benchmarks/experiment_5_causal_stress_test.py`: scans Chronos latent
+  predictor causal regularizer strength on Lorentzian oscillator rollouts.
+  These are JEPA-style latent predictors, not Meta/LeCun JEPA implementations.
+  The current quick result is a negative ablation: it exposes higher decoded
+  causal violation rates for the present regularizer.
 - `experiments/causal_projection_demo.py`: exploratory causal projection
   experiment. It is not presented as a superiority benchmark.
 
@@ -93,5 +94,5 @@ implemented checks, runnable demos, and explicitly marked assumptions.
   before making stronger AI-world-model claims.
 - Add generated result snapshots only when they are tied to a reproducible
   script and test.
-- Keep JEPA/world-model integration out of the core claim path until a real
-  baseline reproduction exists.
+- Keep JEPA-style/world-model integration out of the core claim path until a
+  stronger baseline reproduction exists.

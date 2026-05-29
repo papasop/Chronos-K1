@@ -1,9 +1,12 @@
 """Experiment 5: constraint ablation and causal stress test.
 
-This is a research benchmark, not a unit test. It scans Chronos-JEPA causal
-regularization strength on synthetic Lorentzian oscillator trajectories and
-measures whether constraints reduce decoded causal violations under OOD box
-extrapolation while keeping rollout MSE comparable.
+This is a research benchmark, not a unit test. It scans Chronos latent
+predictor causal regularization strength on synthetic Lorentzian oscillator
+trajectories and measures whether constraints reduce decoded causal violations
+under OOD box extrapolation while keeping rollout MSE comparable.
+
+The models are JEPA-style in the narrow sense that they predict future
+embeddings. They are not implementations of Meta/LeCun JEPA.
 
 Run from ``k1-manifold-core``:
 
@@ -193,7 +196,7 @@ class Decoder(nn.Module):
         return self.net(z)
 
 
-class EuclidJEPA(nn.Module):
+class EuclideanLatentPredictor(nn.Module):
     def __init__(self, dim: int, k: int, width: int) -> None:
         super().__init__()
         self.enc = Encoder(dim, k, width)
@@ -226,7 +229,7 @@ class EuclidJEPA(nn.Module):
         return torch.stack(xs, dim=1)
 
 
-class ChronosJEPA(nn.Module):
+class ChronosLatentPredictor(nn.Module):
     def __init__(self, dim: int, k: int, width: int) -> None:
         super().__init__()
         self.enc = Encoder(dim, k, width)
@@ -279,8 +282,8 @@ class ChronosJEPA(nn.Module):
 
 
 MODELS = {
-    "euclid_jepa": EuclidJEPA,
-    "chronos_jepa": ChronosJEPA,
+    "euclidean_latent_predictor": EuclideanLatentPredictor,
+    "chronos_latent_predictor": ChronosLatentPredictor,
 }
 
 
@@ -356,7 +359,7 @@ def eval_model(model: nn.Module, trajs: np.ndarray) -> dict[str, object]:
     x0 = torch.tensor(x0_np, dtype=torch.float32, device=DEVICE)
 
     with torch.no_grad():
-        if isinstance(model, ChronosJEPA):
+        if isinstance(model, ChronosLatentPredictor):
             pred, z_roll = model.rollout(x0, ROLL_STEPS)
             pred_np = pred.detach().cpu().numpy()
             z_np = z_roll.detach().cpu().numpy()
@@ -439,8 +442,8 @@ def run_experiment_5() -> tuple[pd.DataFrame, dict[str, object], dict[str, objec
                     }
                 )
 
-            euclid = raw[str(lam)]["euclid_jepa"][key]
-            chronos = raw[str(lam)]["chronos_jepa"][key]
+            euclid = raw[str(lam)]["euclidean_latent_predictor"][key]
+            chronos = raw[str(lam)]["chronos_latent_predictor"][key]
 
             e_v = np.array([r["causal_violation_rate"] for r in euclid])
             c_v = np.array([r["causal_violation_rate"] for r in chronos])
@@ -474,9 +477,9 @@ def run_experiment_5() -> tuple[pd.DataFrame, dict[str, object], dict[str, objec
         "benchmark": "experiment_5_causal_stress_test",
         "scope": "research benchmark, not unit test",
         "description": (
-            "Constraint ablation and OOD causal stress test for Chronos-JEPA. "
+            "Constraint ablation and OOD causal stress test for Chronos latent predictor. "
             "Lambda scans interval/causal losses only; K1 regularization and "
-            "Lorentz-normalized latent steps remain active for Chronos-JEPA."
+            "Lorentz-normalized latent steps remain active for Chronos latent predictor."
         ),
         "config": {
             "quick": QUICK,
@@ -514,10 +517,10 @@ def write_outputs(df: pd.DataFrame, raw: dict[str, object], payload: dict[str, o
 
     plt.figure(figsize=(8, 5))
     for lam in LAMBDA_GRID:
-        sub = df[(df["lambda"] == lam) & (df["model"] == "chronos_jepa")]
+        sub = df[(df["lambda"] == lam) & (df["model"] == "chronos_latent_predictor")]
         plt.plot(sub["box"], sub["violation_mean"], marker="o", label=f"Chronos lambda={lam}")
-    euclid = df[(df["lambda"] == LAMBDA_GRID[0]) & (df["model"] == "euclid_jepa")]
-    plt.plot(euclid["box"], euclid["violation_mean"], marker="s", linestyle="--", label="Euclid")
+    euclid = df[(df["lambda"] == LAMBDA_GRID[0]) & (df["model"] == "euclidean_latent_predictor")]
+    plt.plot(euclid["box"], euclid["violation_mean"], marker="s", linestyle="--", label="ELP")
     plt.xscale("log")
     plt.xlabel("test box")
     plt.ylabel("causal violation rate")
@@ -530,9 +533,9 @@ def write_outputs(df: pd.DataFrame, raw: dict[str, object], payload: dict[str, o
 
     plt.figure(figsize=(8, 5))
     for lam in LAMBDA_GRID:
-        sub = df[(df["lambda"] == lam) & (df["model"] == "chronos_jepa")]
+        sub = df[(df["lambda"] == lam) & (df["model"] == "chronos_latent_predictor")]
         plt.plot(sub["box"], sub["final_mse_mean"], marker="o", label=f"Chronos lambda={lam}")
-    plt.plot(euclid["box"], euclid["final_mse_mean"], marker="s", linestyle="--", label="Euclid")
+    plt.plot(euclid["box"], euclid["final_mse_mean"], marker="s", linestyle="--", label="ELP")
     plt.xscale("log")
     plt.yscale("log")
     plt.xlabel("test box")
@@ -547,12 +550,12 @@ def write_outputs(df: pd.DataFrame, raw: dict[str, object], payload: dict[str, o
     max_box = str(max(TEST_BOXES))
     plt.figure(figsize=(8, 5))
     for lam in LAMBDA_GRID:
-        records = raw[str(lam)]["chronos_jepa"][max_box]
+        records = raw[str(lam)]["chronos_latent_predictor"][max_box]
         curves = np.array([r["violation_by_t"] for r in records])
         plt.plot(np.arange(curves.shape[1]), curves.mean(axis=0), marker="o", label=f"Chronos lambda={lam}")
-    records = raw[str(LAMBDA_GRID[0])]["euclid_jepa"][max_box]
+    records = raw[str(LAMBDA_GRID[0])]["euclidean_latent_predictor"][max_box]
     curves = np.array([r["violation_by_t"] for r in records])
-    plt.plot(np.arange(curves.shape[1]), curves.mean(axis=0), marker="s", linestyle="--", label="Euclid")
+    plt.plot(np.arange(curves.shape[1]), curves.mean(axis=0), marker="s", linestyle="--", label="ELP")
     plt.xlabel("rollout step")
     plt.ylabel("causal violation rate")
     plt.title(f"Causal violation by step, box={max_box}")
@@ -564,7 +567,7 @@ def write_outputs(df: pd.DataFrame, raw: dict[str, object], payload: dict[str, o
 
     plt.figure(figsize=(8, 5))
     for lam in LAMBDA_GRID:
-        records = raw[str(lam)]["chronos_jepa"][max_box]
+        records = raw[str(lam)]["chronos_latent_predictor"][max_box]
         curves = np.array([r["mean_abs_K_minus_1_by_t"] for r in records])
         plt.plot(np.arange(curves.shape[1]), curves.mean(axis=0), marker="o", label=f"lambda={lam}")
     plt.xlabel("rollout step")
