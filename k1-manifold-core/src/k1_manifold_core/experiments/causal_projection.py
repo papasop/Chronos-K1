@@ -1,6 +1,6 @@
-"""v0.4 causal reachability benchmark.
+"""Causal projection experiment utilities.
 
-This benchmark compares raw Euclidean random displacements against a Chronos
+This experiment compares raw Euclidean random displacements against a Chronos
 causal-cone projection on the same random steps. It measures whether each
 step is causally valid under ``dx.T @ G @ dx >= 0``.
 """
@@ -95,13 +95,13 @@ def simulate_reachability(
 
 
 def summarize_reachability(result: dict[str, Any]) -> dict[str, Any]:
-    """Return JSON-serializable benchmark metrics."""
+    """Return JSON-serializable experiment metrics."""
 
     steps = int(result["steps"])
     euclid_intervals = np.asarray(result["euclid_intervals"], dtype=float)
     chronos_intervals = np.asarray(result["chronos_intervals"], dtype=float)
     return {
-        "benchmark": "v0.4 causal reachability",
+        "experiment": "causal projection",
         "description": "Raw Euclidean random displacements vs Chronos causal-cone projection.",
         "parameters": {
             "steps": steps,
@@ -133,7 +133,7 @@ def write_reachability_results(
     step_sigma: float = 0.3,
     seed: int = 2026,
 ) -> dict[str, Any]:
-    """Run the benchmark and write a JSON summary."""
+    """Run the experiment and write a JSON summary."""
 
     result = simulate_reachability(steps=steps, step_sigma=step_sigma, seed=seed)
     summary = summarize_reachability(result)
@@ -154,8 +154,8 @@ def plot_reachability(result: dict[str, Any], output_dir: str | Path) -> tuple[P
 
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
-    trajectory_path = output / "causal_reachability_trajectories.png"
-    intervals_path = output / "causal_reachability_intervals.png"
+    trajectory_path = output / "causal_projection_trajectories.png"
+    intervals_path = output / "causal_projection_intervals.png"
 
     traj_e = np.asarray(result["traj_e"], dtype=float)
     traj_c = np.asarray(result["traj_c"], dtype=float)

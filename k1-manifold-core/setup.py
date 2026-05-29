@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="k1-manifold-core",
-    version="0.4.0",
+    version="0.3.1",
     description="Numerical core for the K=1 chronogeometrodynamics framework.",
     packages=find_packages(where="src"),
     package_dir={"": "src"},

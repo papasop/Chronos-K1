@@ -1,4 +1,4 @@
-"""Run the v0.4 causal reachability benchmark."""
+"""Run the causal projection experiment."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from k1_manifold_core.benchmarks.benchmark_causal_reachability import (
+from k1_manifold_core.experiments.causal_projection import (
     plot_reachability,
     simulate_reachability,
     summarize_reachability,
@@ -19,12 +19,12 @@ def main() -> None:
     root = Path(__file__).resolve().parents[1]
     result = simulate_reachability()
     summary = summarize_reachability(result)
-    output_json = root / "results" / "benchmark_causal_reachability.json"
+    output_json = root / "results" / "causal_projection_experiment.json"
     output_json.parent.mkdir(parents=True, exist_ok=True)
     output_json.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     figure_paths = plot_reachability(result, root / "examples" / "outputs")
 
-    print("===== Causal Reachability Benchmark =====")
+    print("===== Causal Projection Experiment =====")
     print(json.dumps(summary["metrics"], indent=2))
     print(f"saved results = {output_json}")
     for path in figure_paths:

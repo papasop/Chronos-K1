@@ -1,6 +1,6 @@
 import numpy as np
 
-from k1_manifold_core.benchmarks.benchmark_causal_reachability import (
+from k1_manifold_core.experiments.causal_projection import (
     causal_project,
     causal_valid,
     interval,
@@ -24,7 +24,7 @@ def test_causal_project_maps_spacelike_or_past_displacements_into_future_cone():
         assert interval(projected) >= -1e-12
 
 
-def test_causal_reachability_benchmark_reduces_violation_rate():
+def test_causal_projection_experiment_reduces_violation_rate():
     result = simulate_reachability(steps=5000, step_sigma=0.3, seed=2026)
     summary = summarize_reachability(result)
     euclidean = summary["metrics"]["euclidean"]

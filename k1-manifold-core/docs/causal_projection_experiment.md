@@ -1,6 +1,6 @@
-# v0.4 Causal Reachability Benchmark
+# Causal Projection Experiment
 
-This benchmark tests a simple causal-reachability constraint in a 2D Lorentzian state space.
+This experiment tests a simple causal-projection constraint in a 2D Lorentzian state space.
 
 It compares:
 
@@ -18,15 +18,15 @@ G = diag(1, -1)
 
 ```bash
 cd k1-manifold-core
-python examples/benchmark_causal_reachability.py
+python experiments/causal_projection_demo.py
 ```
 
 The script writes:
 
 ```text
-results/benchmark_causal_reachability.json
-examples/outputs/causal_reachability_trajectories.png
-examples/outputs/causal_reachability_intervals.png
+results/causal_projection_experiment.json
+examples/outputs/causal_projection_trajectories.png
+examples/outputs/causal_projection_intervals.png
 ```
 
 ## Metrics
@@ -38,6 +38,6 @@ examples/outputs/causal_reachability_intervals.png
 
 ## Interpretation Boundary
 
-This benchmark tests a projected reachability constraint. It does not prove a general physical law or world-modeling advantage.
+This experiment tests a projected reachability constraint. It does not prove a general physical law or world-modeling advantage.
 
 Its value is narrower: under the implemented Lorentzian constraint, causal projection eliminates step-level causal violations that raw Euclidean random displacements can produce.

@@ -1,5 +1,5 @@
 {
-  "benchmark": "v0.4 causal reachability",
+  "experiment": "causal projection",
   "description": "Raw Euclidean random displacements vs Chronos causal-cone projection.",
   "parameters": {
     "steps": 5000,

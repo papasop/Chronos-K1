@@ -4,7 +4,7 @@ This benchmark moves Chronos-K1 from geometric self-consistency checks toward a 
 
 The task is intentionally narrow: compare a Euclidean gradient baseline against Chronos-K1 Lorentzian dynamics on a noisy `K=1` recovery task.
 
-It does not claim broad superiority on world-modeling tasks.
+It does not claim broad advantage on world-modeling tasks.
 
 ## Models Compared
 
