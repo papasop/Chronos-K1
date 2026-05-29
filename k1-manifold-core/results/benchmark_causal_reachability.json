@@ -1,0 +1,33 @@
+{
+  "benchmark": "v0.4 causal reachability",
+  "description": "Raw Euclidean random displacements vs Chronos causal-cone projection.",
+  "parameters": {
+    "steps": 5000,
+    "step_sigma": 0.3,
+    "seed": 2026,
+    "G": [
+      [
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        -1.0
+      ]
+    ]
+  },
+  "metrics": {
+    "euclidean": {
+      "violations": 2495,
+      "violation_rate": 0.499,
+      "mean_interval": -0.0041518999379067,
+      "min_interval": -1.127053743626991
+    },
+    "chronos_causal_projection": {
+      "violations": 0,
+      "violation_rate": 0.0,
+      "mean_interval": 0.055047688205004226,
+      "min_interval": 1.467086134429135e-13
+    }
+  }
+}
