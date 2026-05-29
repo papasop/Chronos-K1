@@ -19,7 +19,9 @@ This diagnostic directory provides:
 - `chronos_k1_complete_colab.py`: a Colab-friendly launcher for the maintained
   benchmark script.
 - `VERIFICATION_REPORT.md`: concise milestone verification report.
+- `里程碑验证报告.md`: Chinese milestone verification report.
 - `COLAB_INSTRUCTIONS.md`: step-by-step Colab usage guide.
+- `results/`: target directory for full reproduction artifacts.
 
 ## Headline Result
 
@@ -75,13 +77,24 @@ python benchmarks/experiment_5_full_sanity_reproduction.py --smoke
 The maintained benchmark writes:
 
 ```text
-k1-manifold-core/results/experiment_5_full_sanity_summary.csv
-k1-manifold-core/results/experiment_5_full_sanity_payload.json
-k1-manifold-core/results/rng_seeding_documentation.json
-k1-manifold-core/results/experiment_5_full_sanity_violation_vs_box.png
-k1-manifold-core/results/experiment_5_full_sanity_mse_vs_box.png
-k1-manifold-core/results/experiment_5_full_sanity_violation_by_step.png
+experiment_5_full_sanity_summary.csv
+experiment_5_full_sanity_payload.json
+rng_seeding_documentation.json
+experiment_5_full_sanity_violation_vs_box.png
+experiment_5_full_sanity_mse_vs_box.png
+experiment_5_full_sanity_violation_by_step.png
 ```
+
+To write those artifacts into this package, run:
+
+```bash
+CHRONOS_DEVICE=cuda python exp5-diagnostic/chronos_k1_complete_colab.py --full --output-dir exp5-diagnostic/results
+```
+
+The historical Colab raw files `exp5_reproduction_results.csv`,
+`exp5_reproduction_results.png`, and `exp5_reproduction_config.json` should be
+copied into `exp5-diagnostic/results/` if you want to preserve that exact
+external session output. They are not fabricated from summary statistics.
 
 See also:
 
