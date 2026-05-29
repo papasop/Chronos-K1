@@ -145,6 +145,12 @@ python benchmarks/experiment_5_full_sanity_reproduction.py --smoke
 python benchmarks/experiment_5b_causal_mechanism_ablation.py --smoke
 ```
 
+The public diagnostic entry point is also available from the repository root:
+
+```bash
+python exp5-diagnostic/chronos_k1_complete_colab.py --smoke
+```
+
 It writes:
 
 ```text

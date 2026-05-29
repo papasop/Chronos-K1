@@ -35,6 +35,7 @@ Chronos-K1 currently contains three active layers plus one archive layer:
    - OOD light-cone classification
    - world-model causality stress test, Experiment 5
    - causal mechanism ablation, Experiment 5b
+   - public Exp 5 diagnostic package, `exp5-diagnostic/`
 
 4. **Archive**
    - `world_model_v01`: minimal affine latent-transition prototype retained for
@@ -285,6 +286,15 @@ additional local artifacts when run externally, including
 
 See `k1-manifold-core/docs/experiment_5_reproduction_protocol.md` for the
 exact seed strategy and full reproduction configuration.
+
+For a GitHub-facing diagnostic package, see:
+
+```text
+exp5-diagnostic/
+```
+
+It contains a Colab-friendly launcher, verification report, and usage guide for
+the same maintained Experiment 5 reproduction benchmark.
 
 ### AI Benchmark 3 - Mechanism Diagnostic Benchmark
 
