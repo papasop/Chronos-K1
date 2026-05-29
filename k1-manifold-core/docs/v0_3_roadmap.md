@@ -76,6 +76,10 @@ implemented checks, runnable demos, and explicitly marked assumptions.
 - `benchmarks/ood_extrapolation.py`: trains Lorentzian and Euclidean
   classifiers on light-cone labels from `box=2`, evaluates OOD boxes, and
   writes `results/ood_extrapolation.json`.
+- `benchmarks/experiment_5_causal_stress_test.py`: scans Chronos-JEPA causal
+  regularizer strength on Lorentzian oscillator rollouts. The current quick
+  result is a negative ablation: it exposes higher decoded causal violation
+  rates for the present regularizer.
 - `experiments/causal_projection_demo.py`: exploratory causal projection
   experiment. It is not presented as a superiority benchmark.
 

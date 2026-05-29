@@ -163,6 +163,20 @@ and the figure to `k1-manifold-core/results/ood_extrapolation_auc.png`. This is
 a research benchmark, not a pytest unit test; see
 `k1-manifold-core/docs/benchmark_report.md`.
 
+Experiment 5 is a causal stress-test for Chronos-JEPA on Lorentzian oscillator
+trajectories:
+
+```
+cd k1-manifold-core
+python benchmarks/experiment_5_causal_stress_test.py
+```
+
+The current quick result is intentionally reported as an ablation result, not a
+win: in this configuration, Chronos-JEPA keeps rollout MSE comparable but
+increases decoded causal-violation rates relative to Euclidean JEPA. That makes
+it useful as a stress-test target for future regularizer design rather than a
+claim of world-model superiority.
+
 ## Repository Layout
 
 ```
