@@ -2,21 +2,22 @@
 
 This benchmark moves Chronos-K1 from geometric self-consistency checks toward a minimal task validation.
 
-The task is intentionally narrow: compare a Euclidean baseline against Chronos-K1 Lorentzian dynamics on a deterministic `K=1` constrained rollout task.
+The task is intentionally narrow: compare a Euclidean gradient baseline against Chronos-K1 Lorentzian dynamics on a noisy `K=1` recovery task.
 
 It does not claim broad superiority on world-modeling tasks.
 
 ## Models Compared
 
-### Euclidean Baseline
+### Euclidean Gradient Baseline
 
-The baseline evolves toward the Euclidean unit circle:
+The baseline uses the same potential but follows Euclidean gradient descent:
 
 ```text
-dx/dt = -2 (||x||^2 - 1) x
+xdot = -grad V
+V = 1/2 (K - 1)^2
 ```
 
-This is a simple Euclidean normalization dynamics.
+This is a direct baseline for recovery under the same scalar objective.
 
 ### Chronos-K1 Lorentzian Dynamics
 
@@ -27,6 +28,12 @@ xdot = (J_G - D) grad V
 V = 1/2 (K - 1)^2
 D = d_c I
 K(x) = x.T @ G @ x
+```
+
+Both systems receive the same seeded perturbation sequence:
+
+```text
+x <- x + dt * dynamics(x) + 0.05 * N(0, I)
 ```
 
 ## Shared Initial Conditions
@@ -45,8 +52,9 @@ Both models use the same deterministic initial states:
 
 All metrics are lower-is-better.
 
-- `k_stability_tail_mae`: mean absolute `|K(t)-1|` over the late rollout tail.
-- `causal_violation_rate`: fraction of rollout steps with `K(t) <= 0`.
+- `mean_abs_k_error_tail`: mean absolute `|K(t)-1|` over the late rollout tail.
+- `mean_potential_tail`: mean `V(t)` over the late rollout tail.
+- `mean_recovery_time`: first time to reach `|K(t)-1| <= 0.05`, averaged over rollouts.
 - `long_horizon_rollout_error`: final absolute `|K(T)-1|`.
 
 ## Run
@@ -64,6 +72,6 @@ results/benchmark_v03.json
 
 ## Interpretation Boundary
 
-This benchmark is a constrained numerical diagnostic. It shows whether the implemented Chronos-K1 dynamics better preserves the implemented `K=1` task constraints than the selected Euclidean baseline.
+This benchmark is a constrained numerical diagnostic. It shows whether the implemented Chronos-K1 dynamics recovers the implemented `K=1` task constraints faster and more stably than the selected Euclidean gradient baseline under shared random perturbations.
 
 It is not a general proof of physical correctness, nor a world-model benchmark.

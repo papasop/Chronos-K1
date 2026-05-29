@@ -1,8 +1,12 @@
-"""v0.3 constrained rollout benchmark.
+"""v0.3 noisy K=1 recovery benchmark.
 
-The benchmark is intentionally narrow: it compares a Euclidean unit-sphere
-baseline against Chronos-K1 Lorentzian dynamics on a K=1 constraint task.
-It is a numerical diagnostic, not a broad claim about all world-model tasks.
+The benchmark compares two dynamics on the same K=1 recovery task:
+
+* Euclidean gradient dynamics: ``xdot = -grad V``.
+* Chronos-K1 Lorentzian dynamics: ``xdot = (J_G - D) grad V``.
+
+Both systems receive the same seeded Gaussian perturbations. This is a
+numerical task benchmark, not a broad theory claim.
 """
 
 from __future__ import annotations
@@ -14,12 +18,11 @@ from typing import Callable
 import numpy as np
 
 from k1_manifold_core.dynamics.critical_damping import critical_damping_matrix
-from k1_manifold_core.dynamics.ode_solvers import integrate
 from k1_manifold_core.dynamics.symplectic_dissipative import k1_potential_gradient, vector_field
 
 
 Array = np.ndarray
-RHS = Callable[[Array, float], Array]
+RHS = Callable[[Array], Array]
 
 
 DEFAULT_G = np.diag([1.0, -1.0])
@@ -49,55 +52,94 @@ def k_potential(x: Array, G: Array = DEFAULT_G) -> float:
     return 0.5 * (K - 1.0) ** 2
 
 
-def euclidean_baseline_rhs(x: Array, _t: float) -> Array:
-    """Euclidean baseline flow toward the Euclidean unit circle."""
+def euclidean_gradient_rhs(x: Array, G: Array = DEFAULT_G) -> Array:
+    """Euclidean baseline ``xdot = -grad V`` for the same K-potential."""
 
-    x = np.asarray(x, dtype=float)
-    radius_squared = float(x.T @ x)
-    return -2.0 * (radius_squared - 1.0) * x
+    return -k1_potential_gradient(np.asarray(x, dtype=float), np.asarray(G, dtype=float))
 
 
-def chronos_lorentzian_rhs(x: Array, _t: float, G: Array = DEFAULT_G) -> Array:
-    """Chronos-K1 Law II/III flow for the K=1 potential."""
+def chronos_lorentzian_rhs(x: Array, G: Array = DEFAULT_G) -> Array:
+    """Chronos-K1 Law II/III flow for the same K-potential."""
 
     G = np.asarray(G, dtype=float)
     D = critical_damping_matrix(G)
     return vector_field(x, G, D, lambda y: k1_potential_gradient(y, G))
 
 
-def rollout(rhs: RHS, x0: Array, *, dt: float, steps: int) -> Array:
-    """Integrate one rollout from ``x0``."""
+def noisy_rollout(
+    rhs: RHS,
+    x0: Array,
+    noise: Array,
+    *,
+    dt: float,
+) -> Array:
+    """Euler rollout with additive perturbations ``x += noise[t]``."""
 
-    return integrate(rhs, np.asarray(x0, dtype=float), dt=dt, steps=steps)
+    x = np.asarray(x0, dtype=float).copy()
+    trajectory = [x.copy()]
+    for perturbation in np.asarray(noise, dtype=float):
+        x = x + dt * rhs(x) + perturbation
+        trajectory.append(x.copy())
+    return np.vstack(trajectory)
+
+
+def shared_noise(
+    *,
+    seed: int,
+    initial_count: int,
+    steps: int,
+    dimension: int,
+    noise_scale: float,
+) -> Array:
+    """Return one deterministic noise tensor shared across models."""
+
+    rng = np.random.default_rng(seed)
+    return noise_scale * rng.standard_normal((initial_count, steps, dimension))
+
+
+def recovery_time(k_series: Array, *, dt: float, tolerance: float) -> float:
+    """Return first time that ``|K(t)-1| <= tolerance``; inf if absent."""
+
+    errors = np.abs(np.asarray(k_series, dtype=float) - 1.0)
+    hits = np.flatnonzero(errors <= tolerance)
+    if hits.size == 0:
+        return float("inf")
+    return float(hits[0] * dt)
 
 
 def evaluate_rollouts(
     rhs: RHS,
+    noise: Array,
     initial_states: Array = DEFAULT_INITIAL_STATES,
     *,
     G: Array = DEFAULT_G,
     dt: float = 1e-3,
-    steps: int = 10000,
     tail: int = 1000,
+    recovery_tolerance: float = 0.05,
 ) -> dict[str, float]:
-    """Compute K-stability, causal-violation, and long-horizon metrics."""
+    """Compute noisy K-error, potential, and recovery-time metrics."""
 
     G = np.asarray(G, dtype=float)
-    k_series = []
+    abs_k_errors = []
+    potentials = []
+    recovery_times = []
     final_errors = []
-    violation_rates = []
 
-    for x0 in np.asarray(initial_states, dtype=float):
-        trajectory = rollout(rhs, x0, dt=dt, steps=steps)
-        values = np.array([k_value(x, G) for x in trajectory])
-        k_series.append(values)
-        final_errors.append(abs(values[-1] - 1.0))
-        violation_rates.append(float(np.mean(values <= 0.0)))
+    for index, x0 in enumerate(np.asarray(initial_states, dtype=float)):
+        trajectory = noisy_rollout(rhs, x0, noise[index], dt=dt)
+        k_series = np.array([k_value(x, G) for x in trajectory])
+        v_series = 0.5 * (k_series - 1.0) ** 2
+        abs_error = np.abs(k_series - 1.0)
 
-    tail_errors = [float(np.mean(np.abs(values[-tail:] - 1.0))) for values in k_series]
+        abs_k_errors.append(float(np.mean(abs_error[-tail:])))
+        potentials.append(float(np.mean(v_series[-tail:])))
+        recovery_times.append(recovery_time(k_series, dt=dt, tolerance=recovery_tolerance))
+        final_errors.append(float(abs_error[-1]))
+
     return {
-        "k_stability_tail_mae": float(np.mean(tail_errors)),
-        "causal_violation_rate": float(np.mean(violation_rates)),
+        "mean_abs_k_error_tail": float(np.mean(abs_k_errors)),
+        "mean_potential_tail": float(np.mean(potentials)),
+        "mean_recovery_time": float(np.mean(recovery_times)),
         "long_horizon_rollout_error": float(np.mean(final_errors)),
     }
 
@@ -105,30 +147,56 @@ def evaluate_rollouts(
 def run_benchmark_v03(
     *,
     dt: float = 1e-3,
-    steps: int = 10000,
-    tail: int = 1000,
+    steps: int = 5000,
+    tail: int = 500,
+    noise_scale: float = 0.05,
+    seed: int = 7,
+    recovery_tolerance: float = 0.05,
 ) -> dict[str, object]:
-    """Run the deterministic v0.3 task benchmark."""
+    """Run the deterministic noisy v0.3 task benchmark."""
 
-    euclidean = evaluate_rollouts(euclidean_baseline_rhs, dt=dt, steps=steps, tail=tail)
-    chronos = evaluate_rollouts(chronos_lorentzian_rhs, dt=dt, steps=steps, tail=tail)
+    noise = shared_noise(
+        seed=seed,
+        initial_count=len(DEFAULT_INITIAL_STATES),
+        steps=steps,
+        dimension=DEFAULT_INITIAL_STATES.shape[1],
+        noise_scale=noise_scale,
+    )
+    euclidean = evaluate_rollouts(
+        lambda x: euclidean_gradient_rhs(x, DEFAULT_G),
+        noise,
+        dt=dt,
+        tail=tail,
+        recovery_tolerance=recovery_tolerance,
+    )
+    chronos = evaluate_rollouts(
+        lambda x: chronos_lorentzian_rhs(x, DEFAULT_G),
+        noise,
+        dt=dt,
+        tail=tail,
+        recovery_tolerance=recovery_tolerance,
+    )
     return {
-        "benchmark": "v0.3 constrained K=1 rollout",
-        "description": "Euclidean unit-sphere baseline vs Chronos-K1 Lorentzian dynamics on a K=1 constraint task.",
+        "benchmark": "v0.3 noisy K=1 recovery",
+        "description": "Euclidean xdot=-grad V vs Chronos-K1 xdot=(J_G-D)grad V under shared Gaussian perturbations.",
         "parameters": {
             "dt": dt,
             "steps": steps,
             "tail": tail,
+            "noise_scale": noise_scale,
+            "seed": seed,
+            "recovery_tolerance": recovery_tolerance,
             "G": DEFAULT_G.tolist(),
             "initial_states": DEFAULT_INITIAL_STATES.tolist(),
         },
         "metrics": {
             "lower_is_better": [
-                "k_stability_tail_mae",
-                "causal_violation_rate",
+                "mean_abs_k_error_tail",
+                "mean_potential_tail",
+                "mean_recovery_time",
                 "long_horizon_rollout_error",
             ],
-            "euclidean_baseline": euclidean,
+            "euclidean_gradient": euclidean,
             "chronos_k1_lorentzian": chronos,
         },
     }

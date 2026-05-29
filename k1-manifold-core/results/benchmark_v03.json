@@ -1,10 +1,13 @@
 {
-  "benchmark": "v0.3 constrained K=1 rollout",
-  "description": "Euclidean unit-sphere baseline vs Chronos-K1 Lorentzian dynamics on a K=1 constraint task.",
+  "benchmark": "v0.3 noisy K=1 recovery",
+  "description": "Euclidean xdot=-grad V vs Chronos-K1 xdot=(J_G-D)grad V under shared Gaussian perturbations.",
   "parameters": {
     "dt": 0.001,
-    "steps": 10000,
-    "tail": 1000,
+    "steps": 5000,
+    "tail": 500,
+    "noise_scale": 0.05,
+    "seed": 7,
+    "recovery_tolerance": 0.05,
     "G": [
       [
         1.0,
@@ -40,19 +43,22 @@
   },
   "metrics": {
     "lower_is_better": [
-      "k_stability_tail_mae",
-      "causal_violation_rate",
+      "mean_abs_k_error_tail",
+      "mean_potential_tail",
+      "mean_recovery_time",
       "long_horizon_rollout_error"
     ],
-    "euclidean_baseline": {
-      "k_stability_tail_mae": 0.4458732831191748,
-      "causal_violation_rate": 0.2,
-      "long_horizon_rollout_error": 0.4458732831191748
+    "euclidean_gradient": {
+      "mean_abs_k_error_tail": 0.8189927821834402,
+      "mean_potential_tail": 0.534732628228154,
+      "mean_recovery_time": 0.13,
+      "long_horizon_rollout_error": 0.7220413305296421
     },
     "chronos_k1_lorentzian": {
-      "k_stability_tail_mae": 1.1658125487201686e-11,
-      "causal_violation_rate": 0.00387961203879612,
-      "long_horizon_rollout_error": 2.5164537120758724e-12
+      "mean_abs_k_error_tail": 0.6993758490999833,
+      "mean_potential_tail": 0.3545067450943201,
+      "mean_recovery_time": 0.077,
+      "long_horizon_rollout_error": 0.5163498147928667
     }
   }
 }
