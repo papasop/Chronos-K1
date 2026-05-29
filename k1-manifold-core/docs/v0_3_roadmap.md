@@ -15,7 +15,8 @@ implemented checks, runnable demos, and explicitly marked assumptions.
 - `spacetime`: spherical-sector formulas for `K1`, `K2`, Ricci components,
   Rindler helpers, and symbolic reformulation checks.
 - `benchmarks`: the v0.3 noisy `K=1` recovery comparison between a Euclidean
-  gradient baseline and Chronos-K1 Lorentzian dynamics.
+  gradient baseline and Chronos-K1 Lorentzian dynamics, plus the OOD
+  light-cone classification research benchmark.
 - `experiments`: causal projection and critical-damping null-flow experiments,
   including the recovery-scaling demo.
 - `tests`: CI-backed pytest coverage for information time, causal cones,
@@ -72,6 +73,9 @@ implemented checks, runnable demos, and explicitly marked assumptions.
   on a toy hyperbolic sequence dataset.
 - `examples/benchmark_v03.py`: writes `results/benchmark_v03.json` for the
   narrow noisy `K=1` recovery benchmark.
+- `benchmarks/ood_extrapolation.py`: trains Lorentzian and Euclidean
+  classifiers on light-cone labels from `box=2`, evaluates OOD boxes, and
+  writes `results/ood_extrapolation.json`.
 - `experiments/causal_projection_demo.py`: exploratory causal projection
   experiment. It is not presented as a superiority benchmark.
 

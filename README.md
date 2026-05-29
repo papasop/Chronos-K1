@@ -138,6 +138,31 @@ The result is written to `k1-manifold-core/results/world_model_v01.json`. This
 is a minimal latent regularizer benchmark, not a claim about video, robotics,
 or large-scale world models.
 
+### AI Benchmarks
+
+The first training-based AI benchmark is an OOD light-cone classification task.
+Models are trained on synthetic event differences from `box=2` and evaluated
+on larger boxes.
+
+```
+cd k1-manifold-core
+python benchmarks/ood_extrapolation.py
+```
+
+Current OOD AUC summary:
+
+| Test box | Lorentz | Euclid Mahalanobis | Euclid MLP | Lorentz - MLP gap |
+| --- | ---: | ---: | ---: | ---: |
+| 2 | 1.0000 | 0.7256 | 0.9997 | +0.0003 |
+| 4 | 1.0000 | 0.7278 | 0.9997 | +0.0003 |
+| 8 | 1.0000 | 0.7213 | 0.9996 | +0.0004 |
+| 12 | 1.0000 | 0.7217 | 0.9995 | +0.0005 |
+
+The full output is saved to `k1-manifold-core/results/ood_extrapolation.json`
+and the figure to `k1-manifold-core/results/ood_extrapolation_auc.png`. This is
+a research benchmark, not a pytest unit test; see
+`k1-manifold-core/docs/benchmark_report.md`.
+
 ## Repository Layout
 
 ```
@@ -150,6 +175,7 @@ k1-manifold-core/
     spacetime/
     world_model/
   tests/
+  benchmarks/
   examples/
   docs/
   lean4/
