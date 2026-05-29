@@ -74,6 +74,12 @@ python benchmarks/experiment_5_causal_stress_test.py --smoke
 python benchmarks/experiment_5_causal_stress_test.py --full
 ```
 
+For the dedicated full sanity reproduction script:
+
+```bash
+CHRONOS_DEVICE=cuda python benchmarks/experiment_5_full_sanity_reproduction.py --full
+```
+
 **Artifacts.**
 
 - `results/experiment_5_ablation_stress_summary.csv`
@@ -87,6 +93,8 @@ python benchmarks/experiment_5_causal_stress_test.py --full
 design was run on CUDA with `n_seeds=10`, `n_train=3000`, `n_test=512`, and
 `epochs=250`. At `lambda=0.1`, Chronos latent predictor keeps final rollout
 MSE approximately unchanged while reducing decoded causal-violation rates.
+The exact seed strategy is documented in
+`docs/experiment_5_reproduction_protocol.md`.
 
 | Setting | Euclid violation | Chronos violation | Reduction | p(violation) |
 | --- | ---: | ---: | ---: | ---: |

@@ -237,6 +237,11 @@ python benchmarks/experiment_5_causal_stress_test.py
 ```
 
 Use `--smoke` for a tiny CPU-friendly run and `--full` for the larger sweep.
+For the dedicated `N=10` reproduction script, run:
+
+```bash
+CHRONOS_DEVICE=cuda python benchmarks/experiment_5_full_sanity_reproduction.py --full
+```
 
 Current headline AI result:
 
@@ -276,6 +281,9 @@ additional local artifacts when run externally, including
 `experiment_5_full_sanity_violation_vs_box.png`,
 `experiment_5_full_sanity_mse_vs_box.png`, and
 `experiment_5_full_sanity_violation_by_step.png`.
+
+See `k1-manifold-core/docs/experiment_5_reproduction_protocol.md` for the
+exact seed strategy and full reproduction configuration.
 
 ### AI Benchmark 3 - Causal Mechanism Ablation
 

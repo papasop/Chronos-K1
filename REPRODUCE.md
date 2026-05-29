@@ -133,6 +133,7 @@ cd k1-manifold-core
 python -m pip install -r requirements-benchmarks.txt
 python benchmarks/ood_extrapolation.py
 python benchmarks/experiment_5_causal_stress_test.py
+python benchmarks/experiment_5_full_sanity_reproduction.py --full
 python benchmarks/experiment_5b_causal_mechanism_ablation.py
 ```
 
@@ -140,6 +141,7 @@ For a tiny CPU-friendly smoke check of Experiment 5, run:
 
 ```bash
 python benchmarks/experiment_5_causal_stress_test.py --smoke
+python benchmarks/experiment_5_full_sanity_reproduction.py --smoke
 python benchmarks/experiment_5b_causal_mechanism_ablation.py --smoke
 ```
 
@@ -150,6 +152,8 @@ k1-manifold-core/results/ood_extrapolation.json
 k1-manifold-core/results/ood_extrapolation_auc.png
 k1-manifold-core/results/experiment_5_ablation_stress_summary.csv
 k1-manifold-core/results/experiment_5_ablation_stress_raw.json
+k1-manifold-core/results/experiment_5_full_sanity_summary.csv
+k1-manifold-core/results/experiment_5_full_sanity_payload.json
 k1-manifold-core/results/experiment_5b_causal_mechanism_ablation_summary.csv
 k1-manifold-core/results/experiment_5b_causal_mechanism_ablation_raw.json
 ```

@@ -13,6 +13,10 @@ intentionally separate from `tests/`.
   predicts future embeddings, but it is not a Meta/LeCun JEPA implementation.
   Use `--smoke` for a tiny CPU-friendly check or `--full` for the larger
   `n_seeds=10` sanity reproduction.
+- `experiment_5_full_sanity_reproduction.py`: dedicated reproduction script
+  for the original Experiment 5 two-model lambda scan. It records RNG seeding,
+  mean/final rollout MSE, causal violation, interval drift, and paired
+  Wilcoxon p-values.
 - `experiment_5b_causal_mechanism_ablation.py`: decompose Experiment 5 into
   Euclidean, Chronos geometry-only, Chronos causal-only, Chronos interval-only,
   and Chronos full latent-predictor variants. It writes summary CSV, raw JSON,
@@ -24,6 +28,7 @@ Run from `k1-manifold-core`:
 python benchmarks/ood_extrapolation.py
 python benchmarks/experiment_5_causal_stress_test.py
 python benchmarks/experiment_5_causal_stress_test.py --smoke
+python benchmarks/experiment_5_full_sanity_reproduction.py --smoke
 python benchmarks/experiment_5b_causal_mechanism_ablation.py --smoke
 ```
 
