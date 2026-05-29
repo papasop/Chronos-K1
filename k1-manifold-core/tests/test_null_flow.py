@@ -6,6 +6,7 @@ from k1_manifold_core.experiments.null_flow import (
     leaf_box_probability,
     leaf_coordinate,
     null_flow_matrix,
+    recovery_scaling_fit,
     recovery_scaling_slope,
 )
 
@@ -37,3 +38,10 @@ def test_recovery_time_loglog_slope_is_inverse_square():
     slope = recovery_scaling_slope(epsilons)
 
     assert -2.1 <= slope <= -1.9
+
+
+def test_recovery_time_loglog_fit_has_near_perfect_r_squared():
+    epsilons = np.array([0.05, 0.075, 0.1, 0.15, 0.2])
+    _slope, r_squared = recovery_scaling_fit(epsilons)
+
+    assert r_squared > 0.9999

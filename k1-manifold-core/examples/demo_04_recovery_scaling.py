@@ -23,7 +23,7 @@ from k1_manifold_core.experiments.null_flow import (
     leaf_box_probability,
     leaf_coordinate,
     null_flow_matrix,
-    recovery_scaling_slope,
+    recovery_scaling_fit,
     recovery_time,
 )
 
@@ -45,7 +45,8 @@ def main() -> None:
 
     epsilons = np.array([0.05, 0.075, 0.1, 0.15, 0.2])
     times = np.array([recovery_time(epsilon) for epsilon in epsilons])
-    slope = recovery_scaling_slope(epsilons)
+    slope, r_squared = recovery_scaling_fit(epsilons)
+    probability_ratio = ideal_probability / (4.0 * radius * radius)
 
     fig, ax = plt.subplots(figsize=(6, 4))
     ax.loglog(epsilons, times, "o-", label=f"slope = {slope:.3f}")
@@ -63,7 +64,9 @@ def main() -> None:
     print(f"max |c(t)-c(0)| = {c_drift:.3e}")
     print(f"leaf probability estimate = {estimated_probability:.6f}")
     print(f"ideal 4c^2 probability = {ideal_probability:.6f}")
+    print(f"ideal probability ratio = {probability_ratio:.4f}")
     print(f"log-log recovery slope = {slope:.6f}")
+    print(f"log-log fit R^2 = {r_squared:.6f}")
     print(f"saved figure = {output_path}")
 
 

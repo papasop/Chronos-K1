@@ -1,5 +1,7 @@
 # Chronos-K1
 
+[![tests](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml)
+
 Chronos-K1 is a Lorentzian structural dynamics framework in which time is
 modeled as the cost of structural change and causal structure is encoded
 directly into the geometry of a state space.
@@ -206,6 +208,8 @@ mathematics are treated as hypotheses under investigation.
 
 See `k1-manifold-core/docs/v0_2_roadmap.md` for the current v0.2
 implementation map.
+
+For a one-page reproduction guide, see [REPRODUCE.md](REPRODUCE.md).
 
 ## Citation
 

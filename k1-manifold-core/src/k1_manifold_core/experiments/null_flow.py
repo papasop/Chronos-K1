@@ -85,3 +85,18 @@ def recovery_scaling_slope(epsilons: Iterable[float]) -> float:
     times = np.array([recovery_time(value) for value in eps])
     slope, _intercept = np.polyfit(np.log(eps), np.log(times), 1)
     return float(slope)
+
+
+def recovery_scaling_fit(epsilons: Iterable[float]) -> tuple[float, float]:
+    """Return log-log slope and R^2 for recovery time versus epsilon."""
+
+    eps = np.asarray(list(epsilons), dtype=float)
+    times = np.array([recovery_time(value) for value in eps])
+    log_eps = np.log(eps)
+    log_times = np.log(times)
+    slope, intercept = np.polyfit(log_eps, log_times, 1)
+    fitted = slope * log_eps + intercept
+    residual = float(np.sum((log_times - fitted) ** 2))
+    total = float(np.sum((log_times - np.mean(log_times)) ** 2))
+    r_squared = 1.0 if total == 0.0 else 1.0 - residual / total
+    return float(slope), float(r_squared)
