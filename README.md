@@ -201,7 +201,6 @@ mathematics are treated as hypotheses under investigation.
 - Curved, state-dependent metrics.
 - Lean4 formalization of the realizability signature theorem (R/E/T =>
   `Sig(G) = (1,1)`) and the rank-one / first-integral structure.
-- JEPA integration on a separate experimental branch.
 - World-model benchmarks after a baseline implementation exists.
 - Long-horizon prediction experiments.
 
