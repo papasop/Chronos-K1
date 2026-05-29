@@ -311,7 +311,12 @@ exp5-diagnostic/
 
 It contains a Colab-friendly launcher, verification report, usage guide, and
 copy-paste Colab cell version for the same maintained Experiment 5 reproduction
-benchmark.
+benchmark. It also contains a CSV-driven postmortem script for degraded or
+negative Experiment 5 variants:
+
+```text
+exp5-diagnostic/experiment_5_postmortem_analysis.py
+```
 
 For the extended 8-lambda Colab variant, see:
 

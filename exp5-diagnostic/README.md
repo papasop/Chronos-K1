@@ -18,6 +18,9 @@ This diagnostic directory provides:
 
 - `chronos_k1_complete_colab.py`: a Colab-friendly launcher for the maintained
   benchmark script.
+- `experiment_5_postmortem_analysis.py`: CSV-driven postmortem analysis for
+  negative or degraded Experiment 5 variants. It reads real result CSVs by
+  default and only uses embedded demo data when explicitly requested.
 - `VERIFICATION_REPORT.md`: concise milestone verification report.
 - `里程碑验证报告.md`: Chinese milestone verification report.
 - `COLAB_INSTRUCTIONS.md`: step-by-step Colab usage guide.
@@ -65,6 +68,27 @@ Mechanism Diagnostic Benchmark
 ```
 
 Do not describe the result as proved or statistically significant.
+
+If a run shows Chronos degradation rather than reduction, use the postmortem
+script instead of editing a static report by hand:
+
+```bash
+python exp5-diagnostic/experiment_5_postmortem_analysis.py \
+  --csv exp5-diagnostic/results/exp5_extended_fixed_v2_results.csv \
+  --out-dir exp5-diagnostic/results
+```
+
+When the raw CSV is unavailable, the script can reproduce a clearly marked
+demo analysis from manually entered values:
+
+```bash
+python exp5-diagnostic/experiment_5_postmortem_analysis.py \
+  --use-embedded-demo-data \
+  --out-dir exp5-diagnostic/results
+```
+
+The postmortem framing is intentionally narrow: it can support claims about the
+current ChronosJEPA implementation, not claims that GCD theory is wrong.
 
 ## Run Locally
 
