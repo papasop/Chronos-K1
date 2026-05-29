@@ -108,3 +108,50 @@ that Chronos latent predictor improves world-model prediction accuracy.
 Instead, it supports the narrower claim that Chronos constraints can act as a
 causality-preserving world-model regularizer while maintaining comparable
 rollout error on this synthetic stress test.
+
+## Experiment 5b: Causal Mechanism Ablation
+
+**Task.** Decompose the Chronos latent predictor into mechanism variants and
+measure which parts of the constraint stack affect decoded causal consistency.
+
+Variants:
+
+- Euclidean latent predictor
+- Chronos geometry-only latent predictor
+- Chronos causal-only latent predictor
+- Chronos interval-only latent predictor
+- Chronos full latent predictor
+
+These variants separate Lorentz-normalized latent-step geometry from causal,
+interval, and `K=1` regularization losses.
+
+**Command.**
+
+```bash
+cd k1-manifold-core
+python benchmarks/experiment_5b_causal_mechanism_ablation.py
+```
+
+Use `--smoke` for a tiny CPU-friendly run and `--full` for the larger
+configuration:
+
+```bash
+python benchmarks/experiment_5b_causal_mechanism_ablation.py --smoke
+python benchmarks/experiment_5b_causal_mechanism_ablation.py --full
+```
+
+**Artifacts.**
+
+- `results/experiment_5b_causal_mechanism_ablation_summary.csv`
+- `results/experiment_5b_causal_mechanism_ablation_raw.json`
+- `results/experiment_5b_violation_vs_box.png`
+- `results/experiment_5b_mse_vs_box.png`
+- `results/experiment_5b_effective_rank.png`
+- `results/experiment_5b_violation_by_step.png`
+- `results/experiment_5b_K_drift_by_step.png`
+
+**Interpretation boundary.** Experiment 5b is a mechanism probe. It is not a
+unit test, not a theorem, and not by itself a claim that Chronos improves
+forecasting accuracy. Its purpose is to identify which Chronos constraints are
+responsible for causal-consistency preservation before moving to stronger
+dynamical baselines.

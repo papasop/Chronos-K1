@@ -271,6 +271,55 @@ k1-manifold-core/results/experiment_5_violation_by_step.png
 k1-manifold-core/results/experiment_5_K_drift_by_step.png
 ```
 
+### AI Benchmark 3 - Causal Mechanism Ablation
+
+Experiment 5b decomposes the Experiment 5 Chronos latent predictor into
+mechanism variants:
+
+- Euclidean latent predictor,
+- Chronos geometry-only latent predictor,
+- Chronos causal-only latent predictor,
+- Chronos interval-only latent predictor,
+- Chronos full latent predictor.
+
+This benchmark is meant to answer a narrower question: which part of the
+Chronos constraint stack contributes to causal consistency in long-horizon
+rollouts?
+
+Run:
+
+```bash
+cd k1-manifold-core
+python benchmarks/experiment_5b_causal_mechanism_ablation.py
+```
+
+Use `--smoke` for a tiny CPU-friendly run and `--full` for the larger sweep.
+
+It evaluates:
+
+- final rollout MSE,
+- decoded causal-violation rate,
+- Lorentz-interval drift,
+- latent `K` drift,
+- encoder effective rank,
+- OOD extrapolation from `box=2` to `box=32`.
+
+Interpretation boundary: Experiment 5b is a mechanism probe, not a theorem and
+not a unit test. It should be used to localize which Chronos constraints are
+doing useful work before making broader world-model claims.
+
+Artifacts:
+
+```text
+k1-manifold-core/results/experiment_5b_causal_mechanism_ablation_summary.csv
+k1-manifold-core/results/experiment_5b_causal_mechanism_ablation_raw.json
+k1-manifold-core/results/experiment_5b_violation_vs_box.png
+k1-manifold-core/results/experiment_5b_mse_vs_box.png
+k1-manifold-core/results/experiment_5b_effective_rank.png
+k1-manifold-core/results/experiment_5b_violation_by_step.png
+k1-manifold-core/results/experiment_5b_K_drift_by_step.png
+```
+
 ## Archived Benchmarks
 
 ### `world_model_v01`
@@ -390,7 +439,7 @@ derivation.
 - Pendulum benchmark.
 - Double-pendulum benchmark.
 - N-body benchmark.
-- Chronos latent predictor mechanism ablations for Experiment 5.
+- Full Experiment 5b mechanism-ablation report across stronger baselines.
 - JEPA-style latent-predictor scaling study across stronger dynamical
   baselines.
 

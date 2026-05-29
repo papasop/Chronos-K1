@@ -84,6 +84,10 @@ implemented checks, runnable demos, and explicitly marked assumptions.
   The p-values are not stable enough at `n=5` to claim statistical
   significance, so the result is presented as causal-consistency benchmark
   evidence rather than a forecasting-accuracy claim.
+- `benchmarks/experiment_5b_causal_mechanism_ablation.py`: decomposes
+  Experiment 5 into Euclidean, Chronos geometry-only, Chronos causal-only,
+  Chronos interval-only, and Chronos full latent-predictor variants to probe
+  which constraints contribute to causal-consistency preservation.
 - `experiments/causal_projection_demo.py`: exploratory causal projection
   experiment. It is not presented as a superiority benchmark.
 

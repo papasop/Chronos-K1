@@ -13,6 +13,10 @@ intentionally separate from `tests/`.
   predicts future embeddings, but it is not a Meta/LeCun JEPA implementation.
   The default run is the representative `n_seeds=5` configuration; use
   `--smoke` for a tiny CPU-friendly check or `--full` for the larger sweep.
+- `experiment_5b_causal_mechanism_ablation.py`: decompose Experiment 5 into
+  Euclidean, Chronos geometry-only, Chronos causal-only, Chronos interval-only,
+  and Chronos full latent-predictor variants. It writes summary CSV, raw JSON,
+  and diagnostic PNG artifacts under `results/`.
 
 Run from `k1-manifold-core`:
 
@@ -20,7 +24,8 @@ Run from `k1-manifold-core`:
 python benchmarks/ood_extrapolation.py
 python benchmarks/experiment_5_causal_stress_test.py
 python benchmarks/experiment_5_causal_stress_test.py --smoke
+python benchmarks/experiment_5b_causal_mechanism_ablation.py --smoke
 ```
 
 These benchmarks currently require PyTorch in addition to the core scientific
-Python stack. Experiment 5 also uses pandas for its summary CSV/table.
+Python stack. Experiments 5 and 5b also use pandas for summary CSV/tables.
