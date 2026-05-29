@@ -293,8 +293,9 @@ For a GitHub-facing diagnostic package, see:
 exp5-diagnostic/
 ```
 
-It contains a Colab-friendly launcher, verification report, and usage guide for
-the same maintained Experiment 5 reproduction benchmark.
+It contains a Colab-friendly launcher, verification report, usage guide, and
+copy-paste Colab cell version for the same maintained Experiment 5 reproduction
+benchmark.
 
 ### AI Benchmark 3 - Mechanism Diagnostic Benchmark
 

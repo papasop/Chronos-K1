@@ -21,6 +21,8 @@ This diagnostic directory provides:
 - `VERIFICATION_REPORT.md`: concise milestone verification report.
 - `里程碑验证报告.md`: Chinese milestone verification report.
 - `COLAB_INSTRUCTIONS.md`: step-by-step Colab usage guide.
+- `guides/COLAB_COPY_PASTE_VERSION.md`: direct copy-paste Colab cell version
+  of the Experiment 5 reproduction, with cautious interpretation wording.
 - `results/`: target directory for full reproduction artifacts.
 
 ## Headline Result
@@ -98,5 +100,6 @@ external session output. They are not fabricated from summary statistics.
 
 See also:
 
+- `exp5-diagnostic/guides/COLAB_COPY_PASTE_VERSION.md`
 - `k1-manifold-core/docs/experiment_5_reproduction_protocol.md`
 - `k1-manifold-core/docs/benchmark_report.md`
