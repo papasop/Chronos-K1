@@ -612,27 +612,28 @@ $\mathbb{R}^2\setminus\Sigma_0$ but is non-uniform, with the recovery time
 diverging as $c^{-2}$ as $\Sigma_0$ is approached.
 \end{proposition}
 
-\begin{remark}[Numerical confirmation]
-Direct integration confirms both the exact leaf dynamics and the scaling.
-On fixed leaves, a fit of $\ln|K(t)-1|$ against $t$ recovers the decay rate
-$4c^2$ to machine precision ($R^2=1$ for $c=0.05,0.1,0.2,0.5$), and the
-measured recovery times agree with the closed-form
-$T_{\mathrm{recover}}=\tfrac{1}{4c^2}\ln(|K_0-1|/\varepsilon)$ to solver
-accuracy across the tested range $c\in[0.03,1]$. A log--log fit of recovery
+\begin{remark}[Exact-leaf numerical reproduction of the closed-form recovery law]
+Direct integration on exact invariant leaves reproduces the closed-form
+recovery law of Proposition~\ref{prop:recovery} to solver accuracy. With
+exact on-leaf initialisation ($x_1+x_2=c$ held exactly), the measured
+recovery time matches
+$T_{\mathrm{recover}}=\tfrac{1}{4c^2}\ln(|K_0-1|/\varepsilon)$ pointwise
+(ratio $1.0000$ across $c\in[0.03,1]$), and a log--log fit of recovery
 time against $c$ gives
 \[
-\mathrm{slope}=-1.986,\qquad R^2=0.99998,
+\mathrm{slope}=-2.000,\qquad R^2=1.000,
 \]
-consistent with $T_{\mathrm{recover}}=\Theta(c^{-2})$ up to the logarithmic
-factor $\ln(|K_0-1|/\varepsilon)$. The rescaled product
-$T_{\mathrm{recover}}\,c^2$ is \emph{not} expected to be constant: by the
-formula above,
-\[
-T_{\mathrm{recover}}\,c^2=\tfrac14\ln\frac{|K_0-1|}{\varepsilon},
-\]
-so its mild residual drift across leaves (numerically, $2.88$ to $3.07$
-over $c\in[0.03,1]$) reflects the variation of the initial offset $K_0$,
-not a failure of the scaling law.
+in agreement with $T_{\mathrm{recover}}=\Theta(c^{-2})$ up to the
+logarithmic factor $\ln(|K_0-1|/\varepsilon)$. The rescaled product
+$T_{\mathrm{recover}}\,c^2=\tfrac14\ln(|K_0-1|/\varepsilon)$ is therefore
+constant along leaves at fixed $(K_0,\varepsilon)$, not a failure of the
+scaling. Deviations from the $c^{-2}$ exponent observed in earlier
+control runs (fitted slopes in the range $-0.7$ to $-1.1$) arose from
+short-window identifiability effects --- curves near the freeze leaf
+$\Sigma_0$ decay too slowly for the rate to be statistically resolved
+within a finite observation window --- rather than from any failure of
+the theory, consistent with the non-uniform convergence as $\Sigma_0$ is
+approached (Proposition~\ref{prop:recovery}).
 \end{remark}
 
 \section{Spacetime thermodynamics (thermodynamic perspective)}\label{sec:thermo}
@@ -1064,7 +1065,21 @@ The following remarks are heuristic and should be read as an outlook rather than
 The first three problems concern structural completion and empirical distinctness; the last three concern internal dynamical and quantum consistency.
 
 \begin{enumerate}
-\item Provide an independent justification for the field-level ansatz $K_i=1$, beyond the algebraic equivalence with vacuum Einstein components established in Theorem~\ref{thm:field}. Specifically: Laws~I--III constrain the algebraic type of $G$ at the point level, but they do not, in their present formulation, single out the specific differential conditions $K_i=1$ from among the family of possible field-level uplifts of the point-level balance $K=1$. Determine whether this ansatz can be derived from Law~I together with additional principles (e.g., a variational principle on the cost-time layer, a uniqueness argument from cost-weight ansatze, or a generalisation to null congruences of more general metrics), rather than introduced as a separate field-level condition.
+\item Resolve the weight ambiguity of Appendix~\ref{app:eta}. The
+relaxed $\eta$-weighted field action admits two natural prescriptions
+for the single free weight $\eta$ that disagree: the Euler--Lagrange
+marginal-mode reading gives $\eta=2$ (eq.~\eqref{eq:etaEL}), while the
+field-level lift of Axiom~R, via a zero-cost mode, gives $\eta=1$
+(eq.~\eqref{eq:etaR}). The framework as presently formulated supplies
+no principle adjudicating between them. Determine whether such a
+principle follows from the cost axioms (Axioms~R, E, T) or from an
+independent structural requirement. This ambiguity is logically prior
+to, and decides the status of, the conditional $\beta/r^3$ correction
+of eq.~\eqref{eq:fform}: a resolution selecting $\eta=2$ would upgrade
+that correction from conditional to predicted, whereas $\eta=1$ removes
+it entirely. Independently of which value is selected, this also
+subsumes the original question of justifying the field-level conditions
+$K_i=1$, which correspond to the hard-constraint limit of \eqref{eq:Seta}.
 \item Extend the algebraic perspective to non-vacuum matter. In particular, determine whether $\rho=(1-K_2)/(8\pi r^2)$ is an intrinsic consequence of the cost framework, rather than a GR rewriting, whether matter can thereby be understood as the failure of angular eigenvalue self-consistency per unit area, and whether this extends to the full stress-energy tensor~$T_{\mu\nu}$.
 \item Identify testable strong-field predictions. Within the present spherical-vacuum analysis, since in the weak-field regime $K_2=1$ already reproduces the Newtonian potential while $K_1=1$ is automatic at linear order, any observational distinction between the eigenvalue principle and standard GR must arise from the nonlinear strong-field sector, i.e.\ from the term $B/r^2$ in the $K_1$-only family that distinguishes $K_1$-equivalence from pure Schwarzschild (Lemma~\ref{lem:rigidity}). Possible windows include high-precision black-hole shadow data, strong-field gravitational-wave signals, and near-horizon quantum effects.
 \item Establish a first-principles relation between the motivating information time $dt_{\mathrm{info}}$ and the effective dynamical evolution parameter $t$ used in Laws~II--III and the thermodynamic perspective.
@@ -1183,6 +1198,126 @@ Lorentzian signature is therefore not merely compatible with the cost asymmetry;
 
 In the body of the paper, the leading quadratic form $G$ of Law~I (\S\ref{sec:lawI}) is identified with the form $Q$ of this appendix. Axioms~R, E, T are imposed on the local cost-form layer of the information-time construction $dt_{\mathrm{info}}:=d\Phi/H$, and Theorem~\ref{app:thm:lorentz} then forces $\mathrm{Sig}(G)=(1,1)$, equivalently $\det G<0$. This is the operative bridge from cost-realizability to Lorentzian signature used throughout the framework; in particular, it supplies the input to Theorems~\ref{thm:spectral}--\ref{thm:equivalence}. The $(1{+}3)$-dimensional extension is not used in the main text and is therefore omitted from this appendix; the framework's higher-dimensional structure is discussed heuristically in \S\ref{sec:discussion}.
 
+%=====================================================================
+%  APPENDIX B  (Version B2 -- obstruction foregrounded)
+%  Conditional eta-Weighted Extension of the Field-Level Sector
+%
+%  PLACEMENT: insert immediately AFTER \S A.7 of the realizability
+%  appendix, still inside \appendix, before "Statements and Declarations".
+%  Reuses Definition~\ref{def:esc}, Theorem~\ref{thm:field},
+%  \S\ref{sec:field}, \S\ref{sec:nullflow}, \S\ref{sec:discussion}.
+%=====================================================================
+
+\section{Conditional $\eta$-Weighted Extension, and an Unresolved Weight Ambiguity}
+\label{app:eta}
+
+The field-level conditions $K_1=K_2=1$ of \S\ref{sec:field} give an
+algebraic reformulation of the spherical vacuum Einstein equations
+(Theorem~\ref{thm:field}). This appendix examines a relaxed variational
+version. It serves two purposes. The first, minor, is to record a
+conditional non-GR correction term that the relaxation produces. The
+second, and the more important, is to isolate a sharp internal
+ambiguity: the relaxation contains a single free weight $\eta$, and the
+framework offers \emph{two} natural prescriptions for fixing it that
+\emph{disagree}. The unresolved disagreement, not the correction term,
+is the substantive content of this appendix.
+
+\subsection*{B.1\quad The relaxed action and its indicial structure}
+
+Replace the hard constraints by the $\eta$-weighted quadratic relaxation
+\begin{equation}\label{eq:Seta}
+S_\eta=\frac12\int\bigl[\eta\,(K_1-1)^2+(K_2-1)^2\bigr]\,r^2\,dr ,
+\qquad \eta>0,
+\end{equation}
+with $K_1,K_2$ as in Definition~\ref{def:esc}. The two functionals are
+not independent: a direct computation from Definition~\ref{def:esc}
+gives the exact identity
+\begin{equation}\label{eq:constraint}
+K_1=K_2+\frac{r}{2}\,K_2',
+\end{equation}
+so the variational problem involves a \emph{single} field. Writing
+$w:=K_2-1$, the homogeneous Euler--Lagrange equation of \eqref{eq:Seta}
+is of Euler (equidimensional) type, with indicial relation
+\begin{equation}\label{eq:indicial}
+\lambda^2+3\lambda+2-\frac{4}{\eta}=0 ,
+\qquad
+\lambda_\pm=\frac{-3\pm\sqrt{1+16/\eta}}{2}.
+\end{equation}
+The trivial solution $w\equiv0$ ($K_2\equiv1$, the exact Schwarzschild
+branch) solves the homogeneous equation for \emph{every} $\eta$, so the
+mere existence of a vacuum branch cannot single out a weight.
+
+\subsection*{B.2\quad The conditional $1/r^3$ correction}
+
+Imposing the marginal-mode criterion $\lambda_+=0$ selects
+\begin{equation}\label{eq:eta2}
+\eta=2,\qquad \lambda\in\{0,-3\},
+\end{equation}
+and the general homogeneous solution then acquires a constant mode
+beside the $r^{-3}$ mode, $w=w_0+\alpha/r^2+\beta/r^3$. Asymptotic
+flatness removes $w_0$, and integrating $K_2=1+w$ gives
+\begin{equation}\label{eq:fform}
+\lambda_+=0\;\Longrightarrow\;
+f(r)=1+\frac{C}{r}-\frac{\alpha}{r^2}-\frac{\beta}{2r^3}.
+\end{equation}
+Here $C=-2M$ is the Schwarzschild mass term and $\alpha=-Q^2$ is a
+Reissner--Nordstr\"om-like integration mode (opposite in sign to the RN
+charge term); the $\beta/r^3$ term is a non-GR signature absent from
+both Schwarzschild and Reissner--Nordstr\"om. We stress that this is a
+\emph{conditional} statement: it holds only given the criterion
+$\lambda_+=0$, which is examined --- and found wanting --- next.
+
+\subsection*{B.3\quad The unresolved weight ambiguity}
+
+The status of the entire extension hinges on whether the weight $\eta$
+can be fixed by the framework rather than imposed. It is here that the
+framework, in its present form, fails to decide. Two natural
+prescriptions arise, and they give \emph{different} weights.
+
+\medskip\noindent\textit{(i) Dynamical (Euler--Lagrange) reading.}
+The point-level null flow (\S\ref{sec:nullflow}) has a single conserved
+charge, whose lift is the constant field mode $w=\mathrm{const}$.
+Requiring this mode to be an admissible homogeneous Euler--Lagrange
+solution of \eqref{eq:Seta} forces the coefficient $1-\eta/2$ to vanish:
+\begin{equation}\label{eq:etaEL}
+\text{Euler--Lagrange marginal mode}\;\Longrightarrow\;\eta=2 .
+\end{equation}
+
+\medskip\noindent\textit{(ii) Cost-theoretic (Axiom~R) reading.}
+Axiom~R, at the point level, asserts the existence of a nonzero
+\emph{zero-cost} direction; its honest field-level analogue demands a
+nonzero field mode of vanishing cost density. A positive-definite
+penalty admits no such mode, so realising Axiom~R requires the field
+cost form to be Lorentzian (indefinite), mirroring the point-level
+signature. Imposing that the constant direction be null for the
+inherited indefinite form forces instead the coefficient $\eta-1$ to
+vanish:
+\begin{equation}\label{eq:etaR}
+\text{Axiom-R zero-cost mode}\;\Longrightarrow\;\eta=1 .
+\end{equation}
+
+\medskip\noindent
+\fbox{\parbox{0.95\linewidth}{\centering
+The dynamical and cost-theoretic readings select
+$\eta=2$ and $\eta=1$ respectively.\\[2pt]
+\textbf{The framework currently does not resolve this tension.}}}
+
+\medskip\noindent
+The two prescriptions are not minor variants of one another: $\eta=2$
+gives the clean integer-power solution \eqref{eq:fform}, whereas $\eta=1$
+is the symmetric weight, with irrational indicial roots
+$\lambda_\pm=(-3\pm\sqrt{17})/2$ from \eqref{eq:indicial} and no
+integer-power correction at all. The choice between them is therefore
+not a matter of normalisation but determines whether a clean $1/r^3$
+signature exists. Because the framework supplies no principle selecting
+\eqref{eq:etaEL} over \eqref{eq:etaR}, the weight $\eta$ --- and with it
+the $\beta/r^3$ correction of \eqref{eq:fform} --- remains conditional on
+an external choice and is not a theorem of the present $K{=}1$ framework.
+The integration measure ($r^2\,dr$, the coordinate-area measure) is
+likewise an input. Resolving the $\eta=1$ versus $\eta=2$ ambiguity is
+the decisive logical node for this extension and is recorded as the
+sharpened form of Open Problem~1.
+
 
 \noindent\textbf{Statements and Declarations}
 
@@ -1192,7 +1327,7 @@ In the body of the paper, the leading quadratic form $G$ of Law~I (\S\ref{sec:la
 
 \medskip\noindent\textbf{Author contributions.} Y.\,Y.\,N.\ Li is the sole author of the work presented.
 
-\medskip\noindent\textbf{Data availability.} No datasets were generated or analysed during the current study.
+\medskip\noindent\textbf{Data availability.} No primary research datasets were generated during the current study. The symbolic and numerical verification scripts that reproduce the recovery-time scaling of Proposition~\ref{prop:recovery} and the algebraic field equivalence of Theorem~\ref{thm:field}, including the $\eta$-weighted indicial computation of Appendix~\ref{app:eta}, are available from the author on reasonable request.
 
 \begin{thebibliography}{99}
 
