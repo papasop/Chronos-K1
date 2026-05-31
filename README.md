@@ -67,22 +67,17 @@ Law II: Symplectic-Dissipative Dynamics
 Law III: Critical Damping -> Null Flow -> Invariant Foliation
 - Critical damping yields the `K=1` null-flow dynamics and foliation structure.
 
-```text
-┌─────────────────────────────────────────────────────────────────────┐
-│  Where Chronos Fits in Physics-AI                                   │
-│                                                                     │
-│  Data-driven Inductive Bias ─────────────► Explicit Knowledge Priors│
-│                                                                     │
-│  LLM → WM → NODE → CHRONOS → Equiv → HNN → PINN                     │
-│   │     │      │        │        │       │       │                 │
-│  Stat  Rep   Dyn     Metric   Sym    Cons    Eqn                    │
-│                      ▲                                              │
-│                   OUR SPOT                                          │
-│                                                                     │
-│  Metric Prior                                                       │
-│  (derived from realizability assumptions)                           │
-└─────────────────────────────────────────────────────────────────────┘
-```
+Data-driven Bias ───────────────────► Explicit Physics Knowledge
+
+LLM → WM → NODE → CHRONOS → Equiv → HNN → PINN
+                  ▲
+               OUR SPOT
+
+Validated Physics Structure Priors
+
+(Regime Validation
+ + Constraint Validation
+ + Structure Priors)
 
 Positioning diagram asset:
 - `k1-manifold-core/docs/chronos_positioning.svg`
