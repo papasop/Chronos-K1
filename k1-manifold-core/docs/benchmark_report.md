@@ -203,3 +203,33 @@ signal (`timelike improvement > spacelike improvement`).
 - ✅ Evidence for metric-sensitive inductive bias
 - ❌ Not proof of general Physics AI
 - ❌ Not proof that Lorentz is always best in raw performance
+
+## Experiment 8-B: Lorenz Attractor Benchmark (Architecture Prior)
+
+**Question.** On real nonlinear chaotic dynamics (Lorenz), does the
+Lorentz-signature latent prior improve valid prediction time as an
+architectural inductive bias?
+
+**Positioning.** This is an architecture-prior experiment, not a validation of
+Chronos physics theory.
+
+**Primary decision rule.**
+
+- Primary metric: VPT (Valid Prediction Time, in Lyapunov times)
+- One-sided Wilcoxon tests, Lorentz vs each control
+  (`EuclideanNormalized`, `RandomMetric_1..3`)
+- Holm correction across that full primary family
+- Headline pass requires Lorentz to beat Euclidean and all random controls
+
+**Script.**
+
+```bash
+cd k1-manifold-core
+python benchmarks/experiment_8b_lorenz_benchmark_colab.py
+```
+
+**Artifacts.**
+
+- `results/experiment_8b_lorenz/config.json`
+- `results/experiment_8b_lorenz/exp8b_results.csv`
+- `results/experiment_8b_lorenz/exp8b_summary_table.csv`

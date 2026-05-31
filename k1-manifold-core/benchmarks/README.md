@@ -30,6 +30,9 @@ intentionally separate from `tests/`.
   vs spacelike trajectories. It writes per-seed raw results and interaction
   statistics under
   `results/experiment_7_metric_controlled_normalization/`.
+- `experiment_8b_lorenz_benchmark_colab.py`: architecture-prior benchmark on
+  Lorenz chaotic dynamics using VPT as the primary metric with Holm-corrected
+  Lorentz-vs-control tests.
 
 Run from `k1-manifold-core`:
 
@@ -41,6 +44,7 @@ python benchmarks/experiment_5_causal_stress_test.py --smoke
 python benchmarks/experiment_5_full_sanity_reproduction.py --smoke
 python benchmarks/experiment_5b_causal_mechanism_ablation.py --smoke
 python benchmarks/experiment_7_metric_controlled_normalization.py
+python benchmarks/experiment_8b_lorenz_benchmark_colab.py
 ```
 
 These benchmarks currently require PyTorch in addition to the core scientific
