@@ -1,0 +1,22 @@
+name: benchmark-smoke
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  exp7-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r k1-manifold-core/requirements-benchmarks.txt
+      - name: Run Exp7 smoke
+        run: |
+          cd k1-manifold-core
+          python benchmarks/experiment_7_metric_controlled_normalization.py --smoke

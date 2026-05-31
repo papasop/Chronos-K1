@@ -187,9 +187,16 @@ python benchmarks/experiment_7_metric_controlled_normalization.py
 - `results/experiment_7_metric_controlled_normalization/experiment_7_raw_results_with_improvement.csv`
 - `results/experiment_7_metric_controlled_normalization/experiment_7_metric_dataset_interaction.csv`
 
-**Headline result format.** N=30, one-sided Wilcoxon p-value on the Lorentz
-metric interaction term (timelike improvement > spacelike improvement), with
-Euclidean/random as controls.
+**Current results (`N=30`).**
+
+| Metric | Timelike Improvement | Spacelike Improvement | Interaction p-value |
+| --- | ---: | ---: | ---: |
+| Lorentz | +7.1% | -0.7% | 0.040 |
+| Euclidean | +1.5% | -1.1% | 0.278 |
+| Random | +0.4% | -1.8% | 0.452 |
+
+Lorentz is the only metric with a significant one-sided Wilcoxon interaction
+signal (`timelike improvement > spacelike improvement`).
 
 **Interpretation boundary.**
 

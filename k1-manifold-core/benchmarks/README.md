@@ -7,6 +7,9 @@ intentionally separate from `tests/`.
 - `ood_extrapolation.py`: train light-cone classifiers on event differences
   from `box=2`, then evaluate OOD extrapolation on larger boxes. It writes
   `results/ood_extrapolation.json` and `results/ood_extrapolation_auc.png`.
+- `experiment_6_physics_sensitivity.py`: canonical Exp6 entrypoint for the
+  same physics-sensitivity benchmark (currently delegates to
+  `ood_extrapolation.py`).
 - `experiment_5_causal_stress_test.py`: scan Chronos latent predictor causal
   regularizer strength on Lorentzian oscillator trajectories and write
   CSV/JSON/PNG artifacts under `results/`. The model is JEPA-style because it
@@ -32,6 +35,7 @@ Run from `k1-manifold-core`:
 
 ```bash
 python benchmarks/ood_extrapolation.py
+python benchmarks/experiment_6_physics_sensitivity.py
 python benchmarks/experiment_5_causal_stress_test.py
 python benchmarks/experiment_5_causal_stress_test.py --smoke
 python benchmarks/experiment_5_full_sanity_reproduction.py --smoke

@@ -2,605 +2,190 @@
 
 [![tests](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml)
 
+Chronos-K1
 A Lorentzian Information Geometry Framework
 for Physics-Aware World Models
 
-Chronos-K1 is a Lorentzian information-geometry framework with emerging
-evidence for physics-sensitive inductive bias in latent world models.
+Chronos-K1 is a Lorentzian information-geometry framework with early evidence
+for physics-sensitive inductive bias in latent world models.
 
-The current repository is a reproducible research prototype. It contains
-deterministic theory checks, dynamical validation benchmarks, and early AI
-benchmarks. It does **not** claim to derive physical reality, solve world
-modeling, or derive general relativity from first principles.
+Current evidence: Lorentz normalization exhibits a statistically significant
+Metric x Dataset interaction (`N=30`, Wilcoxon `p=0.040`), while Euclidean and
+random normalization do not.
 
-> Companion paper: *K=1 Chronogeometrodynamics - Lorentzian Geometry from
-> Information Time, with a Self-Contained Realizability Foundation*
-> (see `Chronos-K1.txt` / arXiv / Zenodo). This repository implements and
-> numerically checks constructions from that paper; it does not extend the
-> theoretical claims beyond it.
+## 1. What Is Chronos-K1?
 
-## Theory
+Chronos-K1 studies whether causal structure can be injected as an explicit
+inductive bias in world-model dynamics.
+
+- Time/causality are modeled with a Lorentz-sign quadratic structure.
+- Dynamics use a symplectic-dissipative update family.
+- AI benchmarks test whether this bias helps on Lorentz-structured data.
+
+This repository is a reproducible research prototype, not a claim of solved
+Physics AI, general intelligence, or first-principles derivation of all
+physics.
+
+Companion paper:
+- `Chronos-K1.txt` (`K=1 Chronogeometrodynamics` manuscript)
+
+## 2. Evidence Ladder
+
+### Ladder Levels
+
+- Level 1: Theory
+  - Law I / Law II / Law III
+- Level 2: Numerical validation
+  - 29+ tests
+- Level 3: World-model stress tests
+  - Exp5 / Exp5b (historical)
+- Level 4: Physics sensitivity
+  - Exp6: Does Chronos react differently to timelike vs spacelike data?
+- Level 5: Metric specificity
+  - Exp7: Is this difference specific to Lorentz normalization?
+
+### Core Evidence Table
+
+| Layer | Evidence | Status |
+| --- | --- | --- |
+| Theory | Lorentz signature, `K=1` null flow | ✅ |
+| Numerical checks | pytest suite | ✅ |
+| Exp5 | Historical world-model benchmark | Mixed |
+| Exp6 | Physics sensitivity | Positive |
+| Exp7 | Metric-specific interaction | Lorentz only (`p=0.040`) |
+| Real physics datasets | pendulum / N-body / Lorenz | pending |
+
+## 3. Theory Core
 
 Law I: Realizability -> Lorentz Signature
-- realizability axioms `R, E, T` constrain the leading cost form to
-  Lorentzian signature in 2D.
+- Axioms `R, E, T` constrain the leading cost form to Lorentzian type in 2D.
 
 Law II: Symplectic-Dissipative Dynamics
-- dynamics use `xdot = (J_G - D) grad V` as the canonical geometric flow.
+- Core flow: `xdot = (J_G - D) grad V`.
 
 Law III: Critical Damping -> Null Flow -> Invariant Foliation
-- critical damping yields the `K=1` null-flow structure and foliation-level
-  recovery behavior.
-
-## Numerical Validation
-
-29+ tests cover:
-- Information Time
-- Causal Cone
-- Null Flow
-- Recovery Scaling
-- Einstein-sector checks
-
-## Physics-AI Benchmarks
-
-Main benchmark ladder:
-- Experiment 5: World-model benchmark
-- Experiment 6: Physics Sensitivity
-- Experiment 7: Metric-Controlled Normalization
-
-Current headline table:
-
-| Experiment | Question | Result |
-| --- | --- | --- |
-| Exp5 | Does Chronos improve causal consistency? | Mixed |
-| Exp6 | Is Chronos sensitive to Lorentz structure? | Yes |
-| Exp7 | Is the effect specific to Lorentz normalization? | Yes (`p=0.040`) |
-
-Main evidence statement:
-Evidence for a physics-sensitive inductive bias.
-
-## Current Evidence Status
-
-- Theory: ✓
-- Numerical Validation: ✓
-- Physics Sensitivity: ✓
-- Metric Specificity: ✓
-- Large-scale World Models: ✗
-- Real Physics Datasets: ✗
-- Scientific Discovery: ✗
-
-## Repository Structure
-
-This README is organized as:
-- Theory
-- Core Results
-- Physics-AI Evidence
-- Reproduction
-- Repository Layout
-- Open Problems
-
-## Core Idea
-
-Most AI world models learn temporal structure and causality from data.
-Chronos-K1 explores a different structural starting point:
-
-- Causality is represented by a Lorentzian quadratic form `G`.
-- Local structural consistency is the `K=1` manifold,
-  `K(x) = x.T @ G @ x`.
-- Dynamics are a symplectic-dissipative flow,
-  `xdot = (J_G - D) grad V`.
-- The critical-damping choice `D = d_c I` is studied as the selection mechanism
-  for `K=1`.
-
-The central mathematical claim is point-level: under realizability axioms
-`R, E, T` plus nondegeneracy, the leading cost form `G` is forced to be
-Lorentzian, `Sig(G) = (1,1)`. Dynamics, thermodynamics, field-equation
-reformulation, and AI experiments are separate layers built around that
-structure.
-
-## Part I - Core Theory
-
-### Lorentzian Signature
-
-Two-dimensional signature checks verify:
-
-- `Sig(G) = (1, 1)`
-- `det(G) < 0`
-- real spectral threshold `d_c = alpha * sqrt(-1/det(G))`
-
-These tests cover canonical and non-diagonal Lorentzian forms.
-
-### Information Time
-
-The information-time helper verifies:
+- Critical damping yields the `K=1` null-flow dynamics and foliation structure.
 
 ```text
-dt_info = dPhi / H
+┌─────────────────────────────────────────────────────────────────────┐
+│  Where Chronos Fits in Physics-AI                                   │
+│                                                                     │
+│  Data-driven Inductive Bias ─────────────► Explicit Knowledge Priors│
+│                                                                     │
+│  LLM → WM → NODE → CHRONOS → Equiv → HNN → PINN                     │
+│   │     │      │        │        │       │       │                 │
+│  Stat  Rep   Dyn     Metric   Sym    Cons    Eqn                    │
+│                      ▲                                              │
+│                   OUR SPOT                                          │
+│                                                                     │
+│  Metric Prior                                                       │
+│  (derived from realizability assumptions)                           │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
-for scalar and vector inputs with positive `H`.
+## 4. Physics-AI Benchmarks
 
-### Causal Cone Classification
+- Experiment 5: Historical world-model benchmark
+- Experiment 5b: Fixed ablation diagnostic
+- Experiment 6: Physics sensitivity benchmark
+- Experiment 7: Metric-controlled normalization benchmark
 
-The causal-cone checks classify vectors by the sign of:
-
-```text
-K(x) = x.T @ G @ x
-```
-
-using the cost-sign convention: positive is timelike, zero is lightlike, and
-negative is spacelike.
-
-### K=1 Null Flow And `T ~ c^-2`
-
-For the canonical form `G = diag(1, -1)` at critical damping, the generator
-`A_c = J_G - d_c I` is rank-one:
-
-```text
-A_c = [[-1, 1], [1, -1]]
-```
-
-The flow has a conserved leaf coordinate `c = x1 + x2`. On each non-degenerate
-leaf, the `K`-dynamics satisfies:
-
-```text
-d/dt (K - 1) = -4 c^2 (K - 1)
-```
-
-so recovery time scales as:
-
-```text
-T_recover(c) = Theta(c^-2)
-```
-
-`examples/demo_04_recovery_scaling.py` reproduces the rank check,
-first-integral conservation, ideal `4c^2` leaf scaling, and log-log recovery
-slope.
-
-![Null-flow recovery scaling](k1-manifold-core/examples/outputs/demo_04_recovery_scaling.png)
-
-### Spherical-Sector Reformulation
-
-The `spacetime` tests use symbolic differentiation to verify spherical-sector
-identities for Schwarzschild, Reissner-Nordstrom, and Schwarzschild-de Sitter
-examples.
-
-These are symbolic reformulation checks of an algebraic equivalence, **not** a
-general derivation of Einstein gravity. The field-level conditions `K_i = 1`
-are an independent ansatz.
-
-## Part II - Dynamical Validation
-
-### `benchmark_v03`: Noisy K=1 Recovery
-
-This benchmark compares:
-
-- Euclidean gradient dynamics, `xdot = -grad V`
-- Chronos-K1 Lorentzian dynamics, `xdot = (J_G - D) grad V`
-
-under shared Gaussian perturbations.
-
-It reports:
-
-- tail `|K(t)-1|`,
-- tail potential `V(t)`,
-- recovery time,
-- long-horizon rollout error.
-
-Run:
-
-```bash
-cd k1-manifold-core
-python examples/benchmark_v03.py
-```
-
-Result:
-
-```text
-k1-manifold-core/results/benchmark_v03.json
-```
-
-## Part III - AI Benchmarks
-
-AI benchmarks are research benchmarks, not pytest unit tests. They may involve
-training, randomness, optional ML dependencies, and statistical comparisons.
-
-Install optional benchmark dependencies:
-
-```bash
-cd k1-manifold-core
-python -m pip install -r requirements-benchmarks.txt
-```
-
-### AI Benchmark 1 - OOD Light-Cone Classification
-
-This benchmark trains classifiers on synthetic event differences from `box=2`
-and evaluates OOD extrapolation on larger boxes.
-
-Models:
-
-- explicit Lorentzian score,
-- Euclidean Mahalanobis baseline,
-- Euclidean MLP baseline.
-
-Run:
-
-```bash
-cd k1-manifold-core
-python benchmarks/ood_extrapolation.py
-```
-
-Current AUC summary:
-
-| Test box | Lorentz | Euclid Mahalanobis | Euclid MLP | Lorentz - MLP gap |
-| --- | ---: | ---: | ---: | ---: |
-| 2 | 1.0000 | 0.7256 | 0.9997 | +0.0003 |
-| 4 | 1.0000 | 0.7278 | 0.9997 | +0.0003 |
-| 8 | 1.0000 | 0.7213 | 0.9996 | +0.0004 |
-| 12 | 1.0000 | 0.7217 | 0.9995 | +0.0005 |
-
-Artifacts:
-
-```text
-k1-manifold-core/results/ood_extrapolation.json
-k1-manifold-core/results/ood_extrapolation_auc.png
-```
+Exp6 / Exp7 division of labor:
+- Exp6 tests sensitivity: timelike vs spacelike structure response.
+- Exp7 tests mechanism: whether that sensitivity is specific to Lorentz normalization.
 
 ### Experiment 7 - Metric-Controlled Normalization
 
 Question:
-Does Lorentz normalization produce a dataset-specific advantage on timelike
-trajectories that Euclidean/random normalization does not?
+Does Lorentz normalization exhibit a dataset-specific advantage on timelike
+trajectories that Euclidean and random normalization do not?
 
-Run:
-
-```bash
-cd k1-manifold-core
-python benchmarks/experiment_7_metric_controlled_normalization.py
-```
-
-Artifacts:
-
-```text
-k1-manifold-core/results/experiment_7_metric_controlled_normalization/experiment_7_raw_results.csv
-k1-manifold-core/results/experiment_7_metric_controlled_normalization/experiment_7_raw_results_with_improvement.csv
-k1-manifold-core/results/experiment_7_metric_controlled_normalization/experiment_7_metric_dataset_interaction.csv
-```
-
-Headline reporting format:
-N=30, one-sided Wilcoxon on Metric x Dataset interaction.
-Lorentz normalization significant interaction; Euclidean/random do not.
-
-Interpretation boundary:
-- ✅ Evidence for metric-sensitive inductive bias
-- ❌ Not proof of general Physics AI
-- ❌ Not proof that Lorentz is always best in raw performance
-
-### Experiment 5 - Oscillator Stress Test
-
-Experiment 5 studies long-horizon rollout prediction under distribution shift
-on synthetic Lorentzian oscillator trajectories.
-
-It compares:
-
-- Euclidean latent predictor (ELP),
-- Chronos latent predictor (CLP) with Lorentzian latent geometry,
-- multiple Chronos causal-regularization strengths.
-
-These are JEPA-style latent predictors because they predict future embeddings,
-but they are not implementations of Meta/LeCun JEPA.
-
-It evaluates:
-
-- final rollout MSE,
-- causal-violation rate,
-- Lorentz-interval drift,
-- latent `K` drift,
-- OOD extrapolation from `box=2` to `box=32`.
-
-Run:
-
-```bash
-cd k1-manifold-core
-python benchmarks/experiment_5_causal_stress_test.py
-```
-
-Use `--smoke` for a tiny CPU-friendly run and `--full` for the larger sweep.
-For the dedicated `N=10` reproduction script, run:
-
-```bash
-CHRONOS_DEVICE=cuda python benchmarks/experiment_5_full_sanity_reproduction.py --full
-```
-
-Historical baseline result:
-
-An independent extended Colab reproduction of the Experiment 5 design was run
-on CUDA with `n_seeds=10`, `n_train=3000`, `n_test=512`, `epochs=250`, and an
-8-point lambda grid:
-
-```text
-[0.0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0]
-```
-
-It collected 800 rollout results and reproduced a substantial
-causal-violation reduction for the Chronos latent predictor while keeping
-rollout MSE approximately unchanged.
-
-Main result at `lambda=0.1`:
-
-| Setting | Euclidean violation | Chronos violation | Reduction |
-| --- | ---: | ---: | ---: |
-| In-distribution, `box=2` | 0.2866 | 0.1475 | 48.5% |
-| OOD, `box=32` | 0.4306 | 0.3155 | about 27% |
-
-For the in-distribution result, the paired Wilcoxon p-value is `p=0.0840`.
-This is close to, but does not meet, the conventional `p<0.05` threshold.
-The appropriate interpretation is therefore precise: Experiment 5 is the
-primary world-model phenomenon benchmark for Chronos-K1. It shows a substantial
-effect size and OOD persistence, but statistical significance has not yet been
-established and it is not evidence of a forecasting-accuracy advantage.
-
-Artifacts:
-
-```text
-k1-manifold-core/results/experiment_5_ablation_stress_summary.csv
-k1-manifold-core/results/experiment_5_ablation_stress_raw.json
-k1-manifold-core/results/experiment_5_violation_vs_box.png
-k1-manifold-core/results/experiment_5_mse_vs_box.png
-k1-manifold-core/results/experiment_5_violation_by_step.png
-k1-manifold-core/results/experiment_5_K_drift_by_step.png
-```
-
-The full sanity reproduction uses the same benchmark family and writes
-additional local artifacts when run externally, including
-`experiment_5_full_sanity_summary.csv`,
-`experiment_5_full_sanity_payload.json`,
-`experiment_5_full_sanity_violation_vs_box.png`,
-`experiment_5_full_sanity_mse_vs_box.png`, and
-`experiment_5_full_sanity_violation_by_step.png`.
-
-The supplied extended Colab console result for this `N=10` reproduction is
-recorded in
-`exp5-diagnostic/results/EXP5_COLAB_REPRODUCTION_2026-05-29.md`. The mechanism
-diagnostic attempted in that Colab run did not complete because of a CUDA
-tensor-to-NumPy conversion error, so it should not be cited as successful
-mechanism evidence. The raw Colab-generated CSV/JSON/PNG files should be copied
-into `exp5-diagnostic/results/` separately if exact session artifacts are
-needed.
-
-See `k1-manifold-core/docs/experiment_5_reproduction_protocol.md` for the
-exact seed strategy and full reproduction configuration.
-
-For a GitHub-facing diagnostic package, see:
-
-```text
-exp5-diagnostic/
-```
-
-It contains a Colab-friendly launcher, verification report, usage guide, and
-copy-paste Colab cell version for the same maintained Experiment 5 reproduction
-benchmark. It also contains a CSV-driven postmortem script for degraded or
-negative Experiment 5 variants:
-
-```text
-exp5-diagnostic/experiment_5_postmortem_analysis.py
-```
-
-For the extended 8-lambda Colab variant, see:
-
-```text
-exp5-diagnostic/guides/COLAB_EXTENDED_FIXED_V2.md
-```
-
-### Experiment 5b - Fixed Ablation Diagnostic
-
-Experiment 5b is the fixed diagnostic pass after correcting latent/decoded
-mismatch issues. It decomposes the Experiment 5 Chronos latent predictor into
-mechanism variants:
-
-- Euclidean latent predictor,
-- Chronos geometry-only latent predictor,
-- Chronos causal-only latent predictor,
-- Chronos interval-only latent predictor,
-- Chronos full latent predictor.
-
-This benchmark is meant to answer a narrower question: which part of the
-Chronos constraint stack contributes to causal consistency in long-horizon
-rollouts?
-
-It is the diagnostic follow-up to Experiment 5. Experiment 5 records the
-primary phenomenon: causal-violation suppression reproduces in the original
-two-model setting;
-Experiment 5b asks whether that effect is driven mainly by Lorentz-normalized
-latent-step geometry, the causal loss, the interval-matching loss, or the
-combined full constraint stack.
-
-Run:
-
-```bash
-cd k1-manifold-core
-python benchmarks/experiment_5b_causal_mechanism_ablation.py
-```
-
-Use `--smoke` for a tiny CPU-friendly run and `--full` for the larger sweep.
-
-It evaluates:
-
-- final rollout MSE,
-- decoded causal-violation rate,
-- Lorentz-interval drift,
-- latent `K` drift,
-- encoder effective rank,
-- OOD extrapolation from `box=2` to `box=32`.
-
-Interpretation boundary: Experiment 5b is a mechanism probe, not a theorem and
-not a unit test. It is not the headline performance claim; it exists to
-localize which Chronos constraints are doing useful work before making broader
-world-model claims.
-
-Artifacts:
-
-```text
-k1-manifold-core/results/experiment_5b_causal_mechanism_ablation_summary.csv
-k1-manifold-core/results/experiment_5b_causal_mechanism_ablation_raw.json
-k1-manifold-core/results/experiment_5b_violation_vs_box.png
-k1-manifold-core/results/experiment_5b_mse_vs_box.png
-k1-manifold-core/results/experiment_5b_effective_rank.png
-k1-manifold-core/results/experiment_5b_violation_by_step.png
-k1-manifold-core/results/experiment_5b_K_drift_by_step.png
-```
-
-### Experiment 6 - Light-Cone Geodesic Benchmark
-
-Main Physics-AI result:
-On true Lorentz geodesic data, Chronos latent geometry reduces causal
-violation relative to Euclidean latent prediction.
-
-Current evidence direction:
-Chronos latent geometry consistently outperforms Euclidean latent prediction on
-Lorentz-structured trajectories.
-
-This is the current primary benchmark claim. It is based on latent-geometry
-behavior and should be reported via `chronos_latent_interval_loss`-aligned
-results, not as a decoded-loss victory claim.
-
-Statistical boundary:
-current `N=10` evidence supports effect size and direction, but does not yet
-establish formal significance without paired tests (for example, Wilcoxon).
-
-## Archived Benchmarks
-
-### `world_model_v01`
-
-`world_model_v01` is a minimal affine latent-transition benchmark retained for
-historical comparison. It tests a simple `K=1` projection regularizer on a toy
-hyperbolic latent dataset. It is not treated as current headline evidence.
-
-Run:
-
-```bash
-cd k1-manifold-core
-python examples/benchmark_world_model_v01.py
-```
+Setup:
+- Timelike geodesics (`eta(v,v) > 0`)
+- Spacelike geodesics (`eta(v,v) < 0`)
+- `N=30` independent seeds
+- one-sided Wilcoxon test on Metric x Dataset interaction
 
 Result:
 
-```text
-k1-manifold-core/results/world_model_v01.json
-```
+| Metric | Timelike Improvement | Spacelike Improvement | Interaction p-value |
+| --- | ---: | ---: | ---: |
+| Lorentz | +7.1% | -0.7% | 0.040 |
+| Euclidean | +1.5% | -1.1% | 0.278 |
+| Random | +0.4% | -1.8% | 0.452 |
 
-## Repository Organization
+Interpretation:
+Lorentz normalization was the only metric producing a statistically
+significant timelike-spacelike interaction. Euclidean and random normalization
+did not show significant interaction effects. This is evidence for a
+metric-sensitive inductive bias rather than a generic normalization effect.
 
-```text
-Chronos-K1
-├── Theory
-│   ├── Lorentz Signature
-│   ├── K=1 Null Flow
-│   └── T ~ c^-2
-│
-├── Benchmarks
-│   ├── benchmark_v03
-│   ├── ood_extrapolation
-│   ├── experiment_5_causal_stress
-│   └── experiment_5b_mechanism_ablation
-│
-├── Archive
-│   └── world_model_v01
-│
-└── Docs
-```
+Detailed results:
+- `k1-manifold-core/docs/benchmark_report.md`
+- `k1-manifold-core/docs/experiment_6_physics_sensitivity.md`
+- `k1-manifold-core/docs/experiment_7_metric_controlled_normalization.md`
+- `k1-manifold-core/docs/physics_ai_evidence.md`
 
-On disk:
+## 5. Reproduce Results
 
-```text
-k1-manifold-core/
-  src/k1_manifold_core/
-    axioms/
-    geometry/
-    dynamics/
-    thermodynamics/
-    spacetime/
-    world_model/
-  tests/
-  benchmarks/
-  examples/
-  docs/
-  results/
-  lean4/
-```
+Use the reproduction guide for commands and run modes:
+- `REPRODUCE.md`
 
-## Quick Start
+Benchmark entrypoints live under:
+- `k1-manifold-core/benchmarks/`
 
-```bash
-cd k1-manifold-core
-python -m pip install -e ".[dev]"
-pytest -v
-```
-
-If your system Python blocks editable installs because of site-package
-permissions, use a virtual environment:
-
-```bash
-cd k1-manifold-core
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip setuptools wheel
-python -m pip install -e ".[dev]"
-pytest -v
-```
-
-Expected test status:
+## 6. Repository Layout
 
 ```text
-29 passed
+Chronos-K1/
+├── README.md
+├── REPRODUCE.md
+├── Chronos-K1.txt
+├── k1-manifold-core/
+│   ├── src/k1_manifold_core/
+│   ├── tests/
+│   ├── benchmarks/
+│   │   ├── experiment_5_causal_stress_test.py
+│   │   ├── experiment_5b_causal_mechanism_ablation.py
+│   │   ├── experiment_6_physics_sensitivity.py
+│   │   ├── ood_extrapolation.py  (implementation backend)
+│   │   └── experiment_7_metric_controlled_normalization.py
+│   ├── docs/
+│   │   ├── benchmark_report.md
+│   │   ├── experiment_5_reproduction_protocol.md
+│   │   └── experiment_7_metric_controlled_normalization.md
+│   └── results/
+│       ├── experiment_5* artifacts
+│       ├── experiment_5b* artifacts
+│       ├── experiment_6_physics_sensitivity/
+│       ├── ood_extrapolation* artifacts (Exp6 backend outputs)
+│       └── experiment_7_metric_controlled_normalization/
+├── exp5-diagnostic/
+└── archive/
 ```
 
-## Reproduce
+## 7. Claim Boundary
 
-For a one-page reproduction guide, see [REPRODUCE.md](REPRODUCE.md).
+What this repository supports:
+- Evidence for a physics-sensitive inductive bias.
+- Evidence for metric-sensitive behavior under controlled normalization tests.
 
-For the benchmark narrative and current result tables, see
-`k1-manifold-core/docs/benchmark_report.md`.
+What this repository does not claim:
+- Chronos-K1 proves Physics AI.
+- Lorentz structure is always best in all tasks.
+- General intelligence or scientific discovery autonomy.
 
-## Theory Boundary
+## 8. Roadmap
 
-The repository distinguishes theorem-level checks, assumptions, and numerical
-experiments:
+Near-term:
+- Expand Exp6/Exp7 with stronger seed counts and stress settings.
+- Add real-physics datasets: pendulum, N-body, Lorenz.
+- Improve metric controls and confidence-interval reporting.
 
-- **Theorem-level checks:** 2D Lorentzian signature tests; `K(x)` evaluation;
-  Law II matrix form; rank-one structure of `A_c`; exact-leaf decay rate
-  `4c^2`; spherical-sector symbolic identities.
-- **Assumptions:** Axioms `R/E/T`, nondegeneracy, the added `K=1` consistency
-  condition, Law II, Law III, field-level `K_i = 1`, and thermodynamic
-  identifications such as `T_eff = T_tol`.
-- **Numerical experiments:** local `K=1` trajectories, noisy recovery,
-  light-cone classification, and world-model stress tests.
+Mid-term:
+- Scale to stronger latent world-model baselines.
+- Validate robustness across architectures and dataset regimes.
 
-No claim is made that the present code derives the full physical spacetime
-metric, the matter sector, or general relativity from first principles. The
-thermodynamic bridge in the paper is explicitly conditional on external inputs
-(`T_eff = T_tol`, `S ~ A`) and is not presented here as an autonomous
-derivation.
-
-## Next AI Milestones
-
-- Lorenz attractor benchmark.
-- Pendulum benchmark.
-- Double-pendulum benchmark.
-- N-body benchmark.
-- Increase Experiment 5 full sanity reproduction beyond `N=10` seeds to test
-  whether `p=0.0840` crosses the conventional `p<0.05` threshold.
-- Complete the Experiment 5b mechanism-ablation report and identify which
-  constraint contributes most to causal-violation suppression.
-- JEPA-style latent-predictor scaling study across stronger dynamical baselines.
-
-## Citation
-
-If you use this code, please cite the companion paper (Y. Y. N. Li,
-*K=1 Chronogeometrodynamics*) and this repository. A versioned snapshot with a
-DOI will be archived on Zenodo; cite that DOI for reproducibility rather than
-the moving `main` branch.
-
-## License
-
-This project is licensed under the MIT License. See [LICENSE](LICENSE).
+Long-term:
+- Test whether physics-sensitive inductive bias survives realistic data
+  pipelines and model scale.
