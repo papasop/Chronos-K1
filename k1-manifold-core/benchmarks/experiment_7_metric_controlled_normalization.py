@@ -1,10 +1,11 @@
 """
 EXPERIMENT 7: METRIC-CONTROLLED NORMALIZATION TEST
+Fixed version for Colab - handles both script and interactive execution
 """
 
-import argparse
 import sys
 from pathlib import Path
+import os
 
 import numpy as np
 import pandas as pd
@@ -12,17 +13,85 @@ import torch
 import torch.nn as nn
 from scipy import stats
 
-ROOT = Path(__file__).resolve().parents[1]
+# ============================================================================
+# COLAB DETECTION AND PATH SETUP
+# ============================================================================
+
+def is_colab():
+    """Detect if running in Colab environment."""
+    try:
+        from google.colab import drive
+        return True
+    except ImportError:
+        return False
+
+def get_root_dir():
+    """Get root directory, handling both script and interactive execution."""
+    try:
+        # In a script
+        return Path(__file__).resolve().parents[1]
+    except NameError:
+        # In Jupyter/Colab/IPython interactive environment
+        current_dir = Path.cwd()
+        
+        # Look for k1-manifold-core directory
+        if (current_dir / "k1-manifold-core").exists():
+            return current_dir / "k1-manifold-core"
+        elif (current_dir.parent / "k1-manifold-core").exists():
+            return current_dir.parent / "k1-manifold-core"
+        elif "k1-manifold-core" in str(current_dir):
+            # Already inside k1-manifold-core
+            return current_dir
+        else:
+            # Default: assume we're in the right place
+            print(f"⚠️  Warning: Could not determine root directory. Using current directory: {current_dir}")
+            return current_dir
+
+
+ROOT = get_root_dir()
 SRC = ROOT / "src"
+
+# Add to path
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from k1_manifold_core.benchmark_datasets import (
-    make_spacelike_dataset,
-    make_timelike_dataset,
-)
+print(f"✓ ROOT: {ROOT}")
+print(f"✓ SRC:  {SRC}")
+print(f"✓ Path setup complete")
+if is_colab():
+    print(f"✓ Running in Colab environment\n")
+else:
+    print(f"✓ Running in local environment\n")
+
+# ============================================================================
+# IMPORT BENCHMARK DATASETS
+# ============================================================================
+
+try:
+    from k1_manifold_core.benchmark_datasets import (
+        make_spacelike_dataset,
+        make_timelike_dataset,
+    )
+    print("✓ Successfully imported benchmark_datasets from k1_manifold_core\n")
+except ImportError as e:
+    print(f"❌ Import error: {e}")
+    print("\nPlease ensure you have:")
+    print("  1. Cloned the Chronos-K1 repository")
+    print("  2. Run: pip install -e 'k1-manifold-core/[dev]'")
+    print("  3. Set current directory to k1-manifold-core")
+    sys.exit(1)
+
+# ============================================================================
+# SETUP RESULTS DIRECTORY
+# ============================================================================
+
 RESULTS_DIR = ROOT / "results" / "experiment_7_metric_controlled_normalization"
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+print(f"✓ Results directory: {RESULTS_DIR}\n")
+
+# ============================================================================
+# EXPERIMENT CONFIGURATION
+# ============================================================================
 
 DIM = 4
 LATENT_DIM = 16
@@ -39,6 +108,15 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 torch.set_num_threads(2)
 
+print(f"Configuration:")
+print(f"  DIM={DIM}, LATENT_DIM={LATENT_DIM}, WIDTH={WIDTH}")
+print(f"  N_TRAIN={N_TRAIN}, N_TEST={N_TEST}")
+print(f"  N_SEEDS={N_SEEDS}, EPOCHS={EPOCHS}")
+print(f"  DEVICE={DEVICE}\n")
+
+# ============================================================================
+# MODEL DEFINITIONS
+# ============================================================================
 
 class Encoder(nn.Module):
     def __init__(self, dim, k, width):
@@ -67,6 +145,7 @@ class Decoder(nn.Module):
 
 
 class ChronosLorentz(nn.Module):
+    """Chronos with Lorentz metric normalization."""
     def __init__(self, dim, k, width):
         super().__init__()
         self.enc = Encoder(dim, k, width)
@@ -107,6 +186,7 @@ class ChronosLorentz(nn.Module):
 
 
 class ChronosEuclidean(nn.Module):
+    """Chronos with Euclidean metric normalization (control)."""
     def __init__(self, dim, k, width):
         super().__init__()
         self.enc = Encoder(dim, k, width)
@@ -144,6 +224,7 @@ class ChronosEuclidean(nn.Module):
 
 
 class ChronosRandom(nn.Module):
+    """Chronos with random metric (control)."""
     def __init__(self, dim, k, width, seed=42):
         super().__init__()
         self.enc = Encoder(dim, k, width)
@@ -185,6 +266,7 @@ class ChronosRandom(nn.Module):
 
 
 class EuclideanBaseline(nn.Module):
+    """Baseline: Euclidean prediction without metric normalization."""
     def __init__(self, dim, k, width):
         super().__init__()
         self.enc = Encoder(dim, k, width)
@@ -214,22 +296,30 @@ class EuclideanBaseline(nn.Module):
         return torch.stack(xs, dim=1)
 
 
+# ============================================================================
+# UTILITY FUNCTIONS
+# ============================================================================
+
 def np_lorentz_interval(dz):
+    """Lorentz interval: η(v,v) = v₀² - ||v_s||²"""
     return dz[..., 0] ** 2 - np.sum(dz[..., 1:] ** 2, axis=-1)
 
 
 def make_pairs(trajs):
+    """Convert trajectories into (x_t, x_{t+1}) pairs for training."""
     x_t = trajs[:, :-1, :]
     x_next = trajs[:, 1:, :]
     return x_t.reshape(-1, DIM).astype(np.float32), x_next.reshape(-1, DIM).astype(np.float32)
 
 
 def causal_violation_rate(traj):
+    """Fraction of steps where Lorentz interval is negative (causal violation)."""
     delta = traj[:, 1:, :] - traj[:, :-1, :]
     return np.mean(np_lorentz_interval(delta) < 0.0)
 
 
 def train_model(model, x_train_np, y_train_np, epochs):
+    """Train a model on (x, y) prediction task."""
     model.to(DEVICE)
     x_train = torch.tensor(x_train_np, dtype=torch.float32, device=DEVICE)
     y_train = torch.tensor(y_train_np, dtype=torch.float32, device=DEVICE)
@@ -251,6 +341,7 @@ def train_model(model, x_train_np, y_train_np, epochs):
 
 
 def eval_model(model, trajs):
+    """Evaluate model on test trajectories."""
     model.eval()
     x0 = torch.tensor(trajs[:, T_OBS, :], dtype=torch.float32, device=DEVICE)
     with torch.no_grad():
@@ -258,7 +349,12 @@ def eval_model(model, trajs):
     return causal_violation_rate(pred)
 
 
-def run_experiment_7(n_seeds, epochs):
+# ============================================================================
+# EXPERIMENT 7: MAIN TEST
+# ============================================================================
+
+def run_experiment_7(n_seeds, epochs, verbose=True):
+    """Run metric-controlled normalization test across all models and datasets."""
     datasets = {"timelike": make_timelike_dataset, "spacelike": make_spacelike_dataset}
     models = {
         "euclidean_baseline": EuclideanBaseline,
@@ -267,18 +363,31 @@ def run_experiment_7(n_seeds, epochs):
         "chronos_random": ChronosRandom,
     }
     raw = []
+    
+    total_runs = len(datasets) * len(models) * n_seeds
+    run_count = 0
+    
     for dname, dgen in datasets.items():
         for mname, mcls in models.items():
             for seed in range(n_seeds):
+                run_count += 1
+                if verbose and run_count % 10 == 0:
+                    print(f"  Progress: {run_count}/{total_runs}")
+                
+                # Generate training data
                 train_rng = np.random.default_rng(50000 + seed)
                 train_trajs = dgen(N_TRAIN, T_TOTAL, DIM, train_rng, box=TEST_BOX)
                 x_train, y_train = make_pairs(train_trajs)
 
+                # Initialize and train model
                 torch.manual_seed(seed)
                 np.random.seed(seed)
-                model = mcls(DIM, LATENT_DIM, WIDTH, seed=seed) if mname == "chronos_random" else mcls(DIM, LATENT_DIM, WIDTH)
+                model = (mcls(DIM, LATENT_DIM, WIDTH, seed=seed) 
+                        if mname == "chronos_random" 
+                        else mcls(DIM, LATENT_DIM, WIDTH))
                 model = train_model(model, x_train, y_train, epochs=epochs)
 
+                # Evaluate on test data
                 test_rng = np.random.default_rng(60000 + seed)
                 test_trajs = dgen(N_TEST, T_TOTAL, DIM, test_rng, box=TEST_BOX)
                 raw.append({
@@ -287,10 +396,12 @@ def run_experiment_7(n_seeds, epochs):
                     "seed": seed,
                     "violation": eval_model(model, test_trajs),
                 })
+    
     return pd.DataFrame(raw)
 
 
 def analyze_exp7(raw_df):
+    """Analyze results: compute improvements and test for interaction."""
     baselines = {}
     for dataset in raw_df["dataset"].unique():
         b = raw_df[(raw_df["dataset"] == dataset) & (raw_df["model"] == "euclidean_baseline")]["violation"].values
@@ -318,19 +429,69 @@ def analyze_exp7(raw_df):
     return out, pd.DataFrame(rows)
 
 
-if __name__ == "__main__":
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--smoke", action="store_true")
-    args = ap.parse_args()
+# ============================================================================
+# MAIN ENTRY POINT - HANDLES BOTH SCRIPT AND INTERACTIVE
+# ============================================================================
 
-    seeds = 4 if args.smoke else N_SEEDS
-    epochs = 3 if args.smoke else EPOCHS
+def main(n_seeds=N_SEEDS, epochs=EPOCHS, verbose=True):
+    """Main function - can be called from Colab or as a script."""
+    print(f"{'='*70}")
+    print(f"EXPERIMENT 7: METRIC-CONTROLLED NORMALIZATION TEST")
+    print(f"{'='*70}")
+    print(f"Device: {DEVICE}")
+    print(f"Seeds:  {n_seeds}")
+    print(f"Epochs: {epochs}")
+    print(f"{'='*70}\n")
 
-    print(f"EXPERIMENT 7: device={DEVICE} seeds={seeds} epochs={epochs}")
-    raw_df = run_experiment_7(seeds, epochs)
+    # Run experiment
+    if verbose:
+        print("Running experiment...")
+    raw_df = run_experiment_7(n_seeds, epochs, verbose=verbose)
     raw_df.to_csv(RESULTS_DIR / "experiment_7_raw_results.csv", index=False)
+    if verbose:
+        print(f"✓ Saved: {RESULTS_DIR / 'experiment_7_raw_results.csv'}\n")
 
+    # Analyze results
+    if verbose:
+        print("Analyzing results...")
     out_df, interaction_df = analyze_exp7(raw_df)
     out_df.to_csv(RESULTS_DIR / "experiment_7_raw_results_with_improvement.csv", index=False)
     interaction_df.to_csv(RESULTS_DIR / "experiment_7_metric_dataset_interaction.csv", index=False)
-    print(interaction_df)
+    
+    if verbose:
+        print(f"✓ Saved: {RESULTS_DIR / 'experiment_7_raw_results_with_improvement.csv'}")
+        print(f"✓ Saved: {RESULTS_DIR / 'experiment_7_metric_dataset_interaction.csv'}\n")
+        
+        print("RESULTS:")
+        print(interaction_df.to_string(index=False))
+        print(f"\n{'='*70}")
+        print("ANALYSIS COMPLETE")
+        print(f"{'='*70}")
+    
+    return raw_df, out_df, interaction_df
+
+
+# ============================================================================
+# SCRIPT EXECUTION (when run as a script)
+# ============================================================================
+
+if __name__ == "__main__":
+    # For Colab compatibility: ignore unknown arguments
+    if is_colab():
+        # In Colab, just run with defaults
+        main(n_seeds=N_SEEDS, epochs=EPOCHS, verbose=True)
+    else:
+        # In script mode, try to parse arguments
+        import argparse
+        ap = argparse.ArgumentParser()
+        ap.add_argument("--smoke", action="store_true", help="Quick smoke test (4 seeds, 3 epochs)")
+        ap.add_argument("--seeds", type=int, default=N_SEEDS, help=f"Number of seeds (default: {N_SEEDS})")
+        ap.add_argument("--epochs", type=int, default=EPOCHS, help=f"Number of epochs (default: {EPOCHS})")
+        
+        # Handle unknown args for Colab (ignore them)
+        args, unknown = ap.parse_known_args()
+        
+        seeds = 4 if args.smoke else args.seeds
+        epochs = 3 if args.smoke else args.epochs
+        
+        main(n_seeds=seeds, epochs=epochs, verbose=True)
