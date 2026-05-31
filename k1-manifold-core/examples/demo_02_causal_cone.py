@@ -18,7 +18,8 @@ import numpy as np
 def main() -> None:
     output_dir = Path(__file__).resolve().parent / "outputs"
     output_dir.mkdir(exist_ok=True)
-    output_path = output_dir / "demo_02_causal_cone.png"
+    output_png = output_dir / "demo_02_causal_cone.png"
+    output_svg = output_dir / "demo_02_causal_cone.svg"
 
     t = np.linspace(-2.0, 2.0, 401)
     x = np.linspace(-2.0, 2.0, 401)
@@ -38,14 +39,23 @@ def main() -> None:
     ax.grid(True, alpha=0.25)
     ax.legend(loc="upper right")
     fig.tight_layout()
-    fig.savefig(output_path, dpi=160)
+    fig.savefig(output_png, dpi=300)
+    fig.savefig(output_svg)
     plt.close(fig)
+
+    timelike_count = int(np.sum(K > 1e-9))
+    lightlike_count = int(np.sum(np.abs(K) <= 1e-9))
+    spacelike_count = int(np.sum(K < -1e-9))
 
     print("G = diag(1, -1)")
     print("timelike: K > 0")
     print("lightlike: K = 0")
     print("spacelike: K < 0")
-    print(f"saved figure = {output_path}")
+    print(f"Timelike : {timelike_count}")
+    print(f"Lightlike: {lightlike_count}")
+    print(f"Spacelike: {spacelike_count}")
+    print(f"saved png = {output_png}")
+    print(f"saved svg = {output_svg}")
 
 
 if __name__ == "__main__":

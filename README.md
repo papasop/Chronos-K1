@@ -1,6 +1,7 @@
 # Chronos-K1
 
 [![tests](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/papasop/Chronos-K1/blob/main/colab/chronos_k1_quickstart.ipynb)
 
 Chronos-K1
 A Lorentzian Information Geometry Framework
@@ -82,6 +83,9 @@ Law III: Critical Damping -> Null Flow -> Invariant Foliation
 │  (derived from realizability assumptions)                           │
 └─────────────────────────────────────────────────────────────────────┘
 ```
+
+Positioning diagram asset:
+- `k1-manifold-core/docs/chronos_positioning.svg`
 
 ## 4. Physics-AI Benchmarks
 

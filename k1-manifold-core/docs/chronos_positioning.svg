@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320">
+  <rect width="1200" height="320" fill="#ffffff"/>
+  <text x="30" y="42" font-size="28" font-family="Arial" fill="#111">Where Chronos Fits in Physics-AI</text>
+  <text x="30" y="78" font-size="16" font-family="Arial" fill="#444">Data-driven Inductive Bias → Explicit Knowledge Priors</text>
+  <text x="30" y="145" font-size="28" font-family="Arial" fill="#111">LLM → WM → NODE → CHRONOS → Equiv → HNN → PINN</text>
+  <text x="42" y="185" font-size="16" font-family="Arial" fill="#555">Stat    Rep      Dyn        Metric       Sym      Cons      Eqn</text>
+  <line x1="458" y1="210" x2="458" y2="250" stroke="#000" stroke-width="2"/>
+  <polygon points="458,250 450,238 466,238" fill="#000"/>
+  <text x="395" y="280" font-size="22" font-family="Arial" fill="#111">Metric Prior</text>
+  <text x="30" y="305" font-size="14" font-family="Arial" fill="#666">Metric prior: geometry-aware normalization constrains latent updates.</text>
+</svg>
