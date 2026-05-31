@@ -22,6 +22,11 @@ intentionally separate from `tests/`.
   and Chronos full latent-predictor variants. It writes summary CSV, raw JSON,
   and diagnostic PNG artifacts under `results/`. This is the mechanism
   diagnostic benchmark.
+- `experiment_7_metric_controlled_normalization.py`: metric-controlled
+  normalization benchmark with a Metric x Dataset interaction test on timelike
+  vs spacelike trajectories. It writes per-seed raw results and interaction
+  statistics under
+  `results/experiment_7_metric_controlled_normalization/`.
 
 Run from `k1-manifold-core`:
 
@@ -31,6 +36,7 @@ python benchmarks/experiment_5_causal_stress_test.py
 python benchmarks/experiment_5_causal_stress_test.py --smoke
 python benchmarks/experiment_5_full_sanity_reproduction.py --smoke
 python benchmarks/experiment_5b_causal_mechanism_ablation.py --smoke
+python benchmarks/experiment_7_metric_controlled_normalization.py
 ```
 
 These benchmarks currently require PyTorch in addition to the core scientific

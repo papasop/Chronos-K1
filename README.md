@@ -2,9 +2,11 @@
 
 [![tests](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml)
 
-Chronos-K1 is a Lorentzian structural dynamics framework in which time is
-modeled as the cost of structural change and causal structure is encoded
-directly into the geometry of a state space.
+A Lorentzian Information Geometry Framework
+for Physics-Aware World Models
+
+Chronos-K1 is a Lorentzian information-geometry framework with emerging
+evidence for physics-sensitive inductive bias in latent world models.
 
 The current repository is a reproducible research prototype. It contains
 deterministic theory checks, dynamical validation benchmarks, and early AI
@@ -17,29 +19,65 @@ modeling, or derive general relativity from first principles.
 > numerically checks constructions from that paper; it does not extend the
 > theoretical claims beyond it.
 
-## Project Structure
+## Theory
 
-Chronos-K1 currently contains three active layers plus one archive layer:
+Law I: Realizability -> Lorentz Signature
+- realizability axioms `R, E, T` constrain the leading cost form to
+  Lorentzian signature in 2D.
 
-1. **Theory**
-   - Lorentzian Signature Theorem
-   - Information time, `dt_info = dPhi / H`
-   - `K=1` null flow
-   - recovery-time scaling, `T ~ c^-2`
+Law II: Symplectic-Dissipative Dynamics
+- dynamics use `xdot = (J_G - D) grad V` as the canonical geometric flow.
 
-2. **Dynamical Benchmarks**
-   - `benchmark_v03`: noisy `K=1` recovery under Euclidean and Chronos-K1
-     dynamics
+Law III: Critical Damping -> Null Flow -> Invariant Foliation
+- critical damping yields the `K=1` null-flow structure and foliation-level
+  recovery behavior.
 
-3. **AI Benchmarks**
-   - OOD light-cone classification
-   - world-model causality stress test, Experiment 5
-   - causal mechanism ablation, Experiment 5b
-   - public Exp 5 diagnostic package, `exp5-diagnostic/`
+## Numerical Validation
 
-4. **Archive**
-   - `world_model_v01`: minimal affine latent-transition prototype retained for
-     historical comparison
+29+ tests cover:
+- Information Time
+- Causal Cone
+- Null Flow
+- Recovery Scaling
+- Einstein-sector checks
+
+## Physics-AI Benchmarks
+
+Main benchmark ladder:
+- Experiment 5: World-model benchmark
+- Experiment 6: Physics Sensitivity
+- Experiment 7: Metric-Controlled Normalization
+
+Current headline table:
+
+| Experiment | Question | Result |
+| --- | --- | --- |
+| Exp5 | Does Chronos improve causal consistency? | Mixed |
+| Exp6 | Is Chronos sensitive to Lorentz structure? | Yes |
+| Exp7 | Is the effect specific to Lorentz normalization? | Yes (`p=0.040`) |
+
+Main evidence statement:
+Evidence for a physics-sensitive inductive bias.
+
+## Current Evidence Status
+
+- Theory: ✓
+- Numerical Validation: ✓
+- Physics Sensitivity: ✓
+- Metric Specificity: ✓
+- Large-scale World Models: ✗
+- Real Physics Datasets: ✗
+- Scientific Discovery: ✗
+
+## Repository Structure
+
+This README is organized as:
+- Theory
+- Core Results
+- Physics-AI Evidence
+- Reproduction
+- Repository Layout
+- Open Problems
 
 ## Core Idea
 
@@ -208,7 +246,37 @@ k1-manifold-core/results/ood_extrapolation.json
 k1-manifold-core/results/ood_extrapolation_auc.png
 ```
 
-### AI Benchmark 2 - Primary World-Model Phenomenon Benchmark
+### Experiment 7 - Metric-Controlled Normalization
+
+Question:
+Does Lorentz normalization produce a dataset-specific advantage on timelike
+trajectories that Euclidean/random normalization does not?
+
+Run:
+
+```bash
+cd k1-manifold-core
+python benchmarks/experiment_7_metric_controlled_normalization.py
+```
+
+Artifacts:
+
+```text
+k1-manifold-core/results/experiment_7_metric_controlled_normalization/experiment_7_raw_results.csv
+k1-manifold-core/results/experiment_7_metric_controlled_normalization/experiment_7_raw_results_with_improvement.csv
+k1-manifold-core/results/experiment_7_metric_controlled_normalization/experiment_7_metric_dataset_interaction.csv
+```
+
+Headline reporting format:
+N=30, one-sided Wilcoxon on Metric x Dataset interaction.
+Lorentz normalization significant interaction; Euclidean/random do not.
+
+Interpretation boundary:
+- ✅ Evidence for metric-sensitive inductive bias
+- ❌ Not proof of general Physics AI
+- ❌ Not proof that Lorentz is always best in raw performance
+
+### Experiment 5 - Oscillator Stress Test
 
 Experiment 5 studies long-horizon rollout prediction under distribution shift
 on synthetic Lorentzian oscillator trajectories.
@@ -244,7 +312,7 @@ For the dedicated `N=10` reproduction script, run:
 CHRONOS_DEVICE=cuda python benchmarks/experiment_5_full_sanity_reproduction.py --full
 ```
 
-Current headline AI phenomenon:
+Historical baseline result:
 
 An independent extended Colab reproduction of the Experiment 5 design was run
 on CUDA with `n_seeds=10`, `n_train=3000`, `n_test=512`, `epochs=250`, and an
@@ -324,9 +392,10 @@ For the extended 8-lambda Colab variant, see:
 exp5-diagnostic/guides/COLAB_EXTENDED_FIXED_V2.md
 ```
 
-### AI Benchmark 3 - Mechanism Diagnostic Benchmark
+### Experiment 5b - Fixed Ablation Diagnostic
 
-Experiment 5b decomposes the Experiment 5 Chronos latent predictor into
+Experiment 5b is the fixed diagnostic pass after correcting latent/decoded
+mismatch issues. It decomposes the Experiment 5 Chronos latent predictor into
 mechanism variants:
 
 - Euclidean latent predictor,
@@ -380,6 +449,24 @@ k1-manifold-core/results/experiment_5b_effective_rank.png
 k1-manifold-core/results/experiment_5b_violation_by_step.png
 k1-manifold-core/results/experiment_5b_K_drift_by_step.png
 ```
+
+### Experiment 6 - Light-Cone Geodesic Benchmark
+
+Main Physics-AI result:
+On true Lorentz geodesic data, Chronos latent geometry reduces causal
+violation relative to Euclidean latent prediction.
+
+Current evidence direction:
+Chronos latent geometry consistently outperforms Euclidean latent prediction on
+Lorentz-structured trajectories.
+
+This is the current primary benchmark claim. It is based on latent-geometry
+behavior and should be reported via `chronos_latent_interval_loss`-aligned
+results, not as a decoded-loss victory claim.
+
+Statistical boundary:
+current `N=10` evidence supports effect size and direction, but does not yet
+establish formal significance without paired tests (for example, Wilcoxon).
 
 ## Archived Benchmarks
 

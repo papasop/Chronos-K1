@@ -3,7 +3,7 @@
 This report records research benchmarks that involve model training,
 randomness, statistics, or optional ML dependencies. They are not unit tests.
 
-## OOD Extrapolation: Light-Cone Classification
+## Experiment 6: Light-cone Geodesic Benchmark
 
 **Task.** Classify synthetic event differences as timelike or spacelike using
 the Lorentz interval
@@ -49,7 +49,11 @@ OOD edge over a strong MLP baseline, while a radial Euclidean quadratic
 baseline does not capture the task geometry. It is not evidence for broad
 world-model superiority.
 
-## Experiment 5: Primary World-Model Phenomenon Benchmark
+**Main physics-AI result statement.** On true Lorentz geodesic data, Chronos
+latent geometry reduces causal violation relative to Euclidean latent
+prediction.
+
+## Experiment 5: Oscillator Stress Test
 
 **Task.** Train a Euclidean latent predictor (ELP) and Chronos latent predictor
 (CLP) on synthetic Lorentzian oscillator trajectories, then evaluate rollout
@@ -112,9 +116,10 @@ Instead, it supports the narrower claim that Chronos constraints can act as a
 causality-preserving world-model regularizer while maintaining comparable
 rollout error on this synthetic stress test.
 
-## Experiment 5b: Mechanism Diagnostic Benchmark
+## Experiment 5b: Fixed Ablation Diagnostic
 
-**Task.** Decompose the Chronos latent predictor into mechanism variants and
+**Task.** After fixing latent/decoded mismatch behavior, decompose the Chronos
+latent predictor into mechanism variants and
 measure which parts of the constraint stack affect decoded causal consistency.
 
 Variants:
@@ -158,3 +163,36 @@ unit test, not a theorem, and not by itself a claim that Chronos improves
 forecasting accuracy. Its purpose is to identify which Chronos constraints are
 responsible for causal-consistency preservation before moving to stronger
 dynamical baselines.
+
+## Experiment 7: Metric-Controlled Normalization
+
+**Question.** Does Lorentz normalization produce a dataset-specific advantage
+on timelike trajectories that Euclidean/random normalization does not?
+
+**Design.** Compare `euclidean_baseline`, `chronos_lorentz`,
+`chronos_euclidean`, and `chronos_random` on `timelike` and `spacelike`
+datasets. Analyze per-seed improvement relative to dataset baseline and test
+Metric x Dataset interaction via one-sided paired Wilcoxon.
+
+**Command.**
+
+```bash
+cd k1-manifold-core
+python benchmarks/experiment_7_metric_controlled_normalization.py
+```
+
+**Artifacts.**
+
+- `results/experiment_7_metric_controlled_normalization/experiment_7_raw_results.csv`
+- `results/experiment_7_metric_controlled_normalization/experiment_7_raw_results_with_improvement.csv`
+- `results/experiment_7_metric_controlled_normalization/experiment_7_metric_dataset_interaction.csv`
+
+**Headline result format.** N=30, one-sided Wilcoxon p-value on the Lorentz
+metric interaction term (timelike improvement > spacelike improvement), with
+Euclidean/random as controls.
+
+**Interpretation boundary.**
+
+- ✅ Evidence for metric-sensitive inductive bias
+- ❌ Not proof of general Physics AI
+- ❌ Not proof that Lorentz is always best in raw performance
