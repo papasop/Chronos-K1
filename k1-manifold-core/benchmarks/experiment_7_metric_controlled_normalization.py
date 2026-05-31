@@ -3,6 +3,7 @@ EXPERIMENT 7: METRIC-CONTROLLED NORMALIZATION TEST
 """
 
 import argparse
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -11,9 +12,15 @@ import torch
 import torch.nn as nn
 from scipy import stats
 
-from datasets import make_spacelike_dataset, make_timelike_dataset
-
 ROOT = Path(__file__).resolve().parents[1]
+SRC = ROOT / "src"
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
+
+from k1_manifold_core.benchmark_datasets import (
+    make_spacelike_dataset,
+    make_timelike_dataset,
+)
 RESULTS_DIR = ROOT / "results" / "experiment_7_metric_controlled_normalization"
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
