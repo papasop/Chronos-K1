@@ -1,4 +1,5 @@
-# Colab Quickstart
+# Colab Notebooks
 
-- `chronos_k1_quickstart.ipynb`: 5-minute walkthrough for core Chronos-K1 idea
-  (causal cone, recovery scaling, and Exp7 metric-prior evidence).
+- `chronos_k1_quickstart.ipynb`: **Exp7-only** runner for
+  `benchmarks/experiment_7_metric_controlled_normalization.py`.
+  Includes smoke and full-run cells.
