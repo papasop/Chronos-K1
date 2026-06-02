@@ -181,8 +181,7 @@ python chronos/k2/experiments/k2_2a_transfer_h200.py --smoke
 ```
 
 These commands exercise the archived entrypoints and verdict wiring. The full
-Colab training runs are expensive; use the original Colab run modes for full
-training reproduction.
+Colab training sources are not fully restored in this repository yet.
 
 The archived K2.2-A repository summary can be regenerated with:
 
@@ -190,17 +189,20 @@ The archived K2.2-A repository summary can be regenerated with:
 python chronos/k2/experiments/k2_2a_transfer_h200.py
 ```
 
-The full Colab training run remains expensive. Its claim is valid only when
-the full experiment is run with the registered K2.2-A gates:
+The K2.2-A archive script regenerates the repository summary and verdict
+wiring. It does not rerun the full Colab training experiment. The full claim is
+valid only for the original full experiment run with the registered K2.2-A
+gates:
 
 - primary metric: rollout MSE at H=200
 - primary subset: graceful-baseline subset
 - controls: fair energy and fair L2, re-checked at H=200
 - mechanism: full `||J^T Omega J - Omega||` reduction above threshold
 
-Full reproducibility currently starts from K2.1. The predecessor K2.0 and
-K2.0-B stages are preserved as historical logs, and their source scripts are
-being reconstructed.
+K2.1 onward currently has repository archive entrypoints and verdict logic.
+Full training reproduction requires restoring the original Colab experiment
+sources. The predecessor K2.0 and K2.0-B stages are preserved as historical
+logs, and their source scripts are being reconstructed.
 
 ## 8. CI
 

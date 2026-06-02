@@ -50,7 +50,11 @@ Historical logs preserved. Source script missing.
 
 ## Reproducibility Statement
 
-K2.1 onward is fully reproducible from source.
+K2.1 onward has preserved repository archive entrypoints.
+
+The current scripts preserve archived summaries and verdict semantics, but
+full training reproduction still requires restoration of the original Colab
+experiment sources.
 
 K2.0 and K2.0-B are currently supported by:
 
@@ -58,4 +62,5 @@ K2.0 and K2.0-B are currently supported by:
 - archived summaries
 - archived conclusions
 
-Future work may reconstruct the original source files.
+Future work may reconstruct the original K2.0/K2.0-B source files and restore
+the full K2.1/K2.1-B/K2.2-A Colab training sources.

@@ -8,14 +8,18 @@ K2 is the first VPSL-certified physical-structure milestone.
 K2 reached FULL_TRANSFER_CONFIRMED at K2.2-A.
 ```
 
-Full reproducibility currently starts from K2.1. The regime-discovery stages
-K2.0 and K2.0-B are preserved as historical logs and are being reconstructed.
+K2.1 onward currently has repository archive entrypoints and verdict logic.
+Full training reproduction requires restoring the original Colab experiment
+sources. The regime-discovery stages K2.0 and K2.0-B are preserved as
+historical logs and are being reconstructed.
 
-## Available Code
+## Available Archive Entrypoints
 
 - K2.1: `experiments/k2_1_symplectic_prior.py`
 - K2.1-B: `experiments/k2_1b_repair_controls.py`
 - K2.2-A: `experiments/k2_2a_transfer_h200.py`
+
+These are archive entrypoints, not complete Colab training scripts.
 
 ## Missing Source Code
 
@@ -25,8 +29,8 @@ K2.0 and K2.0-B are preserved as historical logs and are being reconstructed.
 ## Available Evidence
 
 - K2.0 / K2.0-B logs: `historical_logs/`
-- K2.1 / K2.1-B code and archived results
-- K2.2-A code and archived results
+- K2.1 / K2.1-B archive entrypoints and archived summaries
+- K2.2-A archive entrypoint, archived summary, and verdict wiring
 
 ## Claim Boundary
 
@@ -36,7 +40,7 @@ availability:
 ```text
 K2 = complete result chain, partial source missing
 K2.0/K2.0-B = historical log archive
-K2.1+ = available experiment code
+K2.1+ = archive entrypoints available; full training source pending restoration
 ```
 
 The final K2 claim remains:

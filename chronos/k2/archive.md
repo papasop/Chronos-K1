@@ -41,11 +41,13 @@ Missing code:
 Available evidence:
 
 - K2.0 / K2.0-B logs
-- K2.1 / K2.1-B code and results
-- K2.2-A code and results
+- K2.1 / K2.1-B archive entrypoints and archived summaries
+- K2.2-A archive entrypoint, archived summary, and verdict wiring
 
-Full reproducibility currently starts from K2.1. The regime-discovery stages
-K2.0 and K2.0-B are preserved as logs and are being reconstructed.
+K2.1 onward currently has repository archive entrypoints and verdict logic.
+Full training reproduction requires restoring the original Colab experiment
+sources. The regime-discovery stages K2.0 and K2.0-B are preserved as logs and
+are being reconstructed.
 
 ## What K2 Established
 
