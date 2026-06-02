@@ -129,30 +129,11 @@ Detailed K1 materials:
 
 ## 5. K2 Archive: Symplectic Prior
 
-K2 moves beyond Lorentz / metric sensitivity and tests a concrete physical
-structure: symplecticity on FPU-beta.
+K2 Milestone: the symplectic prior became the first VPSL-certified physical
+structure, achieving `FULL_TRANSFER_CONFIRMED` on the FPU-beta benchmark.
 
-K2.2-A is the current headline result. It tests transfer at `H=200`, where the
-baseline has non-trivial hard divergence. The claim is stratified:
-
-- pooled: reported for context only
-- graceful-baseline subset: primary transfer test
-- rescued subset: blow-up rescue context
-
-K2.2-A verdict:
-
-```text
-FULL_TRANSFER_CONFIRMED
-```
-
-The K2 claim is intentionally narrow: a symplectic prior transfers on the
-validated FPU-beta regime under the tested controls. It is not yet a claim about
-all Hamiltonian systems, all horizons, or all model classes.
-
-K2 materials:
+See:
 - `chronos/k2/archive.md`
-- `chronos/k2/experiments/k2_2a_transfer_h200.py`
-- `chronos/k2/results/k2_2a_summary.csv`
 
 ## 6. Repository Layout
 

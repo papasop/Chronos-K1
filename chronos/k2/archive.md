@@ -44,6 +44,35 @@ K2.2-A confirms transfer at H=200 on the graceful-baseline subset:
 - `symplectic < fair L2`
 - mechanism transfer confirmed
 
+## K2.2-A Evidence Summary
+
+Primary subset:
+
+```text
+graceful-baseline subset, n = 22
+```
+
+Rollout MSE at H=200:
+
+| Variant | roll_MSE |
+| --- | ---: |
+| baseline | 0.0722 |
+| symplectic | 0.0398 |
+| fair energy | 0.1038 |
+| fair L2 | 0.0975 |
+
+Mechanism:
+
+```text
+full symp_err reduction = 70.7%
+```
+
+Verdict:
+
+```text
+FULL_TRANSFER_CONFIRMED
+```
+
 The mechanism diagnostic is full symplectic Jacobian error:
 
 ```text
