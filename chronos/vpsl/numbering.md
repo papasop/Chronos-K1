@@ -44,7 +44,7 @@ should not be used as the primary archive structure for K2 or later.
 
 | Label | Meaning |
 | --- | --- |
-| K2.0 | FPU-beta regime validation |
+| K2.0 | FPU-β regime validation |
 | K2.0-B | Transfer-window refinement |
 | K2.1 | Initial symplectic prior comparison |
 | K2.1-B | Fair-control repair |

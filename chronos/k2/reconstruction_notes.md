@@ -22,7 +22,7 @@ Missing Source Code:
 
 Purpose:
 
-Find a graceful-failure regime for FPU-beta.
+Find a graceful-failure regime for FPU-β.
 
 Known Outcome:
 

@@ -18,7 +18,7 @@ checks, and claim boundaries.
 This repository is no longer positioned as only a Lorentz / metric-prior
 project. The K1 line remains the bounded framework validation stage. The K2
 line is the first fully validated physical structure: a symplectic prior on the
-FPU-beta regime.
+FPU-β regime.
 
 ![VPSL pipeline](chronos/vpsl/vpsl_pipeline.svg)
 
@@ -37,7 +37,7 @@ Chronos is organized as milestones, not as a single architecture:
 
 - K1: framework validation and bounded positive result for spectral /
   Lorentz-structured priors.
-- K2: first VPSL-certified structure, validating a symplectic prior on FPU-beta.
+- K2: first VPSL-certified structure, validating a symplectic prior on FPU-β.
 - K3: future structure discovery program.
 
 The repository remains a reproducible research prototype. It does not claim a
@@ -73,17 +73,10 @@ K2 established the first full VPSL transfer result:
 
 ## 3. VPSL Gates
 
-Data-driven Bias ───────────────────► Explicit Physics Knowledge
-
-LLM → WM → NODE → CHRONOS → Equiv → HNN → PINN
-                  ▲
-               OUR SPOT
-
-Validated Physics Structure Priors
-
-(Regime Validation
- + Constraint Validation
- + Structure Priors)
+Historically, Chronos was positioned between learned world models and
+explicit physics priors. The current repository foregrounds VPSL: a validation
+framework for deciding when a physical structure is strong enough to become a
+learning constraint.
 
 The current VPSL discipline is:
 
@@ -130,7 +123,7 @@ Detailed K1 materials:
 ## 5. K2 Archive: Symplectic Prior
 
 K2 Milestone: the symplectic prior became the first VPSL-certified physical
-structure, achieving `FULL_TRANSFER_CONFIRMED` on the FPU-beta benchmark.
+structure, achieving `FULL_TRANSFER_CONFIRMED` on the FPU-β benchmark.
 
 See:
 - `chronos/k2/archive.md`
@@ -181,7 +174,7 @@ Supported:
 - VPSL framework.
 - Regime validation methodology.
 - K1 bounded positive result.
-- First fully validated physical structure: symplectic prior on FPU-beta.
+- First fully validated physical structure: symplectic prior on FPU-β.
 
 Not claimed:
 
@@ -189,7 +182,7 @@ Not claimed:
 - All systems benefit from symplectic priors.
 - General Physics-AI.
 - Chronos is a single architecture.
-- K2 generalizes beyond FPU-beta yet.
+- K2 generalizes beyond FPU-β yet.
 - Pooled rescue at a stress horizon is enough for a structure claim.
 
 ## 8. Reproduce Results

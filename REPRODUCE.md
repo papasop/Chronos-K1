@@ -155,7 +155,6 @@ chronos/k2/
 Current K2 files:
 
 ```text
-chronos/k1/archive.md
 chronos/k2/archive.md
 chronos/k2/docs/chronos_k2_archive.md
 chronos/k2/historical_logs/k2_0_regime_validation_log.txt

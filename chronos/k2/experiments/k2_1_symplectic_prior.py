@@ -1,4 +1,4 @@
-"""Experiment K2.1: Symplectic prior on FPU-beta.
+"""Experiment K2.1: Symplectic prior on FPU-β.
 
 Canonical archive path for the K2.1 Colab experiment.
 
@@ -6,7 +6,7 @@ K2.1 tested whether a symplectic structural prior helps the neural baseline in
 the validated graceful-fail regime:
 
 ```text
-FPU-beta, S=1, H=160
+FPU-β, S=1, H=160
 ```
 
 The experiment used a three-way design:
@@ -52,7 +52,7 @@ from dataclasses import dataclass
 
 
 EXPERIMENT = "k2_1_symplectic_prior"
-REGIME = "FPU-beta"
+REGIME = "FPU-β"
 S_FIXED = 1
 HORIZON = 160
 PRIMARY_LAMBDA = 0.1

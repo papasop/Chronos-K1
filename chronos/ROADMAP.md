@@ -27,7 +27,7 @@ DONE
 Certified structure:
 
 ```text
-Symplectic prior on FPU-beta
+Symplectic prior on FPU-β
 ```
 
 Verdict:

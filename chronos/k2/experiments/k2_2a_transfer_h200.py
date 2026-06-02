@@ -37,7 +37,7 @@ import pandas as pd
 
 EXPERIMENT = "k2_2a_transfer_h200"
 STRUCTURE = "symplectic prior"
-REGIME = "FPU-beta"
+REGIME = "FPU-β"
 HORIZON = 200
 CLAIM_LEVEL = "FULL_TRANSFER_CONFIRMED"
 

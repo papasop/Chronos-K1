@@ -1,4 +1,4 @@
-K2.0-B - FPU-beta window refinement historical log
+K2.0-B - FPU-β window refinement historical log
 
 Status:
   Historical evidence archived; source script not currently available.

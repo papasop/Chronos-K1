@@ -3,11 +3,11 @@
 This report records research benchmarks that involve model training,
 randomness, statistics, or optional ML dependencies. They are not unit tests.
 
-## Chronos-K2: Symplectic Prior on FPU-beta
+## Chronos-K2: Symplectic Prior on FPU-β
 
 **Program role.** K2 is the first VPSL-certified physical-structure milestone.
 It moves beyond K1 metric sensitivity and tests a concrete structure prior:
-symplecticity on FPU-beta.
+symplecticity on FPU-β.
 
 **Current verdict.**
 

@@ -4,7 +4,7 @@ K2 is the first VPSL-certified physical-structure stage.
 
 ## Structure
 
-Symplectic prior on FPU-beta.
+Symplectic prior on FPU-β.
 
 ## Status
 
@@ -53,8 +53,8 @@ K2 tells a five-step VPSL story.
 
 | Stage | Result | Claim Role |
 | --- | --- | --- |
-| K2.0 | FPU-beta regime validation | Regime validation |
-| K2.0-B | Valid FPU-beta window refined; H=200 identified as stress transfer horizon | Regime / window validation |
+| K2.0 | FPU-β regime validation | Regime validation |
+| K2.0-B | Valid FPU-β window refined; H=200 identified as stress transfer horizon | Regime / window validation |
 | K2.1 | Initial symplectic prior comparison | Structure candidate test |
 | K2.1-B | Fair non-degenerate controls repaired at H=160 | `CONTROLS_REPAIRED` |
 | K2.2-A | Symplectic transfer confirmed at H=200 | `FULL_TRANSFER_CONFIRMED` |
@@ -104,8 +104,8 @@ The mechanism diagnostic is full symplectic Jacobian error:
 ## Boundary
 
 K2 currently supports a narrow claim: the symplectic prior transfers on the
-validated FPU-beta regime under the tested controls. It does not yet claim
-generalization beyond FPU-beta.
+validated FPU-β regime under the tested controls. It does not yet claim
+generalization beyond FPU-β.
 
 Not claimed:
 

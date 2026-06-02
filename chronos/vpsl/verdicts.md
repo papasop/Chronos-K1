@@ -78,4 +78,4 @@ Criteria:
 
 Example:
 
-- K2 symplectic prior on FPU-beta.
+- K2 symplectic prior on FPU-β.

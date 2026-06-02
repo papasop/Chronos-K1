@@ -11,7 +11,7 @@ FULL_TRANSFER_CONFIRMED
 System:
 
 ```text
-FPU-beta chain
+FPU-β chain
 ```
 
 Program:

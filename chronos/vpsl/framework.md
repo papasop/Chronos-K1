@@ -32,7 +32,7 @@ This gate asks:
 K2 example:
 
 ```text
-FPU-beta, S=1, H=160 clean comparison, H=200 stress transfer.
+FPU-β, S=1, H=160 clean comparison, H=200 stress transfer.
 ```
 
 ## Gate 2 - Constraint Validation

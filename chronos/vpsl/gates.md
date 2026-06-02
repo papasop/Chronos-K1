@@ -8,7 +8,7 @@ validated physical-structure result.
 The tested system must be in the intended physical regime before priors are
 compared.
 
-For K2 this means the FPU-beta setting is validated before claiming symplectic
+For K2 this means the FPU-β setting is validated before claiming symplectic
 transfer.
 
 ## 2. Control Fairness Gate
