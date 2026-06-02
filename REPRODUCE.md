@@ -173,6 +173,18 @@ K2.2-A is the current headline result:
 FULL_TRANSFER_CONFIRMED
 ```
 
+K2 archive entrypoints:
+
+```bash
+python chronos/k2/experiments/k2_1_symplectic_prior.py --smoke
+python chronos/k2/experiments/k2_1b_repair_controls.py --smoke
+python chronos/k2/experiments/k2_2a_transfer_h200.py --smoke
+```
+
+These commands exercise the archived entrypoints and verdict wiring. The full
+Colab training runs are expensive; use the original Colab run modes for full
+training reproduction.
+
 The archived K2.2-A repository summary can be regenerated with:
 
 ```bash

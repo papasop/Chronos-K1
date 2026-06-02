@@ -13,6 +13,9 @@ K1 is the historical Chronos-K1 stage.
 Claim level:
 - `BOUNDED_POSITIVE`
 
+System:
+- K1 framework validation / spectral prior archive
+
 What it established:
 - A reproducible framework for testing physics-sensitive inductive bias.
 - Lorentz / spectral structure can produce metric-sensitive behavior under
@@ -32,6 +35,12 @@ K2 is the first fully validated physical-structure milestone.
 
 Claim level:
 - `FULL_TRANSFER_CONFIRMED`
+
+System:
+- FPU-beta
+
+Key result:
+- H=200 transfer confirmed on the graceful-baseline subset.
 
 What it established:
 - Symplectic prior beats baseline, fair energy, and fair L2 controls on the

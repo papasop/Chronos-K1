@@ -3,6 +3,41 @@
 This report records research benchmarks that involve model training,
 randomness, statistics, or optional ML dependencies. They are not unit tests.
 
+## Chronos-K2: Symplectic Prior on FPU-beta
+
+**Program role.** K2 is the first VPSL-certified physical-structure milestone.
+It moves beyond K1 metric sensitivity and tests a concrete structure prior:
+symplecticity on FPU-beta.
+
+**Current verdict.**
+
+```text
+FULL_TRANSFER_CONFIRMED
+```
+
+**Key result.** K2.2-A confirms H=200 transfer on the graceful-baseline subset:
+
+| Variant | roll_MSE |
+| --- | ---: |
+| baseline | 0.0722 |
+| symplectic | 0.0398 |
+| fair energy | 0.1038 |
+| fair L2 | 0.0975 |
+
+Mechanism:
+
+```text
+full symp_err reduction = 70.7%
+```
+
+**Archive.**
+
+- `../../chronos/k2/archive.md`
+
+**Reproducibility boundary.** Full source-code reproducibility currently starts
+from K2.1. K2.0 and K2.0-B are preserved as historical logs while their source
+scripts are reconstructed.
+
 ## Experiment 6: Light-cone Geodesic Benchmark
 
 **Task.** Classify synthetic event differences as timelike or spacelike using
