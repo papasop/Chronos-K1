@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="360" viewBox="0 0 980 360" role="img" aria-labelledby="title desc">
+  <title id="title">VPSL validation pipeline</title>
+  <desc id="desc">Physical structure passes through regime validation, constraint validation, intervention mechanism, transfer, and certified structure.</desc>
+  <rect width="980" height="360" fill="#fbfbf8"/>
+  <style>
+    .box { fill: #ffffff; stroke: #1f2933; stroke-width: 2; rx: 8; }
+    .text { fill: #111827; font-family: Inter, Arial, sans-serif; font-size: 20px; font-weight: 650; text-anchor: middle; }
+    .small { fill: #4b5563; font-family: Inter, Arial, sans-serif; font-size: 13px; text-anchor: middle; }
+    .arrow { stroke: #2563eb; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+  </style>
+  <defs>
+    <marker id="arrowhead" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#2563eb"/>
+    </marker>
+  </defs>
+  <text x="490" y="42" class="text" style="font-size:26px">Validated Physics Structure Learning</text>
+  <text x="490" y="65" class="small">Chronos / VPSL claim path</text>
+  <g transform="translate(80,105)">
+    <rect class="box" x="0" y="0" width="170" height="70"/>
+    <text class="text" x="85" y="34">Physical</text>
+    <text class="text" x="85" y="58">Structure</text>
+  </g>
+  <path class="arrow" d="M250,140 H310"/>
+  <g transform="translate(310,105)">
+    <rect class="box" x="0" y="0" width="170" height="70"/>
+    <text class="text" x="85" y="34">Regime</text>
+    <text class="text" x="85" y="58">Validation</text>
+  </g>
+  <path class="arrow" d="M480,140 H540"/>
+  <g transform="translate(540,105)">
+    <rect class="box" x="0" y="0" width="170" height="70"/>
+    <text class="text" x="85" y="34">Constraint</text>
+    <text class="text" x="85" y="58">Validation</text>
+  </g>
+  <path class="arrow" d="M625,175 V220"/>
+  <g transform="translate(540,220)">
+    <rect class="box" x="0" y="0" width="170" height="70"/>
+    <text class="text" x="85" y="33">Intervention</text>
+    <text class="text" x="85" y="57">Mechanism</text>
+  </g>
+  <path class="arrow" d="M540,255 H480"/>
+  <g transform="translate(310,220)">
+    <rect class="box" x="0" y="0" width="170" height="70"/>
+    <text class="text" x="85" y="45">Transfer</text>
+  </g>
+  <path class="arrow" d="M310,255 H250"/>
+  <g transform="translate(80,220)">
+    <rect class="box" x="0" y="0" width="170" height="70"/>
+    <text class="text" x="85" y="34">Certified</text>
+    <text class="text" x="85" y="58">Structure</text>
+  </g>
+  <text x="840" y="132" class="small">K1: framework validation</text>
+  <text x="840" y="158" class="small">K2: symplectic prior</text>
+  <text x="840" y="184" class="small">Status: FULL_TRANSFER_CONFIRMED</text>
+</svg>

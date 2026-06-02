@@ -1,71 +1,75 @@
-# Chronos-K1
+# Chronos
+
+Validated Physics Structure Learning (VPSL)
+
+A framework for discovering, validating, and transferring physics structure
+priors.
 
 [![tests](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/papasop/Chronos-K1/blob/main/colab/chronos_k1_quickstart.ipynb)
 
-Chronos-K1
-A Lorentzian Information Geometry Framework
-for Physics-Aware World Models
+Chronos is the working repository for VPSL: Validated Physics Structure
+Learning. It studies whether explicit physical structure can be validated as a
+transferable inductive bias under controlled regimes, fair controls, mechanism
+checks, and claim boundaries.
 
-Chronos-K1 is a Lorentzian information-geometry framework with early evidence
-for physics-sensitive inductive bias in latent world models.
+This repository is no longer positioned as only a Lorentz / metric-prior
+project. The K1 line remains the bounded framework validation stage. The K2
+line is the first fully validated physical structure: a symplectic prior on the
+FPU-beta regime.
 
-Current evidence: Lorentz normalization exhibits a statistically significant
-Metric x Dataset interaction (`N=30`, Wilcoxon `p=0.040`), while Euclidean and
-random normalization do not.
+![VPSL pipeline](chronos/vpsl/vpsl_pipeline.svg)
 
-## 1. What Is Chronos-K1?
+## 1. What Is Chronos?
 
-Chronos-K1 studies whether causal structure can be injected as an explicit
-inductive bias in world-model dynamics.
+Chronos is a Validated Physics Structure Learning (VPSL) framework.
 
-- Time/causality are modeled with a Lorentz-sign quadratic structure.
-- Dynamics use a symplectic-dissipative update family.
-- AI benchmarks test whether this bias helps on Lorentz-structured data.
+It determines:
 
-This repository is a reproducible research prototype, not a claim of solved
-Physics AI, general intelligence, or first-principles derivation of all
-physics.
+1. When a physical structure should become a learning constraint.
+2. Whether its effect is predictive.
+3. Whether its mechanism is genuine.
+4. Whether its advantage transfers.
 
-Companion paper:
-- `Chronos-K1.txt` (`K=1 Chronogeometrodynamics` manuscript)
+Chronos is organized as milestones, not as a single architecture:
+
+- K1: framework validation and bounded positive result for spectral /
+  Lorentz-structured priors.
+- K2: first VPSL-certified structure, validating a symplectic prior on FPU-beta.
+- K3: future structure discovery program.
+
+The repository remains a reproducible research prototype. It does not claim a
+solved Physics AI system, a universal architecture, or a proof that every
+physical prior improves every task.
+
+Companion historical manuscript:
+- `Chronos-K1.txt` (`K=1 Chronogeometrodynamics`)
 
 ## 2. Evidence Ladder
 
-### Ladder Levels
+VPSL treats a positive result as valid only when the regime, controls,
+performance, and mechanism all survive the relevant gates.
 
-- Level 1: Theory
-  - Law I / Law II / Law III
-- Level 2: Numerical validation
-  - 29+ tests
-- Level 3: World-model stress tests
-  - Exp5 / Exp5b (historical)
-- Level 4: Physics sensitivity
-  - Exp6: Does Chronos react differently to timelike vs spacelike data?
-- Level 5: Metric specificity
-  - Exp7: Is this difference specific to Lorentz normalization?
-
-### Core Evidence Table
-
-| Layer | Evidence | Status |
+| Stage | Result | Status |
 | --- | --- | --- |
-| Theory | Lorentz signature, `K=1` null flow | ✅ |
-| Numerical checks | pytest suite | ✅ |
-| Exp5 | Historical world-model benchmark | Mixed |
-| Exp6 | Physics sensitivity | Positive |
-| Exp7 | Metric-specific interaction | Lorentz only (`p=0.040`) |
-| Real physics datasets | pendulum / N-body / Lorenz | pending |
+| K1 | VPSL Framework Validation | Done |
+| K1 | Spectral Prior | BOUNDED_POSITIVE |
+| K2 | Symplectic Prior | FULL_TRANSFER_CONFIRMED |
+| K3 | Future Structures | Pending |
 
-## 3. Theory Core
+K1 established a bounded framework result: metric-sensitive behavior appears
+under controlled normalization tests, but it is not promoted to a universal
+physics-prior claim.
 
-Law I: Realizability -> Lorentz Signature
-- Axioms `R, E, T` constrain the leading cost form to Lorentzian type in 2D.
+K2 established the first full VPSL transfer result:
 
-Law II: Symplectic-Dissipative Dynamics
-- Core flow: `xdot = (J_G - D) grad V`.
+- `symplectic < baseline`
+- `symplectic < fair energy`
+- `symplectic < fair L2`
+- mechanism transfer confirmed by full symplectic Jacobian error reduction
+- confirmation holds on the graceful-baseline subset, not only pooled rescue
 
-Law III: Critical Damping -> Null Flow -> Invariant Foliation
-- Critical damping yields the `K=1` null-flow dynamics and foliation structure.
+## 3. VPSL Gates
 
 Data-driven Bias ───────────────────► Explicit Physics Knowledge
 
@@ -79,112 +83,136 @@ Validated Physics Structure Priors
  + Constraint Validation
  + Structure Priors)
 
-Positioning diagram asset:
-- `k1-manifold-core/docs/chronos_positioning.svg`
+The current VPSL discipline is:
 
-## 4. Physics-AI Benchmarks
+- Regime validation is a necessary gate before comparing priors.
+- Controls must be non-degenerate and fair at the tested horizon.
+- Pooled improvements at stress horizons are context only.
+- Transfer claims must hold on the graceful-baseline subset.
+- Mechanism transfer is required for structure claims.
 
-- Experiment 5: Historical world-model benchmark
-- Experiment 5b: Fixed ablation diagnostic
-- Experiment 6: Physics sensitivity benchmark
-- Experiment 7: Metric-controlled normalization benchmark
+See:
+- `chronos/vpsl/framework.md`
+- `chronos/vpsl/gates.md`
+- `chronos/vpsl/claim_taxonomy.md`
 
-Exp6 / Exp7 division of labor:
-- Exp6 tests sensitivity: timelike vs spacelike structure response.
-- Exp7 tests mechanism: whether that sensitivity is specific to Lorentz normalization.
+## 4. K1 Archive: Bounded Framework Result
 
-### Experiment 7 - Metric-Controlled Normalization
+K1 is now treated as the historical framework-validation archive. It studied
+whether causal / metric structure can be injected as an explicit inductive bias
+in world-model dynamics.
 
-Question:
-Does Lorentz normalization exhibit a dataset-specific advantage on timelike
-trajectories that Euclidean and random normalization do not?
+Historical K1 ingredients:
 
-Setup:
-- Timelike geodesics (`eta(v,v) > 0`)
-- Spacelike geodesics (`eta(v,v) < 0`)
-- `N=30` independent seeds
-- one-sided Wilcoxon test on Metric x Dataset interaction
+- Lorentz-sign quadratic structure for time / causality.
+- Symplectic-dissipative update family.
+- Exp6 / Exp7 tests for physics sensitivity and metric specificity.
 
-Result:
+The strongest K1 evidence remains bounded:
 
-| Metric | Timelike Improvement | Spacelike Improvement | Interaction p-value |
-| --- | ---: | ---: | ---: |
-| Lorentz | +7.1% | -0.7% | 0.040 |
-| Euclidean | +1.5% | -1.1% | 0.278 |
-| Random | +0.4% | -1.8% | 0.452 |
+| Experiment | Question | Result |
+| --- | --- | --- |
+| Exp6 | Does Chronos react differently to timelike vs spacelike data? | Positive sensitivity |
+| Exp7 | Is the effect specific to Lorentz normalization? | Lorentz-only interaction, Wilcoxon `p=0.040` |
 
-Interpretation:
-Lorentz normalization was the only metric producing a statistically
-significant timelike-spacelike interaction. Euclidean and random normalization
-did not show significant interaction effects. This is evidence for a
-metric-sensitive inductive bias rather than a generic normalization effect.
-
-Detailed results:
-- `k1-manifold-core/docs/benchmark_report.md`
+Detailed K1 materials:
+- `k1-manifold-core/`
+- `chronos/k1/archive.md`
 - `k1-manifold-core/docs/experiment_6_physics_sensitivity.md`
 - `k1-manifold-core/docs/experiment_7_metric_controlled_normalization.md`
-- `k1-manifold-core/docs/physics_ai_evidence.md`
 
-## 5. Reproduce Results
+## 5. K2 Archive: Symplectic Prior
 
-Use the reproduction guide for commands and run modes:
-- `REPRODUCE.md`
+K2 moves beyond Lorentz / metric sensitivity and tests a concrete physical
+structure: symplecticity on FPU-beta.
 
-Benchmark entrypoints live under:
-- `k1-manifold-core/benchmarks/`
+K2.2-A is the current headline result. It tests transfer at `H=200`, where the
+baseline has non-trivial hard divergence. The claim is stratified:
+
+- pooled: reported for context only
+- graceful-baseline subset: primary transfer test
+- rescued subset: blow-up rescue context
+
+K2.2-A verdict:
+
+```text
+FULL_TRANSFER_CONFIRMED
+```
+
+The K2 claim is intentionally narrow: a symplectic prior transfers on the
+validated FPU-beta regime under the tested controls. It is not yet a claim about
+all Hamiltonian systems, all horizons, or all model classes.
+
+K2 materials:
+- `chronos/k2/archive.md`
+- `chronos/k2/experiments/k2_2a_transfer_h200.py`
+- `chronos/k2/results/k2_2a_summary.csv`
 
 ## 6. Repository Layout
 
 ```text
-Chronos-K1/
+Chronos/
 ├── README.md
 ├── REPRODUCE.md
+├── MILESTONES.md
 ├── Chronos-K1.txt
+├── archive/
+├── chronos/
+│   ├── k1/
+│   │   └── archive.md
+│   ├── k2/
+│   │   ├── archive.md
+│   │   ├── experiments/
+│   │   └── results/
+│   ├── k3/
+│   │   └── README.md
+│   └── vpsl/
+│       ├── framework.md
+│       ├── gates.md
+│       ├── claim_taxonomy.md
+│       └── vpsl_pipeline.svg
 ├── k1-manifold-core/
-│   ├── src/k1_manifold_core/
-│   ├── tests/
-│   ├── benchmarks/
-│   │   ├── experiment_5_causal_stress_test.py
-│   │   ├── experiment_5b_causal_mechanism_ablation.py
-│   │   ├── experiment_6_physics_sensitivity.py
-│   │   ├── ood_extrapolation.py  (implementation backend)
-│   │   └── experiment_7_metric_controlled_normalization.py
-│   ├── docs/
-│   │   ├── benchmark_report.md
-│   │   ├── experiment_5_reproduction_protocol.md
-│   │   └── experiment_7_metric_controlled_normalization.md
-│   └── results/
-│       ├── experiment_5* artifacts
-│       ├── experiment_5b* artifacts
-│       ├── experiment_6_physics_sensitivity/
-│       ├── ood_extrapolation* artifacts (Exp6 backend outputs)
-│       └── experiment_7_metric_controlled_normalization/
-├── exp5-diagnostic/
-└── archive/
+└── exp5-diagnostic/
 ```
+
+The repository name on GitHub may still be `Chronos-K1`; the scientific
+positioning is now Chronos / VPSL, with K1 as the historical first milestone.
 
 ## 7. Claim Boundary
 
-What this repository supports:
-- Evidence for a physics-sensitive inductive bias.
-- Evidence for metric-sensitive behavior under controlled normalization tests.
+Supported:
 
-What this repository does not claim:
-- Chronos-K1 proves Physics AI.
-- Lorentz structure is always best in all tasks.
-- General intelligence or scientific discovery autonomy.
+- VPSL framework.
+- Regime validation as a necessary gate.
+- K1 bounded positive result.
+- K2 fully validated symplectic structure on FPU-beta.
 
-## 8. Roadmap
+Not claimed:
 
-Near-term:
-- Expand Exp6/Exp7 with stronger seed counts and stress settings.
-- Add real-physics datasets: pendulum, N-body, Lorenz.
-- Improve metric controls and confidence-interval reporting.
+- All physical priors help.
+- Chronos is a single architecture.
+- K2 generalizes beyond FPU-beta yet.
+- Pooled rescue at a stress horizon is enough for a structure claim.
+- Chronos proves Physics AI, AGI, or autonomous scientific discovery.
 
-Mid-term:
-- Scale to stronger latent world-model baselines.
-- Validate robustness across architectures and dataset regimes.
+## 8. Reproduce Results
 
-Long-term:
-- Test whether physics-sensitive inductive bias survives realistic data
-  pipelines and model scale.
+Use the reproduction guide:
+- `REPRODUCE.md`
+
+K1 benchmark entrypoints live under:
+- `k1-manifold-core/benchmarks/`
+
+K2 entrypoints live under:
+- `chronos/k2/experiments/`
+
+## 9. Roadmap
+
+Current repository program:
+
+- K1 Archive: preserve the original framework-proven line and keep it
+  reproducible.
+- K2 Archive: preserve the first fully validated VPSL structure claim and its
+  transfer-test discipline.
+- K3 Structure Discovery Program: evaluate the next physical structures only after
+  regime gates, fair controls, mechanism checks, and transfer gates are defined.

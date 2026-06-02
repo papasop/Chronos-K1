@@ -1,8 +1,12 @@
 # Reproduce The Core Results
 
-This page gives the shortest path from a clean checkout to the numerical
-checks used by the Chronos-K1 research prototype. The commands below do not
-expand the theory claims; they reproduce the implemented tests and demos.
+This page separates the historical K1 reproduction path from the newer K2
+VPSL archive path.
+
+Chronos currently contains two evidence stages:
+
+- K1: framework / bounded result.
+- K2: first VPSL-certified physical structure.
 
 ## 1. Install
 
@@ -13,13 +17,15 @@ python -m pip install -r requirements.txt
 python -m pip install -e "k1-manifold-core[dev]"
 ```
 
-## 2. Run The Test Suite
+## 2. K1: Historical Framework Checks
+
+Run the K1 test suite:
 
 ```bash
 pytest -v k1-manifold-core
 ```
 
-Expected result:
+Expected result for the current K1 suite:
 
 ```text
 collected 29 items
@@ -42,7 +48,7 @@ This covers:
 - `tests/test_world_model_v01.py`: minimal latent world-model regularizer
   checks.
 
-## 3. Reproduce The Null-Flow Figure And Numbers
+## 3. K1: Null-Flow Figure And Numbers
 
 ```bash
 cd k1-manifold-core
@@ -65,7 +71,7 @@ The figure is written to:
 k1-manifold-core/examples/outputs/demo_04_recovery_scaling.png
 ```
 
-## 4. Reproduce The Latent World-Model v0.1 Benchmark
+## 4. K1: Latent World-Model v0.1 Benchmark
 
 ```bash
 cd k1-manifold-core
@@ -89,11 +95,10 @@ The result is written to:
 k1-manifold-core/results/world_model_v01.json
 ```
 
-This is a toy latent regularizer benchmark: the Chronos-K1 variant is the same
-affine transition as the Euclidean baseline, followed by a `K=1` projection.
-It is not a claim about large-scale world models.
+This is a toy latent regularizer benchmark. It is not a claim about large-scale
+world models.
 
-## Paper Mapping
+## 5. K1 Paper Mapping
 
 | Paper object | Script / test | What to check |
 | --- | --- | --- |
@@ -109,21 +114,9 @@ It is not a claim about large-scale world models.
 The companion paper may report finite-sample visual-fit values such as
 `slope = -1.986` and `R^2 = 0.99998`. The current demo also prints the
 deterministic analytic reference fit, which gives `slope = -2.000000` and
-`R^2 = 1.000000`. Both correspond to the same inverse-square recovery law;
-the finite-sample values are numerical-plot estimates, while the deterministic
-reference is the exact implemented check.
+`R^2 = 1.000000`. Both correspond to the same inverse-square recovery law.
 
-## CI
-
-GitHub Actions runs the same core command on every push and pull request:
-
-```bash
-cd k1-manifold-core
-python -m pip install -e ".[dev]"
-pytest -v
-```
-
-## Optional AI Benchmark
+## 6. K1 Optional AI Benchmark
 
 The OOD light-cone benchmark uses PyTorch and is intentionally not part of
 pytest:
@@ -151,15 +144,57 @@ The public diagnostic entry point is also available from the repository root:
 python exp5-diagnostic/chronos_k1_complete_colab.py --smoke
 ```
 
-It writes:
+## 7. K2: VPSL Archive
+
+K2 is archived under:
 
 ```text
-k1-manifold-core/results/ood_extrapolation.json
-k1-manifold-core/results/ood_extrapolation_auc.png
-k1-manifold-core/results/experiment_5_ablation_stress_summary.csv
-k1-manifold-core/results/experiment_5_ablation_stress_raw.json
-k1-manifold-core/results/experiment_5_full_sanity_summary.csv
-k1-manifold-core/results/experiment_5_full_sanity_payload.json
-k1-manifold-core/results/experiment_5b_causal_mechanism_ablation_summary.csv
-k1-manifold-core/results/experiment_5b_causal_mechanism_ablation_raw.json
+chronos/k2/
+```
+
+Current K2 files:
+
+```text
+chronos/k1/archive.md
+chronos/k2/archive.md
+chronos/k2/docs/chronos_k2_archive.md
+chronos/k2/experiments/k2_0_fpu_regime.py
+chronos/k2/experiments/k2_0b_refine_window.py
+chronos/k2/experiments/k2_1b_repair_controls.py
+chronos/k2/experiments/k2_2a_transfer_h200.py
+chronos/k2/results/k2_2a_summary.csv
+```
+
+K2.2-A is the current headline result:
+
+```text
+FULL_TRANSFER_CONFIRMED
+```
+
+The archived K2.2-A repository summary can be regenerated with:
+
+```bash
+python chronos/k2/experiments/k2_2a_transfer_h200.py
+```
+
+The full Colab training run remains expensive. Its claim is valid only when
+the full experiment is run with the registered K2.2-A gates:
+
+- primary metric: rollout MSE at H=200
+- primary subset: graceful-baseline subset
+- controls: fair energy and fair L2, re-checked at H=200
+- mechanism: full `||J^T Omega J - Omega||` reduction above threshold
+
+The predecessor K2.0, K2.0-B, and K2.1-B paths are present as archive
+entrypoints. Their full source should be restored from original run logs before
+they are used as executable evidence.
+
+## 8. CI
+
+GitHub Actions runs the K1 core command on every push and pull request:
+
+```bash
+cd k1-manifold-core
+python -m pip install -e ".[dev]"
+pytest -v
 ```
