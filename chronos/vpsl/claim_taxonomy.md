@@ -1,44 +1,80 @@
 # VPSL Claim Taxonomy
 
+VPSL claims are graded by what survives controls, mechanism checks, and
+transfer tests. The taxonomy prevents a local performance gain from being
+overstated as a certified physical structure.
+
 ## Claim Levels
 
-### `BOUNDED_POSITIVE`
+| Level | Label | Meaning |
+| --- | --- | --- |
+| 0 | `NO_EFFECT` | The prior does not improve the target metric. |
+| 1 | `PERFORMANCE_ONLY` | The prior improves performance, but mechanism or controls are not confirmed. |
+| 2 | `BOUNDED_POSITIVE` | The prior/framework has a bounded positive result under a validated setting. |
+| 3 | `TRANSFER_CONFIRMED` | The advantage transfers with a confirmed mechanism against every fair control still valid at the transfer horizon. |
+| 4 | `FULL_TRANSFER_CONFIRMED` | Transfer holds with mechanism, baseline separation, and all pre-registered fair controls intact. |
 
-The framework or prior shows a positive result under bounded conditions, but it
-is not promoted to a full transferable structure claim.
+## Level 0 - `NO_EFFECT`
+
+The tested prior does not robustly beat the baseline.
+
+Use this when:
+
+- primary performance does not improve
+- pooled and graceful-subset results both fail
+- the result does not justify mechanism interpretation
+
+## Level 1 - `PERFORMANCE_ONLY`
+
+The prior improves the target metric, but the evidence does not establish a
+physical-structure mechanism.
+
+Use this when:
+
+- improvement is pooled-only rescue
+- graceful-subset performance fails
+- mechanism fails
+- controls are missing, degenerate, or unfair
+
+K2 synonym:
+
+```text
+TRANSFER_PERFORMANCE_ONLY
+```
+
+## Level 2 - `BOUNDED_POSITIVE`
+
+The result is positive and meaningful, but bounded.
+
+Use this when:
+
+- the framework works in a controlled setting
+- the mechanism is suggestive but not fully transfer-certified
+- the claim should remain local and historical
 
 Chronos example:
-- K1 spectral / Lorentz-sensitive prior evidence.
 
-### `CONTROLS_REPAIRED`
+```text
+K1 spectral / Lorentz-sensitive prior
+```
 
-The experiment has established fair, non-degenerate controls for the relevant
-comparison.
+## Level 3 - `TRANSFER_CONFIRMED`
 
-Chronos example:
-- K2.1-B repaired the energy and L2 control comparisons for the symplectic
-  prior.
+The prior transfers to a harder setting with mechanism confirmed on the
+graceful-baseline subset, and it beats every control that remains fair at that
+transfer horizon.
 
-### `TRANSFER_PERFORMANCE_ONLY`
+Use this when:
 
-The prior improves performance at the transfer horizon, but the mechanism does
-not transfer or the improvement is explained mainly by pooled rescue.
+- a pre-registered control degenerates at the transfer horizon
+- the transfer claim is real, but the full three-way comparison is incomplete
 
-This is not a physical-structure transfer claim.
-
-### `TRANSFER_CONFIRMED`
-
-The prior beats baseline and every control still fair at the transfer horizon
-on the graceful-baseline subset, with mechanism transfer confirmed.
-
-This claim is used when one or more previously selected controls degenerated at
-the transfer horizon, reducing the completeness of the three-way comparison.
-
-### `FULL_TRANSFER_CONFIRMED`
+## Level 4 - `FULL_TRANSFER_CONFIRMED`
 
 The strongest current VPSL claim level.
 
 Requirements:
+
 - prior beats baseline on the graceful-baseline subset
 - prior beats fair energy control
 - prior beats fair L2 control
@@ -46,11 +82,28 @@ Requirements:
 - mechanism transfer is confirmed
 
 Chronos example:
-- K2.2-A symplectic transfer at H=200 on FPU-beta.
 
-### `NO_TRANSFER`
+```text
+K2.2-A symplectic transfer at H=200 on FPU-beta
+```
 
-The prior does not robustly beat baseline at the transfer horizon.
+## Auxiliary Labels
+
+`CONTROLS_REPAIRED`
+
+The experiment has established fair, non-degenerate controls for the relevant
+comparison.
+
+Chronos example:
+
+```text
+K2.1-B repaired fair energy and fair L2 controls.
+```
+
+`CONTROL_MATCHES_SYMP`
+
+The symplectic mechanism persists and beats baseline, but a fair control
+matches or beats the target prior on performance.
 
 ## Non-Claim Defaults
 
@@ -60,4 +113,5 @@ Unless explicitly validated, Chronos does not claim:
 - transfer beyond the tested horizon
 - universality across architectures
 - that every physical prior helps
+- that all systems benefit from symplectic priors
 - that pooled rescue is enough for mechanism transfer

@@ -8,6 +8,8 @@ priors.
 [![tests](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/papasop/Chronos-K1/blob/main/colab/chronos_k1_quickstart.ipynb)
 
+Chronos-K1 is the first stage of the Chronos VPSL program.
+
 Chronos is the working repository for VPSL: Validated Physics Structure
 Learning. It studies whether explicit physical structure can be validated as a
 transferable inductive bias under controlled regimes, fair controls, mechanism
@@ -95,6 +97,7 @@ See:
 - `chronos/vpsl/framework.md`
 - `chronos/vpsl/gates.md`
 - `chronos/vpsl/claim_taxonomy.md`
+- `chronos/vpsl/numbering.md`
 
 ## 4. K1 Archive: Bounded Framework Result
 
@@ -170,6 +173,7 @@ Chronos/
 │       ├── framework.md
 │       ├── gates.md
 │       ├── claim_taxonomy.md
+│       ├── numbering.md
 │       └── vpsl_pipeline.svg
 ├── k1-manifold-core/
 └── exp5-diagnostic/
@@ -183,17 +187,18 @@ positioning is now Chronos / VPSL, with K1 as the historical first milestone.
 Supported:
 
 - VPSL framework.
-- Regime validation as a necessary gate.
+- Regime validation methodology.
 - K1 bounded positive result.
-- K2 fully validated symplectic structure on FPU-beta.
+- First fully validated physical structure: symplectic prior on FPU-beta.
 
 Not claimed:
 
 - All physical priors help.
+- All systems benefit from symplectic priors.
+- General Physics-AI.
 - Chronos is a single architecture.
 - K2 generalizes beyond FPU-beta yet.
 - Pooled rescue at a stress horizon is enough for a structure claim.
-- Chronos proves Physics AI, AGI, or autonomous scientific discovery.
 
 ## 8. Reproduce Results
 
