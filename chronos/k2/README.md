@@ -21,6 +21,8 @@ historical logs and are being reconstructed.
 
 These are archive entrypoints, not complete Colab training scripts.
 
+See `experiments/README.md` for the directory-level boundary statement.
+
 ## Missing Source Code
 
 - K2.0: source script not currently available
