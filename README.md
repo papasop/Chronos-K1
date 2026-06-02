@@ -12,6 +12,9 @@ priors.
 The Colab badge opens the K1 quickstart. K2 archive scripts live under
 `chronos/k2/experiments/`.
 
+Current K2 scripts preserve archived verdict logic and summaries. Full Colab
+training sources are still being restored.
+
 Chronos-K1 is the first stage of the Chronos VPSL program.
 
 Chronos is the working repository for VPSL: Validated Physics Structure
