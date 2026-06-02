@@ -97,7 +97,10 @@ See:
 - `chronos/vpsl/framework.md`
 - `chronos/vpsl/gates.md`
 - `chronos/vpsl/claim_taxonomy.md`
+- `chronos/vpsl/verdicts.md`
+- `chronos/vpsl/certified_structures.md`
 - `chronos/vpsl/numbering.md`
+- `chronos/archive/negative_results.md`
 
 ## 4. K1 Archive: Bounded Framework Result
 
@@ -161,6 +164,9 @@ Chronos/
 ├── Chronos-K1.txt
 ├── archive/
 ├── chronos/
+│   ├── ROADMAP.md
+│   ├── archive/
+│   │   └── negative_results.md
 │   ├── k1/
 │   │   └── archive.md
 │   ├── k2/
@@ -173,6 +179,8 @@ Chronos/
 │       ├── framework.md
 │       ├── gates.md
 │       ├── claim_taxonomy.md
+│       ├── verdicts.md
+│       ├── certified_structures.md
 │       ├── numbering.md
 │       └── vpsl_pipeline.svg
 ├── k1-manifold-core/
@@ -213,11 +221,12 @@ K2 entrypoints live under:
 
 ## 9. Roadmap
 
-Current repository program:
+See the program roadmap:
+- `chronos/ROADMAP.md`
 
-- K1 Archive: preserve the original framework-proven line and keep it
-  reproducible.
-- K2 Archive: preserve the first fully validated VPSL structure claim and its
-  transfer-test discipline.
-- K3 Structure Discovery Program: evaluate the next physical structures only after
-  regime gates, fair controls, mechanism checks, and transfer gates are defined.
+Current program:
+
+- K1: Framework Validation - done.
+- K2: First Certified Structure - done.
+- K3: Gauge / topological / multi-scale candidates - pending.
+- K4: Cross-system transfer - future.
