@@ -12,13 +12,28 @@ Symplectic prior on FPU-beta.
 FULL_TRANSFER_CONFIRMED
 ```
 
+## Archive Verdict
+
+K2.2-A is archived as a milestone result, not as another positive experiment.
+
+```text
+K2 = first VPSL-certified physical structure
+K2.2-A = first FULL_TRANSFER_CONFIRMED structure result
+```
+
+No further changes are required to K2.2-A before archival. Future work should
+start from K3 or from a clearly labeled K2.3 extension, not by weakening the
+K2.2-A claim boundary.
+
 ## What K2 Established
 
-K2 tells a three-step VPSL story.
+K2 tells a five-step VPSL story.
 
 | Stage | Result | Claim Role |
 | --- | --- | --- |
+| K2.0 | FPU-beta regime validation | Regime validation |
 | K2.0-B | Valid FPU-beta window refined; H=200 identified as stress transfer horizon | Regime / window validation |
+| K2.1 | Initial symplectic prior comparison | Structure candidate test |
 | K2.1-B | Fair non-degenerate controls repaired at H=160 | `CONTROLS_REPAIRED` |
 | K2.2-A | Symplectic transfer confirmed at H=200 | `FULL_TRANSFER_CONFIRMED` |
 
@@ -61,6 +76,30 @@ K2.2-A transfer test at H=200
 ```
 
 Historical ExpXX labels remain in K1 archive material only.
+
+## H=240+ Note
+
+K2.2-A uses `hard_diverged` as the primary baseline-stratification label. The
+definition is intentionally strong:
+
+```text
+FUNC_DIV_THR = 10
+tail failure >= 80%
+```
+
+For H=240 or later stress tests, future experiments should track both labels:
+
+```text
+hard_diverged
+functional_diverged
+```
+
+Reason: at longer horizons, a seed may become functionally failed without
+meeting the stronger hard-divergence tail criterion. Future graceful subsets
+should avoid mixing such half-failed samples into the primary transfer test.
+
+This is a K2.3+ design note only. It does not change the K2.2-A archive
+verdict.
 
 ## Preserved Materials
 
