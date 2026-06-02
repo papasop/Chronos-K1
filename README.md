@@ -6,7 +6,11 @@ A framework for discovering, validating, and transferring physics structure
 priors.
 
 [![tests](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml)
+[![k2-syntax](https://github.com/papasop/Chronos-K1/actions/workflows/k2_syntax.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/k2_syntax.yml)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/papasop/Chronos-K1/blob/main/colab/chronos_k1_quickstart.ipynb)
+
+The Colab badge opens the K1 quickstart. K2 archive scripts live under
+`chronos/k2/experiments/`.
 
 Chronos-K1 is the first stage of the Chronos VPSL program.
 

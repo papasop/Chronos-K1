@@ -1,0 +1,19 @@
+name: k2-syntax
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  k2-syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile K2 archive scripts
+        run: |
+          python -m py_compile chronos/k2/experiments/k2_1_symplectic_prior.py
+          python -m py_compile chronos/k2/experiments/k2_1b_repair_controls.py
+          python -m py_compile chronos/k2/experiments/k2_2a_transfer_h200.py

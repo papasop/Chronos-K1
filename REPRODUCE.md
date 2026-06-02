@@ -211,3 +211,14 @@ cd k1-manifold-core
 python -m pip install -e ".[dev]"
 pytest -v
 ```
+
+GitHub Actions also runs a lightweight K2 archive syntax check:
+
+```bash
+python -m py_compile chronos/k2/experiments/k2_1_symplectic_prior.py
+python -m py_compile chronos/k2/experiments/k2_1b_repair_controls.py
+python -m py_compile chronos/k2/experiments/k2_2a_transfer_h200.py
+```
+
+This confirms that the archived K2 entrypoints remain syntactically valid
+without running expensive training jobs.
