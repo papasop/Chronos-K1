@@ -1,67 +1,61 @@
 # K2 Reconstruction Notes
 
-K2.0 and K2.0-B established the FPU-beta graceful-fail regime, but their source
-scripts are not currently available in this repository.
+## Current Status
 
-## Current Source Availability
+Available Source Code:
 
-Available code:
+- `k2_1_symplectic_prior.py`
+- `k2_1b_repair_controls.py`
+- `k2_2a_transfer_h200.py`
 
-- K2.1
-- K2.1-B
-- K2.2-A
+Available Logs:
 
-Missing code:
+- K2.0 Regime Validation
+- K2.0-B Refine Graceful Window
+
+Missing Source Code:
 
 - K2.0
 - K2.0-B
 
-Available evidence:
+## K2.0
 
-- K2.0 / K2.0-B logs
-- K2.1 / K2.1-B code and results
-- K2.2-A code and results
+Purpose:
 
-## Reproducibility Boundary
+Find a graceful-failure regime for FPU-beta.
 
-Full reproducibility currently starts from K2.1.
+Known Outcome:
 
-The regime-discovery stages K2.0 and K2.0-B are preserved as logs in:
+- S=1 identified as candidate regime.
+- Higher S values became divergent.
 
-```text
-chronos/k2/historical_logs/
-```
+Status:
 
-They should be reconstructed before claiming full source-code reproducibility
-for the entire K2 chain.
+Historical logs preserved. Source script missing.
 
-## Reconstruction Targets
+## K2.0-B
 
-Future files:
+Purpose:
 
-```text
-chronos/k2/experiments/k2_0_reconstructed.py
-chronos/k2/experiments/k2_0b_reconstructed.py
-```
+Separate rollout accumulation from training instability.
 
-Acceptance criteria:
+Known Outcome:
 
-- recover FPU-beta S=1 as the validated K2 regime
-- recover H=160 as the clean graceful-fail comparison window
-- recover H=200 as the K2.2-A stress transfer horizon
-- match the archived hard-divergence conclusions closely enough to preserve
-  the K2.1 / K2.2-A claim boundary
+- H=160 selected as clean VPSL regime.
+- Rollout accumulation identified as dominant failure mode.
 
-## Archive Statement
+Status:
 
-K2 can be archived as:
+Historical logs preserved. Source script missing.
 
-```text
-complete result chain, partial source missing
-```
+## Reproducibility Statement
 
-The final K2 verdict remains:
+K2.1 onward is fully reproducible from source.
 
-```text
-FULL_TRANSFER_CONFIRMED
-```
+K2.0 and K2.0-B are currently supported by:
+
+- archived logs
+- archived summaries
+- archived conclusions
+
+Future work may reconstruct the original source files.
