@@ -1,65 +1,57 @@
 # Chronos Milestones
 
-| Milestone | Status |
-| --- | --- |
-| K1 - Framework Proven | `BOUNDED_POSITIVE` |
-| K2 - First VPSL-Certified Structure (Symplectic) | `FULL_TRANSFER_CONFIRMED` |
-| K3 - Structure Discovery Program | `PENDING` |
+## K1 - Framework Validation
 
-## K1 - Framework Proven
+Status: `BOUNDED_POSITIVE`
 
-K1 is the historical Chronos-K1 stage.
+Goal:
 
-Claim level:
-- `BOUNDED_POSITIVE`
+- Validate the VPSL methodology.
+- Establish Regime Validation as a necessary gate.
+- Demonstrate that failure-matched priors can outperform generic priors.
 
-System:
-- K1 framework validation / spectral prior archive
+Main Results:
 
-What it established:
-- A reproducible framework for testing physics-sensitive inductive bias.
-- Lorentz / spectral structure can produce metric-sensitive behavior under
-  controlled normalization tests.
-- Exp6 / Exp7 separate sensitivity from metric specificity.
-- Chronos is a validation discipline for physical structure priors, not only a
-  Lorentz metric-prior implementation.
+- Spectral prior on Klein-Gordon system.
+- Mechanism evidence observed.
+- Performance transfer observed.
+- Mechanism transfer not fully confirmed.
 
-Boundary:
-- K1 is not a universal Lorentz-prior claim.
-- K1 is not the final Chronos architecture.
-- K1 remains a bounded framework validation stage.
+Verdict:
+
+- Framework validated.
+- First bounded positive result.
 
 ## K2 - First VPSL-Certified Structure
 
-K2 is the first fully validated physical-structure milestone.
+Status: `FULL_TRANSFER_CONFIRMED`
 
-Claim level:
-- `FULL_TRANSFER_CONFIRMED`
+Structure:
+
+- Symplectic prior.
 
 System:
-- FPU-beta
 
-Key result:
-- H=200 transfer confirmed on the graceful-baseline subset.
+- FPU-beta chain.
 
-What it established:
-- Symplectic prior beats baseline, fair energy, and fair L2 controls on the
-  graceful-baseline subset of the validated FPU-beta regime.
-- Mechanism transfer is confirmed by full symplectic Jacobian error reduction.
-- The H=200 result is not merely pooled divergence rescue.
+Evidence:
 
-Boundary:
-- K2 is currently scoped to FPU-beta.
-- K2 does not yet claim transfer beyond FPU-beta, beyond the tested horizons,
-  or across all architecture families.
+- Regime Validation passed.
+- Fair controls established.
+- Mechanism confirmed via full symplectic Jacobian error.
+- Transfer confirmed at H=200.
 
-## K3 - Structure Discovery Program
+Key Result:
 
-Future K3 candidates should enter the repository only with an explicit VPSL
-gate plan:
+- First VPSL-certified physical structure.
 
-- regime validation
-- constraint validation
-- intervention / mechanism test
-- transfer test
-- claim boundary
+## K3 - Future Structure Discovery
+
+Status: `PLANNED`
+
+Candidate Structures:
+
+- Gauge symmetry.
+- Topological invariants.
+- Multi-scale Hamiltonian structure.
+- Constraint manifolds.
