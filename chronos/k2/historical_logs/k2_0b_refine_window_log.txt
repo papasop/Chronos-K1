@@ -1,0 +1,21 @@
+K2.0-B - FPU-beta window refinement historical log
+
+Status:
+  Historical evidence archived; source script not currently available.
+
+Role:
+  Refine the K2 rollout window and identify clean vs stress horizons.
+
+Known conclusions:
+  H=160:
+    Valid graceful-fail window for K2.1.
+    Baseline hard-divergence rate approximately 0.13.
+
+  H=200:
+    Stress transfer horizon for K2.2-A.
+    Baseline hard-divergence rate approximately 0.27.
+
+Archive boundary:
+  This file preserves the K2.0-B evidence state. It is not executable source
+  code. Reconstructed code should be added later as k2_0b_reconstructed.py only
+  after matching this historical conclusion.

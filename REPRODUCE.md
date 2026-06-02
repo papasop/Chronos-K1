@@ -158,8 +158,10 @@ Current K2 files:
 chronos/k1/archive.md
 chronos/k2/archive.md
 chronos/k2/docs/chronos_k2_archive.md
-chronos/k2/experiments/k2_0_fpu_regime.py
-chronos/k2/experiments/k2_0b_refine_window.py
+chronos/k2/historical_logs/k2_0_regime_validation_log.txt
+chronos/k2/historical_logs/k2_0b_refine_window_log.txt
+chronos/k2/reconstruction_notes.md
+chronos/k2/experiments/k2_1_symplectic_prior.py
 chronos/k2/experiments/k2_1b_repair_controls.py
 chronos/k2/experiments/k2_2a_transfer_h200.py
 chronos/k2/results/k2_2a_summary.csv
@@ -185,9 +187,9 @@ the full experiment is run with the registered K2.2-A gates:
 - controls: fair energy and fair L2, re-checked at H=200
 - mechanism: full `||J^T Omega J - Omega||` reduction above threshold
 
-The predecessor K2.0, K2.0-B, and K2.1-B paths are present as archive
-entrypoints. Their full source should be restored from original run logs before
-they are used as executable evidence.
+Full reproducibility currently starts from K2.1. The predecessor K2.0 and
+K2.0-B stages are preserved as historical logs, and their source scripts are
+being reconstructed.
 
 ## 8. CI
 

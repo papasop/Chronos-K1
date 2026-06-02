@@ -26,6 +26,10 @@ K2 is now sealed as the first VPSL-certified structure milestone.
 
 K2.2-A tests transfer at H=200 after K2.1-B repaired the controls at H=160.
 
+Full reproducibility currently starts from K2.1. K2.0 and K2.0-B established
+the FPU-beta graceful-fail regime; their logs are archived, but source scripts
+are not currently available.
+
 The confirmed H=200 result requires the primary claim to hold on the
 graceful-baseline subset, not only in pooled results.
 
@@ -75,8 +79,9 @@ FULL_TRANSFER_CONFIRMED
 
 ## Experiment Files
 
-- `chronos/k2/experiments/k2_0_fpu_regime.py`
-- `chronos/k2/experiments/k2_0b_refine_window.py`
+- `chronos/k2/historical_logs/k2_0_regime_validation_log.txt`
+- `chronos/k2/historical_logs/k2_0b_refine_window_log.txt`
+- `chronos/k2/reconstruction_notes.md`
 - `chronos/k2/experiments/k2_1_symplectic_prior.py`
 - `chronos/k2/experiments/k2_1b_repair_controls.py`
 - `chronos/k2/experiments/k2_2a_transfer_h200.py`

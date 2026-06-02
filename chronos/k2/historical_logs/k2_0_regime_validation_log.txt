@@ -1,0 +1,15 @@
+K2.0 - FPU-beta regime validation historical log
+
+Status:
+  Historical evidence archived; source script not currently available.
+
+Role:
+  Establish the FPU-beta regime used by K2.1 and later.
+
+Known conclusion:
+  FPU-beta, S=1 was selected as the K2 regime for symplectic-prior validation.
+
+Archive boundary:
+  This file preserves the K2.0 evidence state. It is not executable source code.
+  Reconstructed code should be added later as k2_0_reconstructed.py only after
+  matching this historical conclusion.

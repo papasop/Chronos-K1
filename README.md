@@ -151,8 +151,11 @@ Chronos/
 │   ├── k1/
 │   │   └── archive.md
 │   ├── k2/
+│   │   ├── README.md
 │   │   ├── archive.md
 │   │   ├── experiments/
+│   │   ├── historical_logs/
+│   │   ├── reconstruction_notes.md
 │   │   └── results/
 │   ├── k3/
 │   │   └── README.md

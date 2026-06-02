@@ -25,6 +25,28 @@ No further changes are required to K2.2-A before archival. Future work should
 start from K3 or from a clearly labeled K2.3 extension, not by weakening the
 K2.2-A claim boundary.
 
+## Source Availability
+
+Available code:
+
+- K2.1
+- K2.1-B
+- K2.2-A
+
+Missing code:
+
+- K2.0
+- K2.0-B
+
+Available evidence:
+
+- K2.0 / K2.0-B logs
+- K2.1 / K2.1-B code and results
+- K2.2-A code and results
+
+Full reproducibility currently starts from K2.1. The regime-discovery stages
+K2.0 and K2.0-B are preserved as logs and are being reconstructed.
+
 ## What K2 Established
 
 K2 tells a five-step VPSL story.
@@ -132,8 +154,10 @@ verdict.
 
 ## Preserved Materials
 
-- `chronos/k2/experiments/k2_0_fpu_regime.py`
-- `chronos/k2/experiments/k2_0b_refine_window.py`
+- `chronos/k2/README.md`
+- `chronos/k2/reconstruction_notes.md`
+- `chronos/k2/historical_logs/k2_0_regime_validation_log.txt`
+- `chronos/k2/historical_logs/k2_0b_refine_window_log.txt`
 - `chronos/k2/experiments/k2_1_symplectic_prior.py`
 - `chronos/k2/experiments/k2_1b_repair_controls.py`
 - `chronos/k2/experiments/k2_2a_transfer_h200.py`
