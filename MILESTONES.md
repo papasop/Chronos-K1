@@ -32,7 +32,7 @@ Structure:
 
 System:
 
-- FPU-beta chain.
+- FPU-β chain.
 
 Evidence:
 
