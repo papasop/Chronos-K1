@@ -134,6 +134,7 @@ verdict.
 
 - `chronos/k2/experiments/k2_0_fpu_regime.py`
 - `chronos/k2/experiments/k2_0b_refine_window.py`
+- `chronos/k2/experiments/k2_1_symplectic_prior.py`
 - `chronos/k2/experiments/k2_1b_repair_controls.py`
 - `chronos/k2/experiments/k2_2a_transfer_h200.py`
 - `chronos/k2/results/k2_2a_summary.csv`
