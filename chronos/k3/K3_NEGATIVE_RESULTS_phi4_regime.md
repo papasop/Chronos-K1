@@ -55,3 +55,27 @@ K3.0-D keeps periodic Sine-Gordon but changes the state representation to:
 The target structure is downgraded honestly to winding-density / local
 topological structure. Integer winding remains a secondary hard check, not the
 primary graceful metric.
+
+## K3.1 - Winding-Density Continuity Prior
+
+Verdict:
+
+```text
+NO_EFFECT
+```
+
+Reason:
+
+The density prior failed the primary paired tests:
+
+- `density_l1.0` did not beat baseline.
+- `density_l1.0` did not beat the matched-ratio off-target continuity control.
+- `density_l0.1` did not beat generic smoothness.
+- `density_l0.1` did not beat increment L2.
+- Winding-density diagnostic did not improve; median reduction was `-10.7%`.
+
+Boundary:
+
+This is a negative result for the tested winding-density continuity prior, not
+a rejection of all topological or winding-density structures. Integer
+topological-charge certification was never claimed.

@@ -1,0 +1,2 @@
+experiment,system,structure,horizon,claim_level,primary_comparison,density_l1_vs_baseline,density_l1_vs_offtarget_matched,density_l01_vs_smoothness,density_l01_vs_increment_l2,mechanism,wdens_reduction,wind_intact,non_claim
+k3_1_main,periodic Sine-Gordon,winding-density continuity prior,160,NO_EFFECT,density_l1.0<offtarget_l0.01 matched-ratio,False,False,False,False,False,-0.107,0.93,not integer topological-charge certification

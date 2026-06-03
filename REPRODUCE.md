@@ -7,7 +7,7 @@ Chronos currently contains these program stages:
 
 - K1: framework / bounded result.
 - K2: first VPSL-certified physical structure.
-- K3: active candidate-structure regime validation; no certified structure yet.
+- K3: active candidate-structure testing; no certified structure yet.
 
 ## 1. Install
 
@@ -243,16 +243,29 @@ Current K3 file:
 
 ```text
 chronos/k3/experiments/k3_0d_sine_gordon_winding_density.py
+chronos/k3/experiments/k3_1_winding_density_prior.py
+chronos/k3/results/k3_1_summary.csv
+chronos/k3/results/k3_1_group_summary.csv
 ```
 
 K3.0-D is baseline-only periodic Sine-Gordon regime validation for a
 winding-density / local topological-structure target. It does not test a prior
 and does not certify integer topological charge.
 
+K3.1 tests a winding-density continuity prior at H=160 and is archived as:
+
+```text
+NO_EFFECT
+```
+
+The K3.1 archive entrypoint regenerates the archived result summaries; it does
+not rerun the full GPU Colab training experiment.
+
 Tiny wiring check:
 
 ```bash
 python chronos/k3/experiments/k3_0d_sine_gordon_winding_density.py --smoke
+python chronos/k3/experiments/k3_1_winding_density_prior.py
 ```
 
-Full K3.0-D training is a Colab-scale experiment.
+Full K3.0-D / K3.1 training is Colab-scale.

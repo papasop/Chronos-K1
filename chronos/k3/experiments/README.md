@@ -8,9 +8,12 @@ entrypoints for future VPSL structures.
 ## Current Entrypoints
 
 - `k3_0d_sine_gordon_winding_density.py`
+- `k3_1_winding_density_prior.py`
 
 ## Boundary
 
 K3.0-D is baseline-only regime validation for a winding-density / local
-topological-structure target on periodic Sine-Gordon. It does not test a
-topological prior and does not certify integer topological charge.
+topological-structure target on periodic Sine-Gordon. K3.1 tests a
+winding-density continuity prior and is archived as `NO_EFFECT`.
+
+Neither file certifies integer topological charge.

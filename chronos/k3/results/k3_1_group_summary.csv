@@ -1,0 +1,8 @@
+group,roll_med,wdens_med,wind_err,inc_norm,gate_pass
+baseline,0.0068,0.0379,0.2,0.0107,True
+density_l0.1,0.0059,0.0377,0.1,0.0103,True
+density_l1.0,0.0087,0.0419,0.07,0.0106,True
+offtarget_l0.01,0.0067,0.0383,0.2,0.0103,True
+offtarget_l0.1,0.0039,0.0251,0.07,0.0077,True
+smoothness_l0.1,0.0059,0.0343,0.17,0.0104,True
+increment_l2_l0.1,0.0065,0.0364,0.2,0.0106,True

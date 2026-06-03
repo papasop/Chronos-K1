@@ -41,7 +41,7 @@ FULL_TRANSFER_CONFIRMED
 Status:
 
 ```text
-STAGE_1_REGIME_VALIDATION
+STAGE_2_PRIOR_TEST_NEGATIVE
 ```
 
 Candidate families:
@@ -55,6 +55,12 @@ Current Stage-1 candidate:
 - K3.0-D: periodic Sine-Gordon winding-density regime validation
 - representation: `[sin(u), cos(u), u_t]`
 - target: winding-density / local topological structure, not integer-charge certification
+
+Current Stage-2 result:
+
+- K3.1: winding-density continuity prior test
+- verdict: `NO_EFFECT`
+- next direction: redesign the topological-density prior or move to a different topological structure
 
 Entry requirement:
 
