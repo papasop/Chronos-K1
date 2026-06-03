@@ -16,7 +16,7 @@ defined:
 K3 status:
 
 ```text
-STAGE_2_PRIOR_TEST_NEGATIVE
+ACTIVE / BOUNDED_NEGATIVE
 ```
 
 ## Current Candidate
@@ -37,6 +37,10 @@ Archived package:
 Prior negative regime attempts are archived in:
 
 - `K3_NEGATIVE_RESULTS_phi4_regime.md`
+
+Detailed K3.1-A negative prior result:
+
+- `negative_results/k3_1a_winding_density_continuity_rejected.md`
 
 K3.0-D is baseline-only periodic Sine-Gordon regime validation using the angle
 representation `[sin(u), cos(u), u_t]`.

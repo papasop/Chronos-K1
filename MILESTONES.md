@@ -51,13 +51,18 @@ Key Result:
 
 - First VPSL-certified physical structure.
 
-## K3 - Future Structure Discovery
+## K3 - Topological / Winding-Density Structure Search
 
-Status: `PLANNED`
+Status: `ACTIVE / BOUNDED_NEGATIVE`
 
-Candidate Structures:
+Current Result:
 
-- Gauge symmetry.
-- Topological invariants.
-- Multi-scale Hamiltonian structure.
-- Constraint manifolds.
+- K3.0-D found a valid winding-density regime.
+- K3.1-A returned `NO_EFFECT` for the Form-C winding-density continuity prior.
+- No K3 structure is certified yet.
+
+Next Checkpoints:
+
+- K3.1-B advection-aware prior, sandbox-gated only.
+- 2D vortex topology.
+- Or pause K3 and move to another structure family.

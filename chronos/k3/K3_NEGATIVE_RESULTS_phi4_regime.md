@@ -58,6 +58,10 @@ primary graceful metric.
 
 ## K3.1 - Winding-Density Continuity Prior
 
+Detailed archive:
+
+- `negative_results/k3_1a_winding_density_continuity_rejected.md`
+
 Verdict:
 
 ```text
