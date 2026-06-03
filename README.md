@@ -47,6 +47,18 @@ Chronos is organized as milestones, not as a single architecture:
 - K2: first VPSL-certified structure, validating a symplectic prior on FPU-β.
 - K3: future structure discovery program.
 
+## VPSL Structure Map
+
+Chronos tracks physical structures as validation targets:
+
+| Structure Family | Program / System | Scope | Current Status |
+| --- | --- | --- | --- |
+| Pseudo-Riemannian / Lorentz structure | K1 / Klein-Gordon | Geometry, causality, metric signature, light-cone behavior | Partially confirmed; short-horizon evidence, mechanism transfer bounded |
+| Spectral / dispersion structure | K1 / Klein-Gordon | Frequencies, dispersion relation, mode dynamics | `BOUNDED_POSITIVE`; coupled with Lorentz-sensitive validation |
+| Symplectic / Hamiltonian structure | K2 / FPU-β | Phase space, Hamiltonian flow, long-horizon dynamics | `FULL_TRANSFER_CONFIRMED`; H=200 mechanism transfer confirmed |
+| Gauge structure | K3 candidate | Local symmetry and gauge invariants | Pending |
+| Topological structure | K4 candidate | Global invariants and topological constraints | Pending |
+
 The repository remains a reproducible research prototype. It does not claim a
 solved Physics AI system, a universal architecture, or a proof that every
 physical prior improves every task.
@@ -166,6 +178,7 @@ Chronos/
 │       ├── verdicts.md
 │       ├── certified_structures.md
 │       ├── numbering.md
+│       ├── structure_claim_template.md
 │       └── vpsl_pipeline.svg
 ├── k1-manifold-core/
 └── exp5-diagnostic/
