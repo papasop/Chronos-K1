@@ -1,12 +1,13 @@
 # Reproduce The Core Results
 
-This page separates the historical K1 reproduction path from the newer K2
-VPSL archive path.
+This page separates the historical K1 reproduction path, the K2 VPSL archive
+path, and the active K3 candidate-regime path.
 
-Chronos currently contains two evidence stages:
+Chronos currently contains these program stages:
 
 - K1: framework / bounded result.
 - K2: first VPSL-certified physical structure.
+- K3: active candidate-structure regime validation; no certified structure yet.
 
 ## 1. Install
 
@@ -229,3 +230,29 @@ python -m py_compile chronos/k2/experiments/k2_2b_transfer_h240.py
 
 This confirms that the archived K2 entrypoints remain syntactically valid
 without running expensive training jobs.
+
+## 9. K3: Candidate Regime Validation
+
+K3 entrypoints live under:
+
+```text
+chronos/k3/experiments/
+```
+
+Current K3 file:
+
+```text
+chronos/k3/experiments/k3_0d_sine_gordon_winding_density.py
+```
+
+K3.0-D is baseline-only periodic Sine-Gordon regime validation for a
+winding-density / local topological-structure target. It does not test a prior
+and does not certify integer topological charge.
+
+Tiny wiring check:
+
+```bash
+python chronos/k3/experiments/k3_0d_sine_gordon_winding_density.py --smoke
+```
+
+Full K3.0-D training is a Colab-scale experiment.

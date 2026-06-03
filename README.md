@@ -57,6 +57,7 @@ Chronos tracks physical structures as validation targets:
 | Spectral / dispersion structure | K1 / Klein-Gordon | Frequencies, dispersion relation, mode dynamics | `BOUNDED_POSITIVE`; coupled with Lorentz-sensitive validation |
 | Symplectic / Hamiltonian structure | K2 / FPU-β | Phase space, Hamiltonian flow, long-horizon dynamics | `FULL_TRANSFER_CONFIRMED` through H=240; mechanism transfer confirmed |
 | Gauge structure | K3 candidate | Local symmetry and gauge invariants | Pending |
+| Topological / winding-density structure | K3.0-D candidate | Local topological-charge density, Sine-Gordon winding density | Stage-1 regime validation |
 | Topological structure | K4 candidate | Global invariants and topological constraints | Pending |
 
 The repository remains a reproducible research prototype. It does not claim a
@@ -172,7 +173,8 @@ Chronos/
 │   │   ├── reconstruction_notes.md
 │   │   └── results/
 │   ├── k3/
-│   │   └── README.md
+│   │   ├── README.md
+│   │   └── experiments/
 │   └── vpsl/
 │       ├── framework.md
 │       ├── gates.md
@@ -227,5 +229,5 @@ Current program:
 
 - K1: Framework Validation - done.
 - K2: First Certified Structure - done.
-- K3: Gauge / topological / multi-scale candidates - pending.
+- K3: Gauge / topological / multi-scale candidates - stage-1 regime validation.
 - K4: Cross-system transfer - future.

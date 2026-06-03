@@ -41,7 +41,7 @@ FULL_TRANSFER_CONFIRMED
 Status:
 
 ```text
-PENDING
+STAGE_1_REGIME_VALIDATION
 ```
 
 Candidate families:
@@ -49,6 +49,12 @@ Candidate families:
 - gauge structure
 - topological structure
 - multi-scale structure
+
+Current Stage-1 candidate:
+
+- K3.0-D: periodic Sine-Gordon winding-density regime validation
+- representation: `[sin(u), cos(u), u_t]`
+- target: winding-density / local topological structure, not integer-charge certification
 
 Entry requirement:
 
