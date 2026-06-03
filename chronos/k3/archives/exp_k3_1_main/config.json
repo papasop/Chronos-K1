@@ -1,0 +1,37 @@
+{
+  "experiment": "k3_1_main",
+  "program": "K3",
+  "stage": "Stage 2 prior test",
+  "status": "archived",
+  "verdict": "NO_EFFECT",
+  "system": "periodic Sine-Gordon",
+  "representation": "[sin(u), cos(u), u_t]",
+  "target_structure": "winding-density / local topological structure",
+  "non_claim": "integer topological-charge certification",
+  "horizon": 160,
+  "n_seeds": 30,
+  "epochs": 150,
+  "device": "cuda",
+  "groups": [
+    {"name": "baseline", "prior": "none", "lambda": 0.0, "ratio": null},
+    {"name": "density_l0.1", "prior": "winding_density_continuity", "lambda": 0.1, "ratio": 0.51},
+    {"name": "density_l1.0", "prior": "winding_density_continuity", "lambda": 1.0, "ratio": 1.08},
+    {"name": "offtarget_l0.01", "prior": "off_target_continuity", "lambda": 0.01, "ratio": 0.83},
+    {"name": "offtarget_l0.1", "prior": "off_target_continuity", "lambda": 0.1, "ratio": 5.7},
+    {"name": "smoothness_l0.1", "prior": "gradient_smoothness", "lambda": 0.1, "ratio": 0.50},
+    {"name": "increment_l2_l0.1", "prior": "increment_l2", "lambda": 0.1, "ratio": 0.36}
+  ],
+  "primary_comparison": "density_l1.0 < offtarget_l0.01 at matched prior/roll ratio",
+  "statistics": {
+    "test": "paired Wilcoxon",
+    "alternative": "less",
+    "multiple_comparisons": "Holm",
+    "alpha": 0.05
+  },
+  "mechanism": {
+    "metric": "winding-density error",
+    "required_reduction": 0.20,
+    "observed_reduction": -0.107,
+    "wind_intact": 0.93
+  }
+}

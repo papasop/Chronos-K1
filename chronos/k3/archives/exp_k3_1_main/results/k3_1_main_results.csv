@@ -1,0 +1,8 @@
+group,prior,lambda,ratio,roll_med,wdens_med,wind_err,inc_norm,gate_pass
+baseline,none,0.0,,0.0068,0.0379,0.2,0.0107,True
+density_l0.1,winding_density_continuity,0.1,0.51,0.0059,0.0377,0.1,0.0103,True
+density_l1.0,winding_density_continuity,1.0,1.08,0.0087,0.0419,0.07,0.0106,True
+offtarget_l0.01,off_target_continuity,0.01,0.83,0.0067,0.0383,0.2,0.0103,True
+offtarget_l0.1,off_target_continuity,0.1,5.7,0.0039,0.0251,0.07,0.0077,True
+smoothness_l0.1,gradient_smoothness,0.1,0.5,0.0059,0.0343,0.17,0.0104,True
+increment_l2_l0.1,increment_l2,0.1,0.36,0.0065,0.0364,0.2,0.0106,True

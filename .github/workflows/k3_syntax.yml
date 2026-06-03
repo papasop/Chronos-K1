@@ -16,3 +16,4 @@ jobs:
         run: |
           python -m py_compile chronos/k3/experiments/k3_0d_sine_gordon_winding_density.py
           python -m py_compile chronos/k3/experiments/k3_1_winding_density_prior.py
+          python -m py_compile chronos/k3/archives/exp_k3_1_main/k3_1_main.py

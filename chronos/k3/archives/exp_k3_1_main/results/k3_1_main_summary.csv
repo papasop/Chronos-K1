@@ -1,0 +1,2 @@
+experiment,verdict,horizon,n_seeds,density_l1_vs_baseline,density_l1_vs_offtarget_matched,density_l01_vs_smoothness,density_l01_vs_increment_l2,mechanism,wdens_reduction,wind_intact,non_claim
+k3_1_main,NO_EFFECT,160,30,False,False,False,False,False,-0.107,0.93,not integer topological-charge certification

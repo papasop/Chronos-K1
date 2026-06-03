@@ -237,6 +237,7 @@ K3 entrypoints live under:
 
 ```text
 chronos/k3/experiments/
+chronos/k3/archives/
 ```
 
 Current K3 file:
@@ -244,6 +245,12 @@ Current K3 file:
 ```text
 chronos/k3/experiments/k3_0d_sine_gordon_winding_density.py
 chronos/k3/experiments/k3_1_winding_density_prior.py
+chronos/k3/archives/exp_k3_1_main/README.md
+chronos/k3/archives/exp_k3_1_main/config.json
+chronos/k3/archives/exp_k3_1_main/k3_1_main.py
+chronos/k3/archives/exp_k3_1_main/docs/EXPERIMENT_DESIGN.md
+chronos/k3/archives/exp_k3_1_main/results/k3_1_main_results.csv
+chronos/k3/archives/exp_k3_1_main/results/k3_1_main_summary.csv
 chronos/k3/results/k3_1_summary.csv
 chronos/k3/results/k3_1_group_summary.csv
 ```
@@ -261,11 +268,18 @@ NO_EFFECT
 The K3.1 archive entrypoint regenerates the archived result summaries; it does
 not rerun the full GPU Colab training experiment.
 
+The packaged K3.1 archive can also regenerate its local CSV summaries:
+
+```bash
+python chronos/k3/archives/exp_k3_1_main/k3_1_main.py
+```
+
 Tiny wiring check:
 
 ```bash
 python chronos/k3/experiments/k3_0d_sine_gordon_winding_density.py --smoke
 python chronos/k3/experiments/k3_1_winding_density_prior.py
+python chronos/k3/archives/exp_k3_1_main/k3_1_main.py
 ```
 
 Full K3.0-D / K3.1 training is Colab-scale.

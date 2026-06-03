@@ -30,6 +30,10 @@ Current entrypoint:
 - `experiments/k3_0d_sine_gordon_winding_density.py`
 - `experiments/k3_1_winding_density_prior.py`
 
+Archived package:
+
+- `archives/exp_k3_1_main/`
+
 Prior negative regime attempts are archived in:
 
 - `K3_NEGATIVE_RESULTS_phi4_regime.md`
@@ -46,6 +50,10 @@ NO_EFFECT
 The density prior does not beat baseline, does not beat the matched-ratio
 off-target continuity control, and does not pass the winding-density mechanism
 test. This is archived as a negative Stage-2 prior result.
+
+The `archives/exp_k3_1_main/` package preserves the experiment design, config,
+headline results, summary verdict, and an archive entrypoint for regenerating
+the stored CSV summaries. It does not rerun the full GPU Colab training sweep.
 
 Boundary:
 
