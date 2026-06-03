@@ -44,7 +44,7 @@ For K2 the mechanism diagnostic is full symplectic Jacobian error:
 ||J^T Omega J - Omega||
 ```
 
-K2.2-A requires more than 20% reduction on the graceful-baseline subset.
+K2.2-B requires more than 20% reduction on the graceful-baseline subset.
 
 ## 5. Claim Boundary Gate
 

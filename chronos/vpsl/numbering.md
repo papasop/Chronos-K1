@@ -21,6 +21,7 @@ K2.0-B
 K2.1
 K2.1-B
 K2.2-A
+K2.2-B
 ```
 
 ## Boundary
@@ -49,6 +50,7 @@ should not be used as the primary archive structure for K2 or later.
 | K2.1 | Initial symplectic prior comparison |
 | K2.1-B | Fair-control repair |
 | K2.2-A | H=200 symplectic transfer test |
+| K2.2-B | H=240 symplectic transfer test |
 
 ## K3 And Later
 

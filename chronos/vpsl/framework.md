@@ -32,7 +32,7 @@ This gate asks:
 K2 example:
 
 ```text
-FPU-β, S=1, H=160 clean comparison, H=200 stress transfer.
+FPU-β, S=1, H=160 clean comparison, H=200 and H=240 stress transfer.
 ```
 
 ## Gate 2 - Constraint Validation
@@ -84,7 +84,7 @@ This gate asks:
 K2 example:
 
 ```text
-K2.2-A at H=200: FULL_TRANSFER_CONFIRMED.
+K2.2-B at H=240: FULL_TRANSFER_CONFIRMED.
 ```
 
 ## Pipeline
@@ -109,7 +109,7 @@ chronos/vpsl/vpsl_pipeline.svg
 | Milestone | Role | Current Claim |
 | --- | --- | --- |
 | K1 | Framework validation / spectral prior | `BOUNDED_POSITIVE` |
-| K2 | First certified structure: symplectic prior | `FULL_TRANSFER_CONFIRMED` |
+| K2 | First certified structure: symplectic prior | `FULL_TRANSFER_CONFIRMED through H=240` |
 | K3 | Future structure discovery program | `PENDING` |
 
 ## Structure Claim Template

@@ -1,0 +1,2 @@
+experiment,structure,regime,horizon,claim_level,primary_subset,baseline_comparison,energy_control,l2_control,mechanism
+k2_2b_transfer_h240,symplectic prior,FPU-β,240,FULL_TRANSFER_CONFIRMED,graceful-baseline,symplectic<baseline,symplectic<fair energy,symplectic<fair L2,full symplectic Jacobian error reduction confirmed

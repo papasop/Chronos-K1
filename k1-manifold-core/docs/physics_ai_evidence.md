@@ -5,11 +5,11 @@
 | Stage | Result | Status |
 | --- | --- | --- |
 | K1 | Framework validation / spectral prior | `BOUNDED_POSITIVE` |
-| K2 | Symplectic prior on FPU-β | `FULL_TRANSFER_CONFIRMED` |
+| K2 | Symplectic prior on FPU-β | `FULL_TRANSFER_CONFIRMED through H=240` |
 
 K1 established the VPSL framework and a bounded positive spectral /
 Lorentz-sensitive prior result. K2 produced the first VPSL-certified physical
-structure: a symplectic prior on FPU-β with H=200 transfer confirmed on the
+structure: a symplectic prior on FPU-β with H=240 transfer confirmed on the
 graceful-baseline subset.
 
 See:

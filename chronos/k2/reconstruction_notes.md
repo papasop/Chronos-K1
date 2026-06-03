@@ -63,4 +63,4 @@ K2.0 and K2.0-B are currently supported by:
 - archived conclusions
 
 Future work may reconstruct the original K2.0/K2.0-B source files and restore
-the full K2.1/K2.1-B/K2.2-A Colab training sources.
+the full K2.1/K2.1-B/K2.2-A/K2.2-B Colab training sources.

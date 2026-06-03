@@ -12,31 +12,31 @@ symplecticity on FPU-β.
 **Current verdict.**
 
 ```text
-FULL_TRANSFER_CONFIRMED
+FULL_TRANSFER_CONFIRMED through H=240
 ```
 
-**Key result.** K2.2-A confirms H=200 transfer on the graceful-baseline subset:
+**Key result.** K2.2-B extends transfer to H=240 on the graceful-baseline subset:
 
 | Variant | roll_MSE |
 | --- | ---: |
-| baseline | 0.0722 |
-| symplectic | 0.0398 |
-| fair energy | 0.1038 |
-| fair L2 | 0.0975 |
+| baseline | 0.0847 |
+| symplectic | 0.0543 |
+| fair energy | 0.1374 |
+| fair L2 | 0.1408 |
 
 Mechanism:
 
 ```text
-full symp_err reduction = 70.7%
+full symp_err reduction = 71.5%
 ```
 
 **Archive.**
 
 - `../../chronos/k2/archive.md`
 
-**Reproducibility boundary.** Full source-code reproducibility currently starts
-from K2.1. K2.0 and K2.0-B are preserved as historical logs while their source
-scripts are reconstructed.
+**Reproducibility boundary.** K2.1 onward currently has repository archive
+entrypoints and verdict logic. Full training reproduction requires restoring
+the original Colab experiment sources.
 
 ## Experiment 6: Light-cone Geodesic Benchmark
 

@@ -5,7 +5,7 @@
 Status:
 
 ```text
-FULL_TRANSFER_CONFIRMED
+FULL_TRANSFER_CONFIRMED through H=240
 ```
 
 System:
@@ -26,6 +26,12 @@ Evidence:
 - Fair Controls
 - Mechanism Validation
 - Transfer Validation
+
+Latest Evidence:
+
+```text
+K2.2-B, FPU-β, H=240
+```
 
 Current Standing:
 

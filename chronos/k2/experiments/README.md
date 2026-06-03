@@ -18,9 +18,10 @@ training sources are explicitly restored.
 - `k2_1_symplectic_prior.py`
 - `k2_1b_repair_controls.py`
 - `k2_2a_transfer_h200.py`
+- `k2_2b_transfer_h240.py`
 
 ## Boundary
 
-K2.1 through K2.2-A can currently be inspected through repository archive
+K2.1 through K2.2-B can currently be inspected through repository archive
 entrypoints and archived summaries. Full training reproduction remains pending
 restoration of the original Colab experiment sources.

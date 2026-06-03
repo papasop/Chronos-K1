@@ -55,7 +55,7 @@ Chronos tracks physical structures as validation targets:
 | --- | --- | --- | --- |
 | Pseudo-Riemannian / Lorentz structure | K1 / Klein-Gordon | Geometry, causality, metric signature, light-cone behavior | Partially confirmed; short-horizon evidence, mechanism transfer bounded |
 | Spectral / dispersion structure | K1 / Klein-Gordon | Frequencies, dispersion relation, mode dynamics | `BOUNDED_POSITIVE`; coupled with Lorentz-sensitive validation |
-| Symplectic / Hamiltonian structure | K2 / FPU-β | Phase space, Hamiltonian flow, long-horizon dynamics | `FULL_TRANSFER_CONFIRMED`; H=200 mechanism transfer confirmed |
+| Symplectic / Hamiltonian structure | K2 / FPU-β | Phase space, Hamiltonian flow, long-horizon dynamics | `FULL_TRANSFER_CONFIRMED` through H=240; mechanism transfer confirmed |
 | Gauge structure | K3 candidate | Local symmetry and gauge invariants | Pending |
 | Topological structure | K4 candidate | Global invariants and topological constraints | Pending |
 
@@ -75,7 +75,7 @@ performance, and mechanism all survive the relevant gates.
 | --- | --- | --- |
 | K1 | VPSL Framework Validation | Done |
 | K1 | Spectral Prior | BOUNDED_POSITIVE |
-| K2 | Symplectic Prior | FULL_TRANSFER_CONFIRMED |
+| K2 | Symplectic Prior | FULL_TRANSFER_CONFIRMED through H=240 |
 | K3 | Future Structures | Pending |
 
 K1 established a bounded framework result: metric-sensitive behavior appears
@@ -89,6 +89,7 @@ K2 established the first full VPSL transfer result:
 - `symplectic < fair L2`
 - mechanism transfer confirmed by full symplectic Jacobian error reduction
 - confirmation holds on the graceful-baseline subset, not only pooled rescue
+- K2.2-B extended the transfer result to H=240 on the graceful-baseline subset
 
 ## 3. VPSL Gates
 
@@ -142,7 +143,8 @@ Detailed K1 materials:
 ## 5. K2 Archive: Symplectic Prior
 
 K2 Milestone: the symplectic prior became the first VPSL-certified physical
-structure, achieving `FULL_TRANSFER_CONFIRMED` on the FPU-β benchmark.
+structure, achieving `FULL_TRANSFER_CONFIRMED` through H=240 on the FPU-β
+benchmark.
 
 See:
 - `chronos/k2/archive.md`

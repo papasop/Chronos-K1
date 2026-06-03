@@ -84,7 +84,7 @@ Requirements:
 Chronos example:
 
 ```text
-K2.2-A symplectic transfer at H=200 on FPU-β
+K2.2-B symplectic transfer at H=240 on FPU-β
 ```
 
 ## Auxiliary Labels

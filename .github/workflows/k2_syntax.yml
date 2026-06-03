@@ -17,3 +17,4 @@ jobs:
           python -m py_compile chronos/k2/experiments/k2_1_symplectic_prior.py
           python -m py_compile chronos/k2/experiments/k2_1b_repair_controls.py
           python -m py_compile chronos/k2/experiments/k2_2a_transfer_h200.py
+          python -m py_compile chronos/k2/experiments/k2_2b_transfer_h240.py

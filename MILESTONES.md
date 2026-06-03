@@ -24,7 +24,7 @@ Verdict:
 
 ## K2 - First VPSL-Certified Structure
 
-Status: `FULL_TRANSFER_CONFIRMED`
+Status: `FULL_TRANSFER_CONFIRMED through H=240`
 
 Structure:
 
@@ -40,6 +40,12 @@ Evidence:
 - Fair controls established.
 - Mechanism confirmed via full symplectic Jacobian error.
 - Transfer confirmed at H=200.
+- Transfer extended to H=240.
+
+Latest Result:
+
+- K2.2-B extended `FULL_TRANSFER_CONFIRMED` to H=240.
+- Transfer remains mechanism-supported, not merely pooled rescue.
 
 Key Result:
 
