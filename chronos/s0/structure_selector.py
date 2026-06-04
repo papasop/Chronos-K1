@@ -10,6 +10,8 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from typing import Any
 
+from chronos.k3.verdicts import k32d_explain, k32d_verdict
+
 from .diagnostics_schema import (
     ACT_CONTINUE,
     ACT_DO_NOT_PROMOTE,
@@ -21,16 +23,12 @@ from .diagnostics_schema import (
     GATE_MECHANISM,
     GATE_REGIME,
     GAUGE_RESIDUAL_SIGNIF,
-    HARD_DIV_MAX,
     K1_LORENTZ,
     K2_SYMPLECTIC,
     K3_TOPOLOGICAL,
     K4_GAUGE,
     K5_HILBERT,
     KNOWN_DIAGNOSTICS,
-    PAIR_INTACT_MIN,
-    POS_ERR_CEIL,
-    REF_CEIL,
     SYMPLECTIC_ERR_OK,
     TOPO_TRANSPORT_OK,
     UNITARITY_ERR_SIGNIF,
@@ -68,9 +66,8 @@ def recommend(diagnostics: dict[str, Any] | None) -> Recommendation:
             ACT_DO_NOT_PROMOTE,
         )
 
-    field_ok = (d.get("field_learnable") is True) or (
-        _present(d, "baseline_divergence") and d["baseline_divergence"] < 0.05
-    )
+    field_ok = d.get("field_learnable") is True
+    bounded_ok = _present(d, "baseline_divergence") and d["baseline_divergence"] < 0.05
     transport_known = _present(d, "topological_transport_score") or _present(d, "object_tracking_valid")
     transport_fail = False
     if transport_known:
@@ -78,7 +75,7 @@ def recommend(diagnostics: dict[str, Any] | None) -> Recommendation:
             transport_fail = True
         if _present(d, "topological_transport_score") and d["topological_transport_score"] < TOPO_TRANSPORT_OK:
             transport_fail = True
-    if field_ok and transport_fail:
+    if field_ok and bounded_ok and transport_fail:
         return Recommendation(
             K3_TOPOLOGICAL,
             CONF_LOW,
@@ -156,35 +153,3 @@ def recommend(diagnostics: dict[str, Any] | None) -> Recommendation:
         None,
         ACT_DO_NOT_PROMOTE,
     )
-
-
-def k32d_verdict(mode: str, ref_med: float, hard_frac: float, pair_frac: float, pos_med: float) -> str:
-    """Return the two-layer K3.2D regime verdict."""
-
-    pipeline_ok = (ref_med < REF_CEIL) and (hard_frac <= HARD_DIV_MAX)
-    transport_ok = (pair_frac >= PAIR_INTACT_MIN) and (pos_med < POS_ERR_CEIL)
-
-    if mode == "SMOKE":
-        if not pipeline_ok:
-            return "SMOKE_PIPELINE_FAIL"
-        if not transport_ok:
-            return "SMOKE_PIPELINE_OK_TRANSPORT_FAIL"
-        return "SMOKE_TRANSPORT_OK"
-
-    return "FULL_REGIME_VALIDATED" if (pipeline_ok and transport_ok) else "REGIME_UNRESOLVED"
-
-
-def k32d_explain(verdict: str) -> str:
-    explanations = {
-        "SMOKE_PIPELINE_FAIL": (
-            "Baseline did not learn field prediction or hard-diverged. Fix training/regime before promotion."
-        ),
-        "SMOKE_PIPELINE_OK_TRANSPORT_FAIL": (
-            "Baseline learns field prediction but fails vortex transport. Low field MSE does not imply topology."
-        ),
-        "SMOKE_TRANSPORT_OK": "Pipeline learns and the vortex pair is transported; promote to FULL for N=30.",
-        "FULL_REGIME_VALIDATED": "Baseline trains, vortex pair transported, position error graceful, hard-div low.",
-        "REGIME_UNRESOLVED": "Regime not validated. This is not a prior test and not a rejection of 2D topology.",
-    }
-    return explanations.get(verdict, "unknown verdict")
-

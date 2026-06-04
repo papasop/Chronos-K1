@@ -45,6 +45,8 @@ import torch
 import torch.nn as nn
 from pathlib import Path
 
+from chronos.k3.verdicts import HARD_DIV_MAX, PAIR_INTACT_MIN, POS_ERR_CEIL, REF_CEIL, k32d_verdict
+
 # ---- run mode ----
 RUN_MODE="SMOKE"     # SMOKE first; then FULL for the N=30 regime decision
 DETERMINISTIC=True
@@ -65,10 +67,6 @@ HIDDEN=48; N_LAYERS=3; RADIUS=2; LR=3e-4; EPOCHS=80; N_SEEDS=30
 N_TRAIN_TRAJ=24; TRAIN_STEPS=40; GRAD_CLIP=1.0
 FUNC_DIV_THR=10.0
 # regime gate thresholds
-REF_CEIL=0.05             # baseline must fit the short-horizon map
-POS_ERR_CEIL=8.0          # final vortex-position error (lattice units) ceiling for "graceful"
-PAIR_INTACT_MIN=0.6       # fraction of seeds keeping exactly one +/- pair at final H
-HARD_DIV_MAX=0.5
 
 if RUN_MODE=="SMOKE":
     N_SEEDS=3; EPOCHS=15; N_TRAIN_TRAJ=8; TRAIN_STEPS=20; HORIZON=20
@@ -216,18 +214,6 @@ def evaluate(model,seed):
     per=np.mean((pred[:T]-true[:T])**2,axis=(1,2,3)); over=per>FUNC_DIV_THR
     hard=bool(over[-1] and over[max(0,T-5):].mean()>0.8)
     return dict(roll_mse=roll,pos_err=pos_err,pair_intact=pair_intact,ref_mse=ref_mse,hard_div=1.0 if hard else 0.0)
-
-def k32d_verdict(mode, ref_med, hard_frac, pair_frac, pos_med):
-    """Two-layer verdict: field prediction pipeline vs topological transport."""
-    pipeline_ok = (ref_med < REF_CEIL) and (hard_frac <= HARD_DIV_MAX)
-    transport_ok = (pair_frac >= PAIR_INTACT_MIN) and (pos_med < POS_ERR_CEIL)
-    if mode == "SMOKE":
-        if not pipeline_ok:
-            return "SMOKE_PIPELINE_FAIL"
-        if not transport_ok:
-            return "SMOKE_PIPELINE_OK_TRANSPORT_FAIL"
-        return "SMOKE_TRANSPORT_OK"
-    return "FULL_REGIME_VALIDATED" if (pipeline_ok and transport_ok) else "REGIME_UNRESOLVED"
 
 def main():
     print("\n"+"🌀"*20); print("EXPERIMENT K3.2D.0: 2D VORTEX REGIME VALIDATION"); print("🌀"*20+"\n")

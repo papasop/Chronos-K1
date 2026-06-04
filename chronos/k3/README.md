@@ -43,6 +43,10 @@ Detailed K3.1-A negative prior result:
 
 - `negative_results/k3_1a_winding_density_continuity_rejected.md`
 
+K3.2D.0 unresolved 2D vortex regime note:
+
+- `negative_results/k3_2d_gp_vortex_regime_unresolved.md`
+
 K3.0-D is baseline-only periodic Sine-Gordon regime validation using the angle
 representation `[sin(u), cos(u), u_t]`.
 
@@ -105,3 +109,7 @@ The smoke verdicts are therefore split:
 
 If K3.2D.0 returns transport failure, it is recorded as
 `REGIME_UNRESOLVED` / `TRANSPORT_FAIL`, not as a rejected topological prior.
+
+The shared K3.2D verdict helper lives in:
+
+- `verdicts.py`

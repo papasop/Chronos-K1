@@ -83,3 +83,22 @@ Boundary:
 This is a negative result for the tested winding-density continuity prior, not
 a rejection of all topological or winding-density structures. Integer
 topological-charge certification was never claimed.
+
+## K3.2D.0 - 2D GP Vortex Regime Unresolved
+
+Detailed archive:
+
+- `negative_results/k3_2d_gp_vortex_regime_unresolved.md`
+
+Verdict:
+
+```text
+REGIME_UNRESOLVED / TRANSPORT_FAIL
+```
+
+Reason:
+
+The 2D restart distinguishes field-learning pipeline health from topological
+transport. A baseline may learn short-horizon `[Re psi, Im psi]` prediction
+while failing to preserve and transport the vortex-antivortex pair as objects.
+This is a regime-validation failure, not a prior rejection.

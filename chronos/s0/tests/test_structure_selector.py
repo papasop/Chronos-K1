@@ -31,6 +31,17 @@ class StructureSelectorTests(unittest.TestCase):
         self.assertEqual(rec.allowed_action, ACT_DO_NOT_PROMOTE)
         self.assertEqual(rec.next_vpsl_gate, GATE_REGIME)
 
+    def test_bounded_only_is_not_field_learned(self):
+        rec = recommend(
+            {
+                "object_tracking_valid": False,
+                "topological_transport_score": 0.0,
+                "baseline_divergence": 0.01,
+            }
+        )
+        self.assertEqual(rec.candidate_family, UNRESOLVED)
+        self.assertEqual(rec.allowed_action, ACT_DO_NOT_PROMOTE)
+
     def test_strong_symplectic(self):
         rec = recommend({"symplectic_improves_vs_controls": True, "symplectic_jacobian_error": 0.1})
         self.assertEqual(rec.candidate_family, K2_SYMPLECTIC)
@@ -51,12 +62,16 @@ class StructureSelectorTests(unittest.TestCase):
         )
 
     def test_k32d_verdicts(self):
+        self.assertEqual(k32d_verdict("smoke", 0.02, 0.0, 0.8, 2.0), "SMOKE_TRANSPORT_OK")
         self.assertEqual(k32d_verdict("SMOKE", 0.02, 0.0, 0.8, 2.0), "SMOKE_TRANSPORT_OK")
         self.assertEqual(k32d_verdict("SMOKE", 0.2, 0.0, 0.0, 8.0), "SMOKE_PIPELINE_FAIL")
         self.assertEqual(k32d_verdict("FULL", 0.02, 0.0, 0.8, 2.0), "FULL_REGIME_VALIDATED")
         self.assertEqual(k32d_verdict("FULL", 0.02, 0.0, 0.0, 8.0), "REGIME_UNRESOLVED")
 
+    def test_k32d_invalid_mode(self):
+        with self.assertRaises(ValueError):
+            k32d_verdict("scout", 0.02, 0.0, 0.8, 2.0)
+
 
 if __name__ == "__main__":
     unittest.main()
-

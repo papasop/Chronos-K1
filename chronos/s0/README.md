@@ -38,6 +38,13 @@ A learner can imitate field values while failing to preserve vortex identity,
 charge, or transport. S0 therefore separates `pipeline_ok` from `transport_ok`
 for topological regimes.
 
+For topology transport failure, S0 requires both:
+
+- `field_learnable=True`
+- bounded baseline behavior such as low `baseline_divergence`
+
+Non-divergence alone is not treated as evidence that the field map was learned.
+
 ## Run Tests
 
 From the repository root:
@@ -45,4 +52,3 @@ From the repository root:
 ```bash
 python -m unittest chronos.s0.tests.test_structure_selector
 ```
-

@@ -268,6 +268,8 @@ Current K3 file:
 chronos/k3/experiments/k3_0d_sine_gordon_winding_density.py
 chronos/k3/experiments/k3_1_winding_density_prior.py
 chronos/k3/experiments/k3_2d_0_vortex_regime.py
+chronos/k3/verdicts.py
+chronos/k3/negative_results/k3_2d_gp_vortex_regime_unresolved.md
 chronos/k3/archives/exp_k3_1_main/README.md
 chronos/k3/archives/exp_k3_1_main/config.json
 chronos/k3/archives/exp_k3_1_main/k3_1_main.py
@@ -315,6 +317,7 @@ Tiny wiring check:
 python chronos/k3/experiments/k3_0d_sine_gordon_winding_density.py --smoke
 python chronos/k3/experiments/k3_1_winding_density_prior.py
 python -m unittest chronos.s0.tests.test_structure_selector
+python -m py_compile chronos/k3/verdicts.py
 python -m py_compile chronos/k3/experiments/k3_2d_0_vortex_regime.py
 python chronos/k3/archives/exp_k3_1_main/k3_1_main.py
 ```

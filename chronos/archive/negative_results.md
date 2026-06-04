@@ -17,6 +17,7 @@ that do not survive the gates.
 | K3.0-B | phi^4 kink-antikink | `NO_GRACEFUL_BAND` | Discrete wall-count failure was too abrupt for a clean graceful window. |
 | K3.0-C | periodic Sine-Gordon lifted field | `NO_GRACEFUL_BAND` | Lifted-field seam representation caused the baseline failure. |
 | K3.1-A | winding-density continuity prior | `NO_EFFECT` | Form-C prior did not beat baseline or matched-ratio off-target; mechanism worsened. |
+| K3.2D.0 | 2D GP vortex-antivortex regime | `REGIME_UNRESOLVED` / `TRANSPORT_FAIL` | Field prediction can be learnable while vortex-object transport fails. |
 
 ## Why This Archive Exists
 
@@ -60,3 +61,9 @@ K3.0-D found a valid winding-density regime for periodic Sine-Gordon, but the
 first tested Form-C winding-density continuity prior failed at K3.1-A. This
 rejects that prior design only; it does not reject all winding-density or
 topological structures.
+
+K3.2D.0 starts the 2D vortex restart, but its regime gate is intentionally
+two-layered. A baseline can learn the `[Re psi, Im psi]` field map while still
+failing to transport the vortex-antivortex pair as a topological object. This
+is archived as `REGIME_UNRESOLVED` / `TRANSPORT_FAIL`, not as a rejected 2D
+topology prior.
