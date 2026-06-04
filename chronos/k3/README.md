@@ -84,6 +84,24 @@ Role:
 - no prior tested
 - validates whether a continuous vortex-position error can form a graceful 2D
   regime before K3.2D.1 spends compute on priors
+- separates field-learning pipeline health from topological transport health
 
 Run mode is intentionally `SMOKE` by default. A scientific regime decision
 requires switching the script to `FULL`.
+
+Developmental lesson:
+
+```text
+Field prediction OK does not imply topological-object transport OK.
+```
+
+The smoke verdicts are therefore split:
+
+- `SMOKE_PIPELINE_FAIL`: the baseline did not learn the field map.
+- `SMOKE_PIPELINE_OK_TRANSPORT_FAIL`: the baseline learned field prediction but
+  failed vortex-antivortex transport; do not promote.
+- `SMOKE_TRANSPORT_OK`: both field prediction and vortex transport passed the
+  smoke sanity check; promotable to `FULL`.
+
+If K3.2D.0 returns transport failure, it is recorded as
+`REGIME_UNRESOLVED` / `TRANSPORT_FAIL`, not as a rejected topological prior.

@@ -42,10 +42,15 @@ It determines:
 
 Chronos is organized as milestones, not as a single architecture:
 
+- S0: structure recognition / developmental learning layer that recommends
+  which physical language should enter VPSL validation.
 - K1: framework validation and bounded positive result for spectral /
   Lorentz-structured priors.
 - K2: first VPSL-certified structure, validating a symplectic prior on FPU-β.
-- K3: future structure discovery program.
+- K3: topological / winding-density structure search, with negative and
+  unresolved regimes recorded.
+- K4: gauge / cross-family structure discovery.
+- K5: Hilbert / quantum-state representation.
 
 ## VPSL Structure Map
 
@@ -53,12 +58,13 @@ Chronos tracks physical structures as validation targets:
 
 | Structure Family | Program / System | Scope | Current Status |
 | --- | --- | --- | --- |
+| Structure recognition layer | S0 | Selects candidate physical language from diagnostics | Active; not a certifier |
 | Pseudo-Riemannian / Lorentz structure | K1 / Klein-Gordon | Geometry, causality, metric signature, light-cone behavior | Partially confirmed; short-horizon evidence, mechanism transfer bounded |
 | Spectral / dispersion structure | K1 / Klein-Gordon | Frequencies, dispersion relation, mode dynamics | `BOUNDED_POSITIVE`; coupled with Lorentz-sensitive validation |
 | Symplectic / Hamiltonian structure | K2 / FPU-β | Phase space, Hamiltonian flow, long-horizon dynamics | `FULL_TRANSFER_CONFIRMED` through H=240; mechanism transfer confirmed |
-| Gauge structure | K3 candidate | Local symmetry and gauge invariants | Pending |
 | Topological / winding-density structure | K3.0-D / K3.1 candidate | Local topological-charge density, Sine-Gordon winding density | Stage-2 prior test negative: `NO_EFFECT` |
-| Topological structure | K4 candidate | Global invariants and topological constraints | Pending |
+| Gauge structure | K4 candidate | Local symmetry and gauge invariants | Pending |
+| Hilbert / quantum-state structure | K5 candidate | Unitarity, quantum-state geometry, Born-compatible diagnostics | Pending |
 
 The repository remains a reproducible research prototype. It does not claim a
 solved Physics AI system, a universal architecture, or a proof that every
@@ -74,10 +80,11 @@ performance, and mechanism all survive the relevant gates.
 
 | Stage | Result | Status |
 | --- | --- | --- |
+| S0 | Structure Recognition Layer | Active; recommends K-family, never certifies |
 | K1 | VPSL Framework Validation | Done |
 | K1 | Spectral Prior | BOUNDED_POSITIVE |
 | K2 | Symplectic Prior | FULL_TRANSFER_CONFIRMED through H=240 |
-| K3 | Future Structures | Pending |
+| K3 | Topological / Winding-Density Search | No certified structure yet; K3.1 `NO_EFFECT` |
 
 K1 established a bounded framework result: metric-sensitive behavior appears
 under controlled normalization tests, but it is not promoted to a universal
@@ -96,7 +103,34 @@ K2 established the first full VPSL transfer result:
   The wrong-Ω controls under-drive the dynamics, so their raw Jacobian errors
   are treated as degenerate rather than valid mechanism evidence.
 
-## 3. VPSL Gates
+## 3. Chronos-S0: Structure Recognition Layer
+
+S0 is the developmental layer of Chronos.
+
+It does not predict physics directly. It observes diagnostic failures and
+successes, then recommends which physical representation family should enter
+VPSL validation.
+
+S0 asks:
+
+```text
+Given a system S, which physical language should the learner try first?
+```
+
+- K1: Lorentz / causal language
+- K2: Symplectic / Hamiltonian language
+- K3: Topological / defect language
+- K4: Gauge / local symmetry language
+- K5: Hilbert / quantum-state language
+
+S0 never certifies a structure. Certification still requires the VPSL gates:
+regime, constraint, mechanism, and transfer validation.
+
+The current S0 guardrail is the K3.2D lesson: low field prediction error is not
+enough. A learner may imitate `[Re psi, Im psi]` while failing to transport the
+vortex-antivortex pair as a topological object.
+
+## 4. VPSL Gates
 
 Historically, Chronos was positioned between learned world models and
 explicit physics priors. The current repository foregrounds VPSL: a validation
@@ -120,7 +154,7 @@ See:
 - `chronos/vpsl/numbering.md`
 - `chronos/archive/negative_results.md`
 
-## 4. K1 Archive: Bounded Framework Result
+## 5. K1 Archive: Bounded Framework Result
 
 K1 is now treated as the historical framework-validation archive. It studied
 whether causal / metric structure can be injected as an explicit inductive bias
@@ -145,7 +179,7 @@ Detailed K1 materials:
 - `k1-manifold-core/docs/experiment_6_physics_sensitivity.md`
 - `k1-manifold-core/docs/experiment_7_metric_controlled_normalization.md`
 
-## 5. K2 Archive: Symplectic Prior
+## 6. K2 Archive: Symplectic Prior
 
 K2 Milestone: the symplectic prior became the first VPSL-certified physical
 structure, achieving `FULL_TRANSFER_CONFIRMED` through H=240 on the FPU-β
@@ -154,7 +188,7 @@ benchmark.
 See:
 - `chronos/k2/archive.md`
 
-## 6. Repository Layout
+## 7. Repository Layout
 
 ```text
 Chronos/
@@ -167,6 +201,11 @@ Chronos/
 │   ├── ROADMAP.md
 │   ├── archive/
 │   │   └── negative_results.md
+│   ├── s0/
+│   │   ├── README.md
+│   │   ├── diagnostics_schema.py
+│   │   ├── structure_selector.py
+│   │   └── tests/
 │   ├── k1/
 │   │   └── archive.md
 │   ├── k2/
@@ -199,7 +238,7 @@ Chronos/
 The repository name on GitHub may still be `Chronos-K1`; the scientific
 positioning is now Chronos / VPSL, with K1 as the historical first milestone.
 
-## 7. Claim Boundary
+## 8. Claim Boundary
 
 Supported:
 
@@ -217,7 +256,7 @@ Not claimed:
 - K2 generalizes beyond FPU-β yet.
 - Pooled rescue at a stress horizon is enough for a structure claim.
 
-## 8. Reproduce Results
+## 9. Reproduce Results
 
 Use the reproduction guide:
 - `REPRODUCE.md`
@@ -228,7 +267,7 @@ K1 benchmark entrypoints live under:
 K2 entrypoints live under:
 - `chronos/k2/experiments/`
 
-## 9. Roadmap
+## 10. Roadmap
 
 See the program roadmap:
 - `chronos/ROADMAP.md`
@@ -237,5 +276,7 @@ Current program:
 
 - K1: Framework Validation - done.
 - K2: First Certified Structure - done.
-- K3: Gauge / topological / multi-scale candidates - Stage-2 winding-density prior test negative.
-- K4: Cross-system transfer - future.
+- K3: Topological attempts - Stage-2 winding-density prior test negative; 2D vortex regime unresolved.
+- S0: Structure Recognition Layer - active.
+- K4: Gauge / cross-family structure discovery - future.
+- K5: Hilbert / quantum-state representation - future.

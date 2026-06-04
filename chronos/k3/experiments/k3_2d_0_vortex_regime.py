@@ -28,10 +28,15 @@ METRICS:
   baseline-health: ref@REF rollout MSE on [Re,Im] (did it train?), field bounded, hard-div.
 
 VERDICT (regime gate):
-  VALID_VORTEX_REGIME    baseline trains (ref clean), pair mostly intact across H, position error rises
-                         but stays bounded/graceful, hard_div low → proceed to K3.2D.1 (prior test).
-  NO_GRACEFUL_BAND       position error saturates immediately / pair annihilates early / baseline can't
-                         fit (ref bad) → 2D regime not testable as-is; retune (sep, S, g, grid) or stop.
+  SMOKE_PIPELINE_FAIL                 baseline cannot learn the short-horizon field map, or hard-diverges.
+  SMOKE_PIPELINE_OK_TRANSPORT_FAIL    field prediction is learnable, but vortex transport fails. Do not
+                                      promote: low field MSE does not imply topological-object transport.
+  SMOKE_TRANSPORT_OK                  smoke sanity passes for both pipeline and vortex transport; promote
+                                      to FULL for the N=30 regime decision.
+  FULL_REGIME_VALIDATED               baseline trains, pair mostly intact across H, position error rises
+                                      but stays bounded/graceful, hard_div low → proceed to K3.2D.1.
+  REGIME_UNRESOLVED                   position error saturates, pair annihilates, hard-div rises, or baseline
+                                      cannot fit. This is not a prior test or a rejection of 2D topology.
 """
 import os, json, platform
 import numpy as np
@@ -212,6 +217,18 @@ def evaluate(model,seed):
     hard=bool(over[-1] and over[max(0,T-5):].mean()>0.8)
     return dict(roll_mse=roll,pos_err=pos_err,pair_intact=pair_intact,ref_mse=ref_mse,hard_div=1.0 if hard else 0.0)
 
+def k32d_verdict(mode, ref_med, hard_frac, pair_frac, pos_med):
+    """Two-layer verdict: field prediction pipeline vs topological transport."""
+    pipeline_ok = (ref_med < REF_CEIL) and (hard_frac <= HARD_DIV_MAX)
+    transport_ok = (pair_frac >= PAIR_INTACT_MIN) and (pos_med < POS_ERR_CEIL)
+    if mode == "SMOKE":
+        if not pipeline_ok:
+            return "SMOKE_PIPELINE_FAIL"
+        if not transport_ok:
+            return "SMOKE_PIPELINE_OK_TRANSPORT_FAIL"
+        return "SMOKE_TRANSPORT_OK"
+    return "FULL_REGIME_VALIDATED" if (pipeline_ok and transport_ok) else "REGIME_UNRESOLVED"
+
 def main():
     print("\n"+"🌀"*20); print("EXPERIMENT K3.2D.0: 2D VORTEX REGIME VALIDATION"); print("🌀"*20+"\n")
     config={"experiment":"k3_2d_0","mode":RUN_MODE,"L":L,"G":G,"S_FIXED":S_FIXED,"PAIR_SEP":PAIR_SEP,
@@ -236,28 +253,34 @@ def main():
     print(f"  pair-intact fraction = {pair_frac:.2f} (need >= {PAIR_INTACT_MIN}) → {'✓' if pair_frac>=PAIR_INTACT_MIN else '✗ pair annihilates'}")
     print(f"  hard-div fraction = {hard_frac:.2f} (need <= {HARD_DIV_MAX}) → {'✓' if hard_frac<=HARD_DIV_MAX else '✗'}")
     trained=ref_med<REF_CEIL; graceful=pos_med<POS_ERR_CEIL; pair_ok=pair_frac>=PAIR_INTACT_MIN; div_ok=hard_frac<=HARD_DIV_MAX
-    valid = trained and graceful and pair_ok and div_ok
+    pipeline_ok = trained and div_ok
+    transport_ok = graceful and pair_ok
+    v = k32d_verdict(RUN_MODE, ref_med, hard_frac, pair_frac, pos_med)
     print("\n"+"="*80)
     if RUN_MODE=="SMOKE":
-        print("⚠️  SMOKE — pipeline + can-baseline-learn check only. NOT a regime decision.")
-        print(f"   {'pipeline runs, baseline learns (ref ok); promote to FULL' if trained else 'baseline did NOT learn even loosely — fix before FULL (sep/S/g/grid/epochs)'}")
-        v="SMOKE_OK" if trained else "SMOKE_BASELINE_NOT_LEARNING"
-    elif valid:
-        print("✅ VALID_VORTEX_REGIME — baseline trains, pair mostly intact, position error graceful,")
+        print("⚠️  SMOKE — pipeline + transport sanity check only. NOT a regime decision.")
+        if v == "SMOKE_TRANSPORT_OK":
+            print("   pipeline learns AND vortex transport is intact; promotable to FULL.")
+        elif v == "SMOKE_PIPELINE_OK_TRANSPORT_FAIL":
+            print("   pipeline learns field prediction, but vortex transport fails. Do NOT promote yet.")
+            print("   Low field MSE does not imply topological-object transport.")
+        else:
+            print("   pipeline failed (ref bad or hard-div); fix sep/S/g/grid/epochs before FULL.")
+    elif v == "FULL_REGIME_VALIDATED":
+        print("✅ FULL_REGIME_VALIDATED — baseline trains, pair mostly intact, position error graceful,")
         print("   hard-div low. A continuous (vortex-position) metric degrades gracefully. → proceed to")
         print("   K3.2D.1 (2D topological prior test with off-target / smoothness / increment controls).")
-        v="VALID_VORTEX_REGIME"
     else:
-        print("⚠️ NO_GRACEFUL_BAND — regime not testable as-is:")
+        print("⚠️ REGIME_UNRESOLVED — regime not testable as-is:")
         if not trained: print("   baseline did not train (ref bad)")
+        if not div_ok: print("   too much hard divergence")
         if not graceful: print("   position error saturated (no graceful band)")
         if not pair_ok: print("   pair annihilates too often")
-        if not div_ok: print("   too much hard divergence")
-        print("   Retune (sep, S, g, grid, epochs) or conclude 2D regime needs a different setup.")
-        v="NO_GRACEFUL_BAND"
+        print("   Retune (sep, S, g, grid, epochs). This is not a prior test or topology rejection.")
     print("="*80)
-    pd.DataFrame([{'experiment':'k3_2d_0','verdict':v,'mode':RUN_MODE,'ref_med':ref_med,
-                   'pos_med':pos_med,'pair_frac':pair_frac,'hard_frac':hard_frac}]).to_csv(
+    pd.DataFrame([{'experiment':'k3_2d_0','verdict':v,'mode':RUN_MODE,'pipeline_ok':pipeline_ok,
+                   'transport_ok':transport_ok,'ref_med':ref_med,'pos_med':pos_med,
+                   'pair_frac':pair_frac,'hard_frac':hard_frac}]).to_csv(
         RESULTS_DIR/"k3_2d_0_summary.csv",index=False)
     print(f"\n✓ Saved to {RESULTS_DIR}")
     print(f"\n{'='*80}\nFINAL: {v}{' (SMOKE)' if RUN_MODE=='SMOKE' else ''}\n{'='*80}")

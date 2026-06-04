@@ -36,17 +36,45 @@ Verdict:
 FULL_TRANSFER_CONFIRMED
 ```
 
+Evidence:
+
+- K2.2-B extends `FULL_TRANSFER_CONFIRMED` through H=240.
+- K2.3 wrong-Ω specificity control confirms that the result is not explained by
+  arbitrary antisymmetric Jacobian regularization; wrong-Ω controls under-drive
+  the dynamics and are treated as degenerate for raw Jacobian-error comparison.
+
+## S0 - Structure Recognition Layer
+
+Status:
+
+```text
+ACTIVE
+```
+
+Role:
+
+- add a developmental structure-acquisition layer above VPSL
+- observe diagnostic successes and failures before selecting a K-family
+- recommend the candidate physical language, confidence, next VPSL gate, and
+  allowed action
+- never certify a structure directly
+
+Current guardrail:
+
+- field prediction can be learnable while object transport fails
+- K3.2D.0 separates `pipeline_ok` from `transport_ok`
+- low `[Re psi, Im psi]` error is not enough to promote a topological regime
+
 ## K3 - Structure Discovery Program
 
 Status:
 
 ```text
-STAGE_2_PRIOR_TEST_NEGATIVE
+ACTIVE / BOUNDED_NEGATIVE
 ```
 
 Candidate families:
 
-- gauge structure
 - topological structure
 - multi-scale structure
 
@@ -66,13 +94,16 @@ Current 2D restart:
 
 - K3.2D.0: Gross-Pitaevskii vortex-antivortex regime validation
 - status: SMOKE-first, baseline-only, no prior tested
+- current lesson: a baseline may learn field prediction while failing vortex
+  transport, so the regime verdict distinguishes pipeline health from
+  topological transport
 - goal: find a graceful 2D vortex-position regime before K3.2D.1 prior tests
 
 Entry requirement:
 
 - pre-register regime, controls, mechanism, transfer horizon, and claim boundary
 
-## K4 - Cross-System Transfer
+## K4 - Gauge / Cross-Family Structure Discovery
 
 Status:
 
@@ -82,5 +113,22 @@ FUTURE
 
 Goal:
 
-- test whether a certified structure transfers across systems, not only across
-  horizons within one system
+- test local-symmetry and gauge-invariant structures under VPSL gates
+- compare gauge candidates against off-target, smoothness, and generic
+  regularization controls
+- keep cross-system transfer as a later hardening step, not the first K4 claim
+
+## K5 - Hilbert / Quantum-State Representation
+
+Status:
+
+```text
+FUTURE
+```
+
+Goal:
+
+- test Hilbert-space and unitary structure candidates
+- define diagnostics for quantum-state geometry, unitarity, and
+  Born-compatible prediction regimes
+- keep certification downstream of S0 recommendation and VPSL gates

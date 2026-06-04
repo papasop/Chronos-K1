@@ -246,6 +246,13 @@ python -m py_compile chronos/k2/experiments/k2_3_wrong_omega_reanalysis.py
 This confirms that the K2 entrypoints remain syntactically valid without
 running expensive training jobs.
 
+The S0 structure-recognition layer is pure stdlib and can be checked locally
+with:
+
+```bash
+python -m unittest chronos.s0.tests.test_structure_selector
+```
+
 ## 9. K3: Candidate Regime Validation
 
 K3 entrypoints live under:
@@ -288,6 +295,14 @@ K3.2D.0 starts the 2D restart with baseline-only Gross-Pitaevskii
 vortex-antivortex regime validation. It runs in `SMOKE` mode by default and is
 not a scientific regime decision until promoted to `FULL`.
 
+The smoke verdict is intentionally two-layered:
+
+- `SMOKE_PIPELINE_FAIL`: the baseline did not learn the field map.
+- `SMOKE_PIPELINE_OK_TRANSPORT_FAIL`: field prediction is learnable, but vortex
+  transport failed; do not promote.
+- `SMOKE_TRANSPORT_OK`: field prediction and vortex transport both pass the
+  smoke sanity check; promotable to `FULL`.
+
 The packaged K3.1 archive can also regenerate its local CSV summaries:
 
 ```bash
@@ -299,6 +314,7 @@ Tiny wiring check:
 ```bash
 python chronos/k3/experiments/k3_0d_sine_gordon_winding_density.py --smoke
 python chronos/k3/experiments/k3_1_winding_density_prior.py
+python -m unittest chronos.s0.tests.test_structure_selector
 python -m py_compile chronos/k3/experiments/k3_2d_0_vortex_regime.py
 python chronos/k3/archives/exp_k3_1_main/k3_1_main.py
 ```
