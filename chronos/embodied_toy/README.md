@@ -99,3 +99,51 @@ relativistic causality.
 Detailed verdict:
 
 - `S0_E1_TOY_SIM_PASSED.md`
+
+## S0-E2: Active Toy Exploration
+
+S0-E2 advances from passive toy simulation to deterministic active exploration.
+
+Status:
+
+```text
+S0_E2_ACTIVE_TOY_PASSED
+```
+
+Pipeline:
+
+```text
+agent chooses action by novelty -> toy world responds -> diagnostic probe -> S0 recommendation
+```
+
+The active explorer uses a lightweight novelty heuristic:
+
+```text
+candidate next-state distance from the set of visited states
+```
+
+This is RND-lite only. No neural network is trained.
+
+Acceptance checks:
+
+- active exploration covers more coarse state cells than a random-action control
+- the K2 diagnostic probe launches from an active reached state
+- symplectic energy drift is measured against an explicit-Euler control
+- S0 recommends `K2_SYMPLECTIC` / `continue`
+
+Run:
+
+```bash
+python -m chronos.embodied_toy.run_active_suite
+python -m chronos.embodied_toy.run_active_suite --json
+python -m unittest chronos.embodied_toy.tests.test_embodied_active
+```
+
+Boundary:
+
+S0-E2 is not robotics, not RL training, not a neural network, not online
+learning, and not physical certification.
+
+Detailed verdict:
+
+- `S0_E2_ACTIVE_TOY_PASSED.md`

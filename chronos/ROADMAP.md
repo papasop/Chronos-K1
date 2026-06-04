@@ -116,6 +116,29 @@ Current diagnostic extractors:
 - contact simulation -> toy contact/event-ordering proxy -> K1
 - toy object persistence -> measured `object_tracking_valid` -> K3 / `do_not_promote`
 
+## S0-E2 - Active Toy Exploration
+
+Status:
+
+```text
+S0_E2_ACTIVE_TOY_PASSED
+```
+
+Role:
+
+- computer-side active exploration step after S0-E1
+- chooses toy pendulum actions by novelty, not by RL training
+- validates active exploration by coverage gain over a random-action control
+- launches the K2 diagnostic probe from an actively reached state
+- still no robotics, no neural network, no online learning, and no physical
+  certification
+
+Target loop:
+
+```text
+agent chooses action by novelty -> toy world responds -> diagnostic probe -> S0 recommendation
+```
+
 ## K3 - Structure Discovery Program
 
 Status:

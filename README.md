@@ -181,6 +181,27 @@ S0_E1_TOY_SIM_PASSED
 This is still not robotics, not model training, not learned classification, and
 not physical certification.
 
+### S0-E2: Active Toy Exploration
+
+S0-E2 adds deterministic action choice by novelty:
+
+```text
+agent chooses action by novelty -> toy world responds -> diagnostic probe -> S0 recommendation
+```
+
+The active explorer covers more toy state-space cells than a random-action
+control, then launches the K2 diagnostic probe from a state active exploration
+actually reached.
+
+Current S0-E2 verdict:
+
+```text
+S0_E2_ACTIVE_TOY_PASSED
+```
+
+This is still not robotics, not RL training, not a neural network, not online
+learning, and not physical certification.
+
 ## 4. VPSL Gates
 
 Historically, Chronos was positioned between learned world models and
@@ -256,8 +277,10 @@ Chronos/
 │   │   ├── README.md
 │   │   ├── run_toy_suite.py
 │   │   ├── run_sim_suite.py
+│   │   ├── run_active_suite.py
 │   │   ├── simulations.py
 │   │   ├── extractors.py
+│   │   ├── active.py
 │   │   ├── toy_worlds.py
 │   │   └── tests/
 │   ├── s0/
