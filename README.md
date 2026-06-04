@@ -91,6 +91,10 @@ K2 established the first full VPSL transfer result:
 - mechanism transfer confirmed by full symplectic Jacobian error reduction
 - confirmation holds on the graceful-baseline subset, not only pooled rescue
 - K2.2-B extended the transfer result to H=240 on the graceful-baseline subset
+- K2.3 hardens the result with wrong-Ω controls: the canonical symplectic form
+  outperforms shuffled and random antisymmetric 2-form penalties on rollout.
+  The wrong-Ω controls under-drive the dynamics, so their raw Jacobian errors
+  are treated as degenerate rather than valid mechanism evidence.
 
 ## 3. VPSL Gates
 

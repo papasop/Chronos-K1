@@ -1,0 +1,2 @@
+experiment,verdict,system,horizon,true_roll,baseline_roll,shuffled_roll,randantisym_roll,true_symp_err,baseline_symp_err,shuffled_symp_err,randantisym_symp_err,true_inc,baseline_inc,shuffled_inc,randantisym_inc,q1_p_holm,q2_p_holm,q3_p_holm,mechanism_reduction,caveat
+k2_3_wrong_omega_specificity,OMEGA_SPECIFICITY_CONFIRMED_NONDEGEN_AWARE,FPU-β,160,0.0269,0.0512,0.1690,0.1786,0.108,0.203,0.069,0.080,0.2108,0.2141,0.0373,0.0401,0.0110,0.0030,0.0030,0.467,"wrong-Ω controls under-drive dynamics; raw Jacobian-error comparison against them is excluded"

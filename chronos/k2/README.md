@@ -20,6 +20,7 @@ and K2.0-B are preserved as historical logs and are being reconstructed.
 - K2.1-B: `experiments/k2_1b_repair_controls.py`
 - K2.2-A: `experiments/k2_2a_transfer_h200.py`
 - K2.2-B: `experiments/k2_2b_transfer_h240.py`
+- K2.3: `experiments/k2_3_wrong_omega_reanalysis.py`
 
 K2.2-B is now a full Colab-scale training script. Running it directly launches
 the expensive two-phase H=240 experiment. Use `py_compile` for repository CI
@@ -38,6 +39,7 @@ See `experiments/README.md` for the directory-level boundary statement.
 - K2.1 / K2.1-B archive entrypoints and archived summaries
 - K2.2-A archive entrypoint, archived summary, and verdict wiring
 - K2.2-B full audit-fixed Colab source, archived summary, and verdict wiring
+- K2.3 wrong-Ω specificity reanalysis summary and code
 
 ## Claim Boundary
 
@@ -50,6 +52,7 @@ K2.0/K2.0-B = historical log archive
 K2.1/K2.1-B/K2.2-A = archive entrypoints available
 K2.2-B = full audit-fixed Colab training source restored
 K2.2-B = FULL_TRANSFER_CONFIRMED through H=240
+K2.3 = OMEGA_SPECIFICITY_CONFIRMED_NONDEGEN_AWARE hardening
 ```
 
 The final K2 claim remains:

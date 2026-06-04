@@ -144,6 +144,40 @@ The mechanism diagnostic is full symplectic Jacobian error:
 ||J^T Omega J - Omega||
 ```
 
+## K2.3 — Wrong-Ω Specificity Control
+
+Status:
+
+```text
+OMEGA_SPECIFICITY_CONFIRMED_NONDEGEN_AWARE
+```
+
+K2.3 tests whether the K2 result is specific to the canonical symplectic form Ω
+or merely an arbitrary antisymmetric Jacobian penalty.
+
+Result:
+
+- canonical Ω beats baseline on rollout
+- canonical Ω beats shuffled Ω and random antisymmetric Ω on rollout
+- canonical Ω reduces true-Ω Jacobian error vs baseline
+- wrong-Ω controls collapse / under-drive the dynamics, making their raw
+  Jacobian error uninterpretable
+
+This strengthens K2 by showing that the certified symplectic effect is not
+explained by generic antisymmetric Jacobian regularization.
+
+Detailed note:
+
+```text
+chronos/k2/docs/k2_3_wrong_omega_specificity.md
+```
+
+Summary:
+
+```text
+chronos/k2/results/k2_3_reanalysis_summary.csv
+```
+
 ## Boundary
 
 K2 currently supports a narrow claim: the symplectic prior transfers through
@@ -210,5 +244,7 @@ archive verdict.
 - `chronos/k2/experiments/k2_1b_repair_controls.py`
 - `chronos/k2/experiments/k2_2a_transfer_h200.py`
 - `chronos/k2/experiments/k2_2b_transfer_h240.py`
+- `chronos/k2/experiments/k2_3_wrong_omega_reanalysis.py`
 - `chronos/k2/results/k2_2a_summary.csv`
 - `chronos/k2/results/k2_2b_summary.csv`
+- `chronos/k2/results/k2_3_reanalysis_summary.csv`

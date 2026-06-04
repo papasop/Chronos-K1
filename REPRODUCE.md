@@ -165,14 +165,22 @@ chronos/k2/experiments/k2_1_symplectic_prior.py
 chronos/k2/experiments/k2_1b_repair_controls.py
 chronos/k2/experiments/k2_2a_transfer_h200.py
 chronos/k2/experiments/k2_2b_transfer_h240.py
+chronos/k2/experiments/k2_3_wrong_omega_reanalysis.py
 chronos/k2/results/k2_2a_summary.csv
 chronos/k2/results/k2_2b_summary.csv
+chronos/k2/results/k2_3_reanalysis_summary.csv
 ```
 
 K2.2-B is the current headline result:
 
 ```text
 FULL_TRANSFER_CONFIRMED through H=240
+```
+
+K2.3 is a mechanism-specificity hardening result:
+
+```text
+OMEGA_SPECIFICITY_CONFIRMED_NONDEGEN_AWARE
 ```
 
 K2 archive entrypoints:
@@ -232,6 +240,7 @@ python -m py_compile chronos/k2/experiments/k2_1_symplectic_prior.py
 python -m py_compile chronos/k2/experiments/k2_1b_repair_controls.py
 python -m py_compile chronos/k2/experiments/k2_2a_transfer_h200.py
 python -m py_compile chronos/k2/experiments/k2_2b_transfer_h240.py
+python -m py_compile chronos/k2/experiments/k2_3_wrong_omega_reanalysis.py
 ```
 
 This confirms that the K2 entrypoints remain syntactically valid without

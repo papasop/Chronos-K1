@@ -68,6 +68,18 @@ full symp_err reduction = 71.5%
 verdict = FULL_TRANSFER_CONFIRMED
 ```
 
+K2.3 hardening evidence:
+
+```text
+wrong-Ω specificity control
+verdict = OMEGA_SPECIFICITY_CONFIRMED_NONDEGEN_AWARE
+```
+
+K2.3 confirms Ω-specificity in a non-degeneracy-aware sense. Canonical Ω beats
+shuffled and random antisymmetric Ω controls on rollout, while the wrong-Ω
+controls under-drive the dynamics. Their raw Jacobian errors are therefore
+treated as degenerate rather than valid mechanism evidence.
+
 ## Boundary
 
 K2 currently supports a narrow structure claim:
