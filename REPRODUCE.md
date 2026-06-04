@@ -260,6 +260,7 @@ Current K3 file:
 ```text
 chronos/k3/experiments/k3_0d_sine_gordon_winding_density.py
 chronos/k3/experiments/k3_1_winding_density_prior.py
+chronos/k3/experiments/k3_2d_0_vortex_regime.py
 chronos/k3/archives/exp_k3_1_main/README.md
 chronos/k3/archives/exp_k3_1_main/config.json
 chronos/k3/archives/exp_k3_1_main/k3_1_main.py
@@ -283,6 +284,10 @@ NO_EFFECT
 The K3.1 archive entrypoint regenerates the archived result summaries; it does
 not rerun the full GPU Colab training experiment.
 
+K3.2D.0 starts the 2D restart with baseline-only Gross-Pitaevskii
+vortex-antivortex regime validation. It runs in `SMOKE` mode by default and is
+not a scientific regime decision until promoted to `FULL`.
+
 The packaged K3.1 archive can also regenerate its local CSV summaries:
 
 ```bash
@@ -294,6 +299,7 @@ Tiny wiring check:
 ```bash
 python chronos/k3/experiments/k3_0d_sine_gordon_winding_density.py --smoke
 python chronos/k3/experiments/k3_1_winding_density_prior.py
+python -m py_compile chronos/k3/experiments/k3_2d_0_vortex_regime.py
 python chronos/k3/archives/exp_k3_1_main/k3_1_main.py
 ```
 

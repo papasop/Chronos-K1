@@ -29,6 +29,7 @@ Current entrypoint:
 
 - `experiments/k3_0d_sine_gordon_winding_density.py`
 - `experiments/k3_1_winding_density_prior.py`
+- `experiments/k3_2d_0_vortex_regime.py`
 
 Archived package:
 
@@ -65,3 +66,24 @@ Boundary:
 - not claimed: integer topological-charge certification
 - no K3 prior confirmed yet
 - no K3 certified structure yet
+
+## K3.2D Restart
+
+K3.2D.0 starts the 2D topological-structure restart using Gross-Pitaevskii
+vortex-antivortex pairs.
+
+Status:
+
+```text
+SMOKE-FIRST REGIME VALIDATION
+```
+
+Role:
+
+- baseline-only
+- no prior tested
+- validates whether a continuous vortex-position error can form a graceful 2D
+  regime before K3.2D.1 spends compute on priors
+
+Run mode is intentionally `SMOKE` by default. A scientific regime decision
+requires switching the script to `FULL`.

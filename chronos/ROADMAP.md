@@ -62,6 +62,12 @@ Current Stage-2 result:
 - verdict: `NO_EFFECT`
 - next direction: redesign the topological-density prior or move to a different topological structure
 
+Current 2D restart:
+
+- K3.2D.0: Gross-Pitaevskii vortex-antivortex regime validation
+- status: SMOKE-first, baseline-only, no prior tested
+- goal: find a graceful 2D vortex-position regime before K3.2D.1 prior tests
+
 Entry requirement:
 
 - pre-register regime, controls, mechanism, transfer horizon, and claim boundary
