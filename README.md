@@ -130,6 +130,9 @@ The current S0 guardrail is the K3.2D lesson: low field prediction error is not
 enough. A learner may imitate `[Re psi, Im psi]` while failing to transport the
 vortex-antivortex pair as a topological object.
 
+S0 v0.4 closes the first structure-recognition loop:
+experiment summary -> diagnostics -> recommendation -> `s0_recommendation.csv`.
+
 Current S0 verdict:
 
 ```text
