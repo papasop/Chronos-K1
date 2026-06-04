@@ -69,8 +69,8 @@ This result motivates the first Chronos-S0 guardrail:
 low field error != topology success
 ```
 
-S0 should recommend K3/topological follow-up only as an unresolved regime when
-field prediction is learnable and bounded but object transport fails in a
+S0 should recommend K3/topological follow-up as an unresolved regime when
+field prediction is explicitly marked learnable but object transport fails in a
 topology-regime diagnostic context:
 
 ```text

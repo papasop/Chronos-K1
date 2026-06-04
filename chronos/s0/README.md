@@ -38,14 +38,15 @@ A learner can imitate field values while failing to preserve vortex identity,
 charge, or transport. S0 therefore separates `pipeline_ok` from `transport_ok`
 for topological regimes.
 
-For topology transport failure, S0 requires both:
+For a pre-emptive topology transport-failure guard, S0 requires:
 
 - `field_learnable=True`
-- bounded baseline behavior such as low `baseline_divergence`
 - a topology-regime diagnostic context for the pre-emptive guard:
   `diagnostic_context="K3_TOPOLOGY_REGIME"`
 
-Non-divergence alone is not treated as evidence that the field map was learned.
+Auxiliary fields such as low `baseline_divergence` can travel with the packet,
+but non-divergence alone is not treated as evidence that the field map was
+learned.
 
 When the diagnostic context is absent, transport failure does not globally
 shadow stronger K1/K2/K4/K5 signals. If no stronger signal matches, S0 still
@@ -59,3 +60,25 @@ From the repository root:
 ```bash
 python -m unittest chronos.s0.tests.test_structure_selector
 ```
+
+## Run Selector
+
+S0 can also close the loop from an experiment summary file to a recommendation:
+
+```bash
+python -m chronos.s0.run_selector --kind k3_2d --summary chronos/k3/results/k3_2d_0_summary.csv
+python -m chronos.s0.run_selector --kind k2 --summary chronos/k2/results/k2_3_reanalysis_summary.csv --out rec.json
+```
+
+Supported adapters:
+
+- `k3_2d`: K3.2D vortex-regime summaries.
+- `k2`: K2 symplectic summaries.
+
+The CLI emits a recommendation object with:
+
+- candidate K-family
+- confidence
+- reason
+- next VPSL gate
+- allowed action

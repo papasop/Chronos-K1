@@ -75,7 +75,6 @@ def recommend(diagnostics: dict[str, Any] | None) -> Recommendation:
     _check_score01(d, "topological_transport_score")
 
     field_ok = d.get("field_learnable") is True
-    bounded_ok = _present(d, "baseline_divergence") and d["baseline_divergence"] < 0.05
     transport_known = _present(d, "topological_transport_score") or _present(d, "object_tracking_valid")
     transport_fail = False
     if transport_known:
@@ -84,7 +83,7 @@ def recommend(diagnostics: dict[str, Any] | None) -> Recommendation:
         if _present(d, "topological_transport_score") and d["topological_transport_score"] < TOPO_TRANSPORT_OK:
             transport_fail = True
     is_topology_context = d.get("diagnostic_context") == CTX_TOPOLOGY
-    if field_ok and bounded_ok and transport_fail and is_topology_context:
+    if field_ok and transport_fail and is_topology_context:
         return Recommendation(
             K3_TOPOLOGICAL,
             CONF_LOW,

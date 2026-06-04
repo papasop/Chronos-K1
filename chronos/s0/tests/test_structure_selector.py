@@ -1,8 +1,13 @@
 import unittest
+import csv
+import os
+import tempfile
 
+from chronos.s0.adapters import diagnostics_from_k2_summary, diagnostics_from_k32d_summary, diagnostics_from_summary
 from chronos.s0.diagnostics_schema import (
     ACT_CONTINUE,
     ACT_DO_NOT_PROMOTE,
+    CTX_SYMPLECTIC,
     CTX_TOPOLOGY,
     GATE_REGIME,
     K1_LORENTZ,
@@ -10,6 +15,7 @@ from chronos.s0.diagnostics_schema import (
     K3_TOPOLOGICAL,
     UNRESOLVED,
 )
+from chronos.s0.run_selector import run_cli
 from chronos.s0.structure_selector import k32d_verdict, recommend
 
 
@@ -75,6 +81,17 @@ class StructureSelectorTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             recommend({"topological_transport_score": 3.2})
 
+    def test_topology_context_does_not_require_hard_frac(self):
+        rec = recommend(
+            {
+                "field_learnable": True,
+                "object_tracking_valid": False,
+                "diagnostic_context": CTX_TOPOLOGY,
+            }
+        )
+        self.assertEqual(rec.candidate_family, K3_TOPOLOGICAL)
+        self.assertEqual(rec.allowed_action, ACT_DO_NOT_PROMOTE)
+
     def test_strong_symplectic(self):
         rec = recommend({"symplectic_improves_vs_controls": True, "symplectic_jacobian_error": 0.1})
         self.assertEqual(rec.candidate_family, K2_SYMPLECTIC)
@@ -104,6 +121,63 @@ class StructureSelectorTests(unittest.TestCase):
     def test_k32d_invalid_mode(self):
         with self.assertRaises(ValueError):
             k32d_verdict("scout", 0.02, 0.0, 0.8, 2.0)
+
+    def test_k32d_adapter_transport_fail(self):
+        diagnostics = diagnostics_from_k32d_summary(
+            {"pipeline_ok": True, "transport_ok": False, "hard_frac": 0.0, "pair_frac": 0.0}
+        )
+        rec = recommend(diagnostics)
+        self.assertEqual(rec.candidate_family, K3_TOPOLOGICAL)
+        self.assertEqual(rec.allowed_action, ACT_DO_NOT_PROMOTE)
+
+    def test_k32d_adapter_transport_ok(self):
+        diagnostics = diagnostics_from_k32d_summary(
+            {"pipeline_ok": True, "transport_ok": True, "hard_frac": 0.0, "pair_frac": 0.9}
+        )
+        rec = recommend(diagnostics)
+        self.assertEqual(rec.candidate_family, K3_TOPOLOGICAL)
+        self.assertEqual(rec.allowed_action, ACT_CONTINUE)
+
+    def test_k32d_adapter_clamps_pair_frac(self):
+        diagnostics = diagnostics_from_k32d_summary({"pipeline_ok": True, "transport_ok": True, "pair_frac": 1.7})
+        self.assertLessEqual(diagnostics["topological_transport_score"], 1.0)
+        self.assertEqual(diagnostics["diagnostic_context"], CTX_TOPOLOGY)
+
+    def test_k32d_adapter_missing_pair_frac_raises_when_transport_ok(self):
+        with self.assertRaises(ValueError):
+            diagnostics_from_k32d_summary({"pipeline_ok": True, "transport_ok": True})
+
+    def test_k32d_adapter_transport_fail_can_omit_pair_frac(self):
+        diagnostics = diagnostics_from_k32d_summary({"pipeline_ok": True, "transport_ok": False})
+        rec = recommend(diagnostics)
+        self.assertEqual(rec.candidate_family, K3_TOPOLOGICAL)
+        self.assertEqual(rec.allowed_action, ACT_DO_NOT_PROMOTE)
+
+    def test_k2_adapter(self):
+        diagnostics = diagnostics_from_k2_summary(
+            {"beats_baseline_and_controls": True, "symp_err": 0.1, "hard_frac": 0.0}
+        )
+        self.assertEqual(diagnostics["diagnostic_context"], CTX_SYMPLECTIC)
+        rec = recommend(diagnostics)
+        self.assertEqual(rec.candidate_family, K2_SYMPLECTIC)
+        self.assertEqual(rec.allowed_action, ACT_CONTINUE)
+
+    def test_unknown_adapter_kind_raises(self):
+        with self.assertRaises(ValueError):
+            diagnostics_from_summary("nope", {})
+
+    def test_run_selector_cli_from_csv(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            summary_path = os.path.join(tmpdir, "summary.csv")
+            with open(summary_path, "w", newline="") as handle:
+                writer = csv.DictWriter(handle, fieldnames=["pipeline_ok", "transport_ok", "hard_frac", "pair_frac"])
+                writer.writeheader()
+                writer.writerow(
+                    {"pipeline_ok": "True", "transport_ok": "False", "hard_frac": "0.0", "pair_frac": "0.0"}
+                )
+            rec = run_cli(["--kind", "k3_2d", "--summary", summary_path], quiet=True)
+        self.assertEqual(rec["candidate_family"], K3_TOPOLOGICAL)
+        self.assertEqual(rec["allowed_action"], ACT_DO_NOT_PROMOTE)
 
 
 if __name__ == "__main__":
