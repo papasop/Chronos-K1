@@ -88,6 +88,33 @@ Current toy cases:
 - `vortex_fail` -> K3 / `do_not_promote`
 - `unknown` -> `UNRESOLVED`
 
+## S0-E1 - Toy Simulation Diagnostics
+
+Status:
+
+```text
+PLANNED
+```
+
+Role:
+
+- next computer-side step after S0-E0
+- replace hand-written toy diagnostics with diagnostics extracted from simple
+  toy simulations
+- still no robotics and no learned selector
+
+Target loop:
+
+```text
+toy simulation -> diagnostic extractor -> S0 recommendation
+```
+
+Candidate diagnostic extractors:
+
+- pendulum simulation -> energy drift / symplectic proxy -> S0
+- causal collision simulation -> contact timing / causal-violation proxy -> S0
+- toy object persistence -> `object_tracking_valid` -> S0
+
 ## K3 - Structure Discovery Program
 
 Status:
