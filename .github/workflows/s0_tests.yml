@@ -15,4 +15,6 @@ jobs:
       - name: Run S0 structure-selector tests
         run: |
           python -m py_compile chronos/s0/adapters.py chronos/s0/emitter.py chronos/s0/run_selector.py
+          python -m py_compile chronos/embodied_toy/toy_worlds.py chronos/embodied_toy/run_toy_suite.py
           python -m unittest chronos.s0.tests.test_structure_selector
+          python -m unittest chronos.embodied_toy.tests.test_embodied_toy

@@ -139,6 +139,24 @@ Current S0 verdict:
 S0_V0_4_PASSED
 ```
 
+### S0-E0: Embodied Toy Diagnostics
+
+S0-E0 is the pre-robot toy layer. It tests whether S0 can choose a physical
+language from simple hand-written diagnostic packets:
+
+```text
+toy physical situation -> diagnostics -> S0 recommendation
+```
+
+Current toy cases:
+
+- pendulum-like -> K2 / symplectic language
+- causal-contact-like -> K1 / Lorentz-causal language
+- vortex-transport-fail -> K3 / topological unresolved
+- unknown -> `UNRESOLVED`
+
+This is not robotics yet, not a simulation, and not a learned classifier.
+
 ## 4. VPSL Gates
 
 Historically, Chronos was positioned between learned world models and
@@ -210,6 +228,11 @@ Chronos/
 │   ├── ROADMAP.md
 │   ├── archive/
 │   │   └── negative_results.md
+│   ├── embodied_toy/
+│   │   ├── README.md
+│   │   ├── run_toy_suite.py
+│   │   ├── toy_worlds.py
+│   │   └── tests/
 │   ├── s0/
 │   │   ├── README.md
 │   │   ├── S0_V0_3_PASSED.md

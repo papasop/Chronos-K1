@@ -67,6 +67,27 @@ Current guardrail:
 - summary adapters, the `run_selector` CLI, and `emit_recommendation` close
   the loop from experiment summaries to emitted S0 recommendations
 
+## S0-E0 - Embodied Toy Diagnostics
+
+Status:
+
+```text
+S0_E0_TOY_SUITE_PASSED
+```
+
+Role:
+
+- pre-robot toy layer
+- tests whether S0 can choose a physical language from toy diagnostic packets
+- no robotics, no real simulation, no training
+
+Current toy cases:
+
+- `pendulum` -> K2
+- `causal_contact` -> K1
+- `vortex_fail` -> K3 / `do_not_promote`
+- `unknown` -> `UNRESOLVED`
+
 ## K3 - Structure Discovery Program
 
 Status:
