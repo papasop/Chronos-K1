@@ -263,7 +263,8 @@ def main():
         if not div_ok: print("   too much hard divergence")
         if not graceful: print("   position error saturated (no graceful band)")
         if not pair_ok: print("   pair annihilates too often")
-        print("   Retune (sep, S, g, grid, epochs). This is not a prior test or topology rejection.")
+        print("   Retune (sep, S, g, grid, epochs) or archive as future work before any K3.2D prior test.")
+        print("   This is not a prior test or topology rejection.")
     print("="*80)
     summary = {'experiment':'k3_2d_0','verdict':v,'mode':RUN_MODE,'pipeline_ok':pipeline_ok,
                'transport_ok':transport_ok,'ref_med':ref_med,'pos_med':pos_med,

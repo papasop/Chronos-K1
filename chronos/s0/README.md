@@ -94,6 +94,13 @@ emit_recommendation("k3_2d", summary, RESULTS_DIR)
 This writes `s0_recommendation.csv` next to the experiment summary and degrades
 without raising if the recommendation step fails.
 
+For CI or release checks, use `strict=True` to raise adapter/selector failures
+instead of degrading:
+
+```python
+emit_recommendation("k3_2d", summary, RESULTS_DIR, strict=True)
+```
+
 S0 recommendation actions are structurally limited to:
 
 - `continue`

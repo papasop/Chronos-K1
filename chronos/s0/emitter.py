@@ -16,11 +16,14 @@ def emit_recommendation(
     results_dir: str | os.PathLike,
     filename: str = "s0_recommendation.csv",
     verbose: bool = True,
+    strict: bool = False,
 ) -> dict[str, Any] | None:
     """Write an S0 recommendation CSV beside an experiment summary.
 
-    This helper is intentionally non-throwing so experiment scripts can call it
-    at the end of a run without risking loss of their primary result.
+    By default this helper is non-throwing so experiment scripts can call it at
+    the end of a run without risking loss of their primary result. Set
+    ``strict=True`` in CI or release checks when adapter/selector failures
+    should fail the caller.
     """
 
     try:
@@ -40,6 +43,8 @@ def emit_recommendation(
             print(f"[S0] wrote {out}")
         return recommendation
     except Exception as exc:
+        if strict:
+            raise
         if verbose:
             print(
                 f"[S0] recommendation skipped ({type(exc).__name__}: {exc}); "

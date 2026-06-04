@@ -217,6 +217,12 @@ class StructureSelectorTests(unittest.TestCase):
             self.assertIsNone(rec)
             self.assertFalse(os.path.exists(os.path.join(tmpdir, "s0_recommendation.csv")))
 
+    def test_emit_recommendation_strict_raises(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with self.assertRaises(ValueError):
+                emit_recommendation("bogus", {}, tmpdir, verbose=False, strict=True)
+            self.assertFalse(os.path.exists(os.path.join(tmpdir, "s0_recommendation.csv")))
+
     def test_recommendation_rejects_certifying_actions(self):
         for bad_action in ("certified", "certify", "promote"):
             with self.subTest(bad_action=bad_action):

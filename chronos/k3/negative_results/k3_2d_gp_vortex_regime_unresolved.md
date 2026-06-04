@@ -84,7 +84,8 @@ prior gate until a valid transport regime exists.
 
 ## Next Actions
 
-- Retune the 2D regime before any K3.2D prior test.
+- Retune the 2D regime or archive it as future work before any K3.2D prior
+  test.
 - Track both field-level diagnostics and vortex-object diagnostics.
 - Preserve the distinction between `pipeline_ok` and `transport_ok` in all K3.2D
   summaries.
