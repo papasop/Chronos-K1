@@ -202,6 +202,28 @@ S0_E2_ACTIVE_TOY_PASSED
 This is still not robotics, not RL training, not a neural network, not online
 learning, and not physical certification.
 
+### S0-E2b: Active Diagnostic Value
+
+S0-E2b uses a partitioned toy world where the K2 structure signal only appears
+in a far zone of state space. Active exploration reaches that zone; a random
+control usually does not.
+
+Observed split:
+
+```text
+active -> K2_SYMPLECTIC / continue
+random -> UNRESOLVED / do_not_promote
+```
+
+Current S0-E2b verdict:
+
+```text
+S0_E2B_ACTIVE_VALUE_PASSED
+```
+
+This closes the E2 gap: active exploration is not just wired into the diagnostic
+loop, it is necessary for the correct diagnosis in this toy.
+
 ## 4. VPSL Gates
 
 Historically, Chronos was positioned between learned world models and
@@ -278,9 +300,11 @@ Chronos/
 │   │   ├── run_toy_suite.py
 │   │   ├── run_sim_suite.py
 │   │   ├── run_active_suite.py
+│   │   ├── run_active_value_suite.py
 │   │   ├── simulations.py
 │   │   ├── extractors.py
 │   │   ├── active.py
+│   │   ├── active_value.py
 │   │   ├── toy_worlds.py
 │   │   └── tests/
 │   ├── s0/

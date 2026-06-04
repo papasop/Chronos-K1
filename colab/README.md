@@ -9,3 +9,5 @@
   implementation lives in `chronos/embodied_toy/` and `chronos/s0/`.
 - `chronos_embodied_active.py`: portable S0-E2 mirror for Colab. The canonical
   implementation lives in `chronos/embodied_toy/` and `chronos/s0/`.
+- `chronos_embodied_active2.py`: portable S0-E2b mirror for Colab. The
+  canonical implementation lives in `chronos/embodied_toy/` and `chronos/s0/`.

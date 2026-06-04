@@ -139,6 +139,32 @@ Target loop:
 agent chooses action by novelty -> toy world responds -> diagnostic probe -> S0 recommendation
 ```
 
+## S0-E2b - Active Diagnostic Value
+
+Status:
+
+```text
+S0_E2B_ACTIVE_VALUE_PASSED
+```
+
+Role:
+
+- partitioned toy world where the K2 structure signal only exists in a far
+  zone
+- active exploration reaches the structure zone; random control usually does
+  not
+- diagnostic probe is launched from the reached state, so the recommendation
+  depends on exploration
+- still no robotics, no RL training, no neural network, and no physical
+  certification
+
+Observed split:
+
+```text
+active -> K2_SYMPLECTIC / continue
+random -> UNRESOLVED / do_not_promote
+```
+
 ## K3 - Structure Discovery Program
 
 Status:

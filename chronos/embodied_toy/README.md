@@ -147,3 +147,48 @@ learning, and not physical certification.
 Detailed verdict:
 
 - `S0_E2_ACTIVE_TOY_PASSED.md`
+
+## S0-E2b: Active Diagnostic Value
+
+S0-E2b checks whether active exploration has real diagnostic value, not merely
+whether the active-to-diagnostic loop is wired.
+
+Status:
+
+```text
+S0_E2B_ACTIVE_VALUE_PASSED
+```
+
+Pipeline:
+
+```text
+partitioned toy world -> active reaches structure zone -> diagnostic probe -> S0 recommendation
+```
+
+The partitioned rail world only exposes a K2 structure signal in the far zone.
+The active explorer reliably reaches that zone; the random-action control does
+not under the fixed control seeds.
+
+Observed recommendation split:
+
+```text
+active -> K2_SYMPLECTIC / continue
+random -> UNRESOLVED / do_not_promote
+```
+
+Run:
+
+```bash
+python -m chronos.embodied_toy.run_active_value_suite
+python -m chronos.embodied_toy.run_active_value_suite --json
+python -m unittest chronos.embodied_toy.tests.test_embodied_active_value
+```
+
+Boundary:
+
+S0-E2b is not robotics, not RL training, not a neural network, not online
+learning, and not physical certification.
+
+Detailed verdict:
+
+- `S0_E2B_ACTIVE_VALUE_PASSED.md`
