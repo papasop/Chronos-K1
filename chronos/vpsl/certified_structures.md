@@ -35,19 +35,11 @@ K2.2-B, FPU-β, H=240
 
 Additional hardening:
 
-```text
-K2.3 wrong-Ω specificity control
-```
-
-K2.3 tested shuffled and random-antisymmetric Ω controls. The canonical Ω prior
-beat both wrong-Ω controls on rollout. Wrong-Ω controls under-drove the
-dynamics, so their raw Jacobian errors were treated as degenerate.
-
-Verdict:
-
-```text
-OMEGA_SPECIFICITY_CONFIRMED_NONDEGEN_AWARE
-```
+- K2.3 wrong-Ω specificity control:
+  `OMEGA_SPECIFICITY_CONFIRMED_NONDEGEN_AWARE`.
+- Canonical Ω beats shuffled and random antisymmetric Ω controls on rollout.
+- Wrong-Ω controls under-drive dynamics, so their raw Jacobian errors are not
+  valid mechanism evidence.
 
 Current Standing:
 

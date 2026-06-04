@@ -41,9 +41,11 @@ Evidence:
 - Mechanism confirmed via full symplectic Jacobian error.
 - Transfer confirmed at H=200.
 - Transfer extended to H=240.
-- K2.3 wrong-Ω control supports Ω-specificity in a non-degeneracy-aware sense:
-  canonical Ω beats shuffled and random antisymmetric Ω controls on rollout,
-  while wrong-Ω controls under-drive the dynamics.
+- K2.3 wrong-Ω specificity control confirmed that the result is not explained
+  by arbitrary antisymmetric Jacobian regularization; canonical Ω beats
+  shuffled and random antisymmetric Ω controls on rollout, while wrong-Ω
+  controls under-drive the dynamics and are treated as degenerate for raw
+  Jacobian-error comparison.
 
 Latest Result:
 
