@@ -31,7 +31,10 @@ KNOWN_DIAGNOSTICS = {
     "unitarity_error",
     "baseline_divergence",
     "field_learnable",
+    "diagnostic_context",
 }
+
+CTX_TOPOLOGY = "K3_TOPOLOGY_REGIME"
 
 TOPO_TRANSPORT_OK = 0.6
 SYMPLECTIC_ERR_OK = 0.2

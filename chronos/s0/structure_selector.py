@@ -19,6 +19,7 @@ from .diagnostics_schema import (
     CONF_HIGH,
     CONF_LOW,
     CONF_MED,
+    CTX_TOPOLOGY,
     GATE_CONSTRAINT,
     GATE_MECHANISM,
     GATE_REGIME,
@@ -52,6 +53,11 @@ def _present(diagnostics: dict[str, Any], key: str) -> bool:
     return key in diagnostics and diagnostics[key] is not None
 
 
+def _check_score01(diagnostics: dict[str, Any], key: str) -> None:
+    if _present(diagnostics, key) and not 0.0 <= diagnostics[key] <= 1.0:
+        raise ValueError(f"{key} must be in [0,1], got {diagnostics[key]!r}")
+
+
 def recommend(diagnostics: dict[str, Any] | None) -> Recommendation:
     """Recommend the next structure family and VPSL gate from diagnostics."""
 
@@ -66,6 +72,8 @@ def recommend(diagnostics: dict[str, Any] | None) -> Recommendation:
             ACT_DO_NOT_PROMOTE,
         )
 
+    _check_score01(d, "topological_transport_score")
+
     field_ok = d.get("field_learnable") is True
     bounded_ok = _present(d, "baseline_divergence") and d["baseline_divergence"] < 0.05
     transport_known = _present(d, "topological_transport_score") or _present(d, "object_tracking_valid")
@@ -75,12 +83,14 @@ def recommend(diagnostics: dict[str, Any] | None) -> Recommendation:
             transport_fail = True
         if _present(d, "topological_transport_score") and d["topological_transport_score"] < TOPO_TRANSPORT_OK:
             transport_fail = True
-    if field_ok and bounded_ok and transport_fail:
+    is_topology_context = d.get("diagnostic_context") == CTX_TOPOLOGY
+    if field_ok and bounded_ok and transport_fail and is_topology_context:
         return Recommendation(
             K3_TOPOLOGICAL,
             CONF_LOW,
-            "Field prediction is learnable but the topological object is not transported. "
-            "Low field error does not imply topology success; this is an unresolved topology regime.",
+            "Field prediction is learnable but the topological object is not transported "
+            "in a topology-regime test. Low field error does not imply topology success; "
+            "this is an unresolved topology regime.",
             GATE_REGIME,
             ACT_DO_NOT_PROMOTE,
         )
@@ -144,6 +154,17 @@ def recommend(diagnostics: dict[str, Any] | None) -> Recommendation:
             "Topological object is transported; topology family is a candidate.",
             GATE_CONSTRAINT,
             ACT_CONTINUE,
+        )
+
+    if field_ok and transport_fail:
+        return Recommendation(
+            K3_TOPOLOGICAL,
+            CONF_LOW,
+            "Field prediction is learnable but the topological object is not transported, "
+            "and no stronger structure signal is present. Low field error does not imply "
+            "topology success; treat this as an unresolved topology regime.",
+            GATE_REGIME,
+            ACT_DO_NOT_PROMOTE,
         )
 
     return Recommendation(

@@ -70,8 +70,17 @@ low field error != topology success
 ```
 
 S0 should recommend K3/topological follow-up only as an unresolved regime when
-field prediction is learnable and bounded but object transport fails. It should
-not promote the topology prior gate until a valid transport regime exists.
+field prediction is learnable and bounded but object transport fails in a
+topology-regime diagnostic context:
+
+```text
+diagnostic_context = K3_TOPOLOGY_REGIME
+```
+
+Outside that context, the same packet should not globally shadow stronger K1,
+K2, K4, or K5 signals. It should fall back to low-confidence K3 unresolved only
+when no stronger structure signal is present. S0 should not promote the topology
+prior gate until a valid transport regime exists.
 
 ## Next Actions
 

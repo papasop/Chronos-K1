@@ -42,8 +42,15 @@ For topology transport failure, S0 requires both:
 
 - `field_learnable=True`
 - bounded baseline behavior such as low `baseline_divergence`
+- a topology-regime diagnostic context for the pre-emptive guard:
+  `diagnostic_context="K3_TOPOLOGY_REGIME"`
 
 Non-divergence alone is not treated as evidence that the field map was learned.
+
+When the diagnostic context is absent, transport failure does not globally
+shadow stronger K1/K2/K4/K5 signals. If no stronger signal matches, S0 still
+surfaces field-learnable-but-transport-failed packets as low-confidence K3
+`REGIME_UNRESOLVED` recommendations.
 
 ## Run Tests
 

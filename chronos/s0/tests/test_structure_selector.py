@@ -3,6 +3,7 @@ import unittest
 from chronos.s0.diagnostics_schema import (
     ACT_CONTINUE,
     ACT_DO_NOT_PROMOTE,
+    CTX_TOPOLOGY,
     GATE_REGIME,
     K1_LORENTZ,
     K2_SYMPLECTIC,
@@ -25,6 +26,7 @@ class StructureSelectorTests(unittest.TestCase):
                 "object_tracking_valid": False,
                 "topological_transport_score": 0.0,
                 "baseline_divergence": 0.01,
+                "diagnostic_context": CTX_TOPOLOGY,
             }
         )
         self.assertEqual(rec.candidate_family, K3_TOPOLOGICAL)
@@ -41,6 +43,37 @@ class StructureSelectorTests(unittest.TestCase):
         )
         self.assertEqual(rec.candidate_family, UNRESOLVED)
         self.assertEqual(rec.allowed_action, ACT_DO_NOT_PROMOTE)
+
+    def test_transport_fail_without_context_falls_back_to_k3(self):
+        rec = recommend({"field_learnable": True, "object_tracking_valid": False})
+        self.assertEqual(rec.candidate_family, K3_TOPOLOGICAL)
+        self.assertEqual(rec.allowed_action, ACT_DO_NOT_PROMOTE)
+
+    def test_transport_fail_does_not_shadow_k2_without_context(self):
+        rec = recommend(
+            {
+                "field_learnable": True,
+                "object_tracking_valid": False,
+                "symplectic_improves_vs_controls": True,
+            }
+        )
+        self.assertEqual(rec.candidate_family, K2_SYMPLECTIC)
+
+    def test_topology_context_transport_fail_preempts_k2(self):
+        rec = recommend(
+            {
+                "field_learnable": True,
+                "object_tracking_valid": False,
+                "baseline_divergence": 0.01,
+                "symplectic_improves_vs_controls": True,
+                "diagnostic_context": CTX_TOPOLOGY,
+            }
+        )
+        self.assertEqual(rec.candidate_family, K3_TOPOLOGICAL)
+
+    def test_transport_score_out_of_range_raises(self):
+        with self.assertRaises(ValueError):
+            recommend({"topological_transport_score": 3.2})
 
     def test_strong_symplectic(self):
         rec = recommend({"symplectic_improves_vs_controls": True, "symplectic_jacobian_error": 0.1})
