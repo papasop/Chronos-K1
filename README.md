@@ -157,6 +157,30 @@ Current toy cases:
 
 This is not robotics yet, not a simulation, and not a learned classifier.
 
+### S0-E1: Toy Simulation Diagnostics
+
+S0-E1 is the next computer-side toy layer:
+
+```text
+toy simulation -> diagnostic extractor -> S0 recommendation
+```
+
+It replaces hand-written toy diagnostics with measured diagnostics from small
+deterministic toy trajectories:
+
+- pendulum simulation -> energy-drift symplectic proxy -> K2
+- contact simulation -> toy contact/event-ordering proxy -> K1
+- object-persistence failure -> object tracking diagnostic -> K3 / `do_not_promote`
+
+Current S0-E1 verdict:
+
+```text
+S0_E1_TOY_SIM_PASSED
+```
+
+This is still not robotics, not model training, not learned classification, and
+not physical certification.
+
 ## 4. VPSL Gates
 
 Historically, Chronos was positioned between learned world models and
@@ -231,6 +255,9 @@ Chronos/
 │   ├── embodied_toy/
 │   │   ├── README.md
 │   │   ├── run_toy_suite.py
+│   │   ├── run_sim_suite.py
+│   │   ├── simulations.py
+│   │   ├── extractors.py
 │   │   ├── toy_worlds.py
 │   │   └── tests/
 │   ├── s0/

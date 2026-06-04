@@ -93,15 +93,16 @@ Current toy cases:
 Status:
 
 ```text
-PLANNED
+S0_E1_TOY_SIM_PASSED
 ```
 
 Role:
 
-- next computer-side step after S0-E0
-- replace hand-written toy diagnostics with diagnostics extracted from simple
-  toy simulations
-- still no robotics and no learned selector
+- computer-side step after S0-E0
+- replaces hand-written toy diagnostics with diagnostics extracted from simple
+  deterministic toy simulations
+- still no robotics, no model training, no learned selector, and no physical
+  certification
 
 Target loop:
 
@@ -109,11 +110,11 @@ Target loop:
 toy simulation -> diagnostic extractor -> S0 recommendation
 ```
 
-Candidate diagnostic extractors:
+Current diagnostic extractors:
 
-- pendulum simulation -> energy drift / symplectic proxy -> S0
-- causal collision simulation -> contact timing / causal-violation proxy -> S0
-- toy object persistence -> `object_tracking_valid` -> S0
+- pendulum simulation -> measured energy drift / symplectic proxy -> K2
+- contact simulation -> toy contact/event-ordering proxy -> K1
+- toy object persistence -> measured `object_tracking_valid` -> K3 / `do_not_promote`
 
 ## K3 - Structure Discovery Program
 

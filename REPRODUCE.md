@@ -265,7 +265,10 @@ The S0-E0 embodied toy layer is also pure stdlib:
 ```bash
 python -m chronos.embodied_toy.run_toy_suite
 python -m chronos.embodied_toy.run_toy_suite --json
+python -m chronos.embodied_toy.run_sim_suite
+python -m chronos.embodied_toy.run_sim_suite --json
 python -m unittest chronos.embodied_toy.tests.test_embodied_toy
+python -m unittest chronos.embodied_toy.tests.test_embodied_sim
 ```
 
 ## 9. K3: Candidate Regime Validation
@@ -333,9 +336,11 @@ python chronos/k3/experiments/k3_0d_sine_gordon_winding_density.py --smoke
 python chronos/k3/experiments/k3_1_winding_density_prior.py
 python -m unittest chronos.s0.tests.test_structure_selector
 python -m unittest chronos.embodied_toy.tests.test_embodied_toy
+python -m unittest chronos.embodied_toy.tests.test_embodied_sim
 python -m chronos.embodied_toy.run_toy_suite
+python -m chronos.embodied_toy.run_sim_suite
 python -m py_compile chronos/s0/adapters.py chronos/s0/emitter.py chronos/s0/run_selector.py
-python -m py_compile chronos/embodied_toy/toy_worlds.py chronos/embodied_toy/run_toy_suite.py
+python -m py_compile chronos/embodied_toy/toy_worlds.py chronos/embodied_toy/run_toy_suite.py chronos/embodied_toy/simulations.py chronos/embodied_toy/extractors.py chronos/embodied_toy/run_sim_suite.py
 python -m py_compile chronos/k3/verdicts.py
 python -m py_compile chronos/k3/experiments/k3_2d_0_vortex_regime.py
 python chronos/k3/archives/exp_k3_1_main/k3_1_main.py
