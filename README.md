@@ -84,7 +84,7 @@ performance, and mechanism all survive the relevant gates.
 | K1 | VPSL Framework Validation | Done |
 | K1 | Spectral Prior | BOUNDED_POSITIVE |
 | K2 | Symplectic Prior | FULL_TRANSFER_CONFIRMED through H=240 |
-| K3 | Topological / Winding-Density Search | No certified structure yet; K3.1 `NO_EFFECT` |
+| K3 | Topological / Winding-Density Search | No certified structure yet; K3.1 `NO_EFFECT`; K3-E2b active toy search passed |
 
 K1 established a bounded framework result: metric-sensitive behavior appears
 under controlled normalization tests, but it is not promoted to a universal
@@ -328,7 +328,10 @@ Chronos/
 │   │   └── results/
 │   ├── k3/
 │   │   ├── K3_NEGATIVE_RESULTS_phi4_regime.md
+│   │   ├── K3_E2B_ACTIVE_TOPOLOGY_SEARCH_PASSED.md
 │   │   ├── README.md
+│   │   ├── active_topology_search.py
+│   │   ├── run_active_topology_search.py
 │   │   ├── verdicts.py
 │   │   ├── archives/
 │   │   ├── experiments/
@@ -388,7 +391,7 @@ Current program:
 
 - K1: Framework Validation - done.
 - K2: First Certified Structure - done.
-- K3: Topological attempts - Stage-2 winding-density prior test negative; 2D vortex regime unresolved.
+- K3: Topological attempts - Stage-2 winding-density prior test negative; K3-E2b active toy regime search passed; 2D vortex regime unresolved.
 - S0: Structure Recognition Layer - `S0_V0_4_PASSED`.
 - K4: Gauge / cross-family structure discovery - future.
 - K5: Hilbert / quantum-state representation - future.

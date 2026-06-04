@@ -199,6 +199,16 @@ Current 2D restart:
   topological transport
 - goal: find a graceful 2D vortex-position regime before K3.2D.1 prior tests
 
+Current active regime-search toy:
+
+- K3-E2b: active topology regime search on an interpretable toy landscape
+- verdict: `ACTIVE_DIAGNOSTIC_VALUE_PASSED`
+- claim: guided regime search beats blind random search
+- boundary: not K3 prior validation, not GP truth, not robotics, not RL/CNN
+  training
+- future path: K3-E2b toy landscape -> K3-E2c cheap GP truth-only active
+  search -> K3.2D regime validation -> K3 prior test
+
 Entry requirement:
 
 - pre-register regime, controls, mechanism, transfer horizon, and claim boundary

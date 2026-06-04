@@ -30,6 +30,7 @@ Current entrypoint:
 - `experiments/k3_0d_sine_gordon_winding_density.py`
 - `experiments/k3_1_winding_density_prior.py`
 - `experiments/k3_2d_0_vortex_regime.py`
+- `run_active_topology_search.py`
 
 Archived package:
 
@@ -46,6 +47,10 @@ Detailed K3.1-A negative prior result:
 K3.2D.0 unresolved 2D vortex regime note:
 
 - `negative_results/k3_2d_gp_vortex_regime_unresolved.md`
+
+K3-E2b active topology regime-search toy:
+
+- `K3_E2B_ACTIVE_TOPOLOGY_SEARCH_PASSED.md`
 
 K3.0-D is baseline-only periodic Sine-Gordon regime validation using the angle
 representation `[sin(u), cos(u), u_t]`.
@@ -113,3 +118,34 @@ If K3.2D.0 returns transport failure, it is recorded as
 The shared K3.2D verdict helper lives in:
 
 - `verdicts.py`
+
+## K3-E2b Active Topology Regime Search
+
+K3-E2b tests active regime search on an interpretable toy landscape.
+
+Status:
+
+```text
+ACTIVE_DIAGNOSTIC_VALUE_PASSED
+```
+
+Claim:
+
+```text
+guided regime search beats blind random search
+```
+
+Boundary:
+
+- not K3 prior validation
+- not proof that topological priors work
+- not robotics, RL training, CNN training, or a Gross-Pitaevskii run
+- pure novelty alone does not solve this toy landscape
+
+Run:
+
+```bash
+python -m chronos.k3.run_active_topology_search
+python -m chronos.k3.run_active_topology_search --json
+python -m unittest chronos.k3.tests.test_active_topology_search
+```

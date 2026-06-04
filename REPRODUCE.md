@@ -292,7 +292,10 @@ Current K3 file:
 chronos/k3/experiments/k3_0d_sine_gordon_winding_density.py
 chronos/k3/experiments/k3_1_winding_density_prior.py
 chronos/k3/experiments/k3_2d_0_vortex_regime.py
+chronos/k3/active_topology_search.py
+chronos/k3/run_active_topology_search.py
 chronos/k3/verdicts.py
+chronos/k3/K3_E2B_ACTIVE_TOPOLOGY_SEARCH_PASSED.md
 chronos/k3/negative_results/k3_2d_gp_vortex_regime_unresolved.md
 chronos/k3/archives/exp_k3_1_main/README.md
 chronos/k3/archives/exp_k3_1_main/config.json
@@ -329,6 +332,17 @@ The smoke verdict is intentionally two-layered:
 - `SMOKE_TRANSPORT_OK`: field prediction and vortex transport both pass the
   smoke sanity check; promotable to `FULL`.
 
+K3-E2b is an active topology regime-search toy:
+
+```bash
+python -m chronos.k3.run_active_topology_search
+python -m chronos.k3.run_active_topology_search --json
+python -m unittest chronos.k3.tests.test_active_topology_search
+```
+
+It is not K3 prior validation. It only records that guided regime search beats
+blind random search on an interpretable toy landscape.
+
 The packaged K3.1 archive can also regenerate its local CSV summaries:
 
 ```bash
@@ -345,14 +359,17 @@ python -m unittest chronos.embodied_toy.tests.test_embodied_toy
 python -m unittest chronos.embodied_toy.tests.test_embodied_sim
 python -m unittest chronos.embodied_toy.tests.test_embodied_active
 python -m unittest chronos.embodied_toy.tests.test_embodied_active_value
+python -m unittest chronos.k3.tests.test_active_topology_search
 python -m chronos.embodied_toy.run_toy_suite
 python -m chronos.embodied_toy.run_sim_suite
 python -m chronos.embodied_toy.run_active_suite
 python -m chronos.embodied_toy.run_active_value_suite
+python -m chronos.k3.run_active_topology_search
 python -m py_compile chronos/s0/adapters.py chronos/s0/emitter.py chronos/s0/run_selector.py
 python -m py_compile chronos/embodied_toy/toy_worlds.py chronos/embodied_toy/run_toy_suite.py chronos/embodied_toy/simulations.py chronos/embodied_toy/extractors.py chronos/embodied_toy/run_sim_suite.py
 python -m py_compile chronos/embodied_toy/active.py chronos/embodied_toy/run_active_suite.py
 python -m py_compile chronos/embodied_toy/active_value.py chronos/embodied_toy/run_active_value_suite.py
+python -m py_compile chronos/k3/active_topology_search.py chronos/k3/run_active_topology_search.py
 python -m py_compile chronos/k3/verdicts.py
 python -m py_compile chronos/k3/experiments/k3_2d_0_vortex_regime.py
 python chronos/k3/archives/exp_k3_1_main/k3_1_main.py

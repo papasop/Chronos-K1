@@ -11,3 +11,5 @@
   implementation lives in `chronos/embodied_toy/` and `chronos/s0/`.
 - `chronos_embodied_active2.py`: portable S0-E2b mirror for Colab. The
   canonical implementation lives in `chronos/embodied_toy/` and `chronos/s0/`.
+- `chronos_k3_active.py`: portable K3-E2b active topology regime-search mirror
+  for Colab. The canonical implementation lives in `chronos/k3/`.
