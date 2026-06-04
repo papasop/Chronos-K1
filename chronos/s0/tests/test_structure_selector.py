@@ -4,6 +4,7 @@ import os
 import tempfile
 
 from chronos.s0.adapters import diagnostics_from_k2_summary, diagnostics_from_k32d_summary, diagnostics_from_summary
+from chronos.k3 import verdicts as k3_verdicts
 from chronos.s0.diagnostics_schema import (
     ACT_CONTINUE,
     ACT_DO_NOT_PROMOTE,
@@ -121,6 +122,22 @@ class StructureSelectorTests(unittest.TestCase):
     def test_k32d_invalid_mode(self):
         with self.assertRaises(ValueError):
             k32d_verdict("scout", 0.02, 0.0, 0.8, 2.0)
+
+    def test_k32d_canonical_truth_table(self):
+        self.assertEqual(k3_verdicts.REF_CEIL, 0.05)
+        self.assertEqual(k3_verdicts.HARD_DIV_MAX, 0.5)
+        self.assertEqual(k3_verdicts.PAIR_INTACT_MIN, 0.6)
+        self.assertEqual(k3_verdicts.POS_ERR_CEIL, 8.0)
+        cases = [
+            (("SMOKE", 0.0374, 0.0, 0.0, 8.0), "SMOKE_PIPELINE_OK_TRANSPORT_FAIL"),
+            (("SMOKE", 0.02, 0.0, 0.8, 2.0), "SMOKE_TRANSPORT_OK"),
+            (("SMOKE", 0.2, 0.0, 0.0, 8.0), "SMOKE_PIPELINE_FAIL"),
+            (("FULL", 0.02, 0.0, 0.8, 2.0), "FULL_REGIME_VALIDATED"),
+            (("FULL", 0.02, 0.0, 0.0, 8.0), "REGIME_UNRESOLVED"),
+            (("smoke", 0.02, 0.0, 0.8, 2.0), "SMOKE_TRANSPORT_OK"),
+        ]
+        for args, expected in cases:
+            self.assertEqual(k3_verdicts.k32d_verdict(*args), expected)
 
     def test_k32d_adapter_transport_fail(self):
         diagnostics = diagnostics_from_k32d_summary(

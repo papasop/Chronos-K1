@@ -1,5 +1,11 @@
 # Chronos-S0: Structure Recognition Layer
 
+Current verdict:
+
+```text
+S0_V0_3_PASSED
+```
+
 S0 is the developmental layer of Chronos.
 
 It does not predict physics directly and it never certifies a structure. It
@@ -60,6 +66,11 @@ From the repository root:
 ```bash
 python -m unittest chronos.s0.tests.test_structure_selector
 ```
+
+Detailed verdict:
+
+- `S0_V0_3_PASSED.md`
+- `results/s0_v0_3_summary.csv`
 
 ## Run Selector
 
