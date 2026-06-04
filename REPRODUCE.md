@@ -181,33 +181,39 @@ K2 archive entrypoints:
 python chronos/k2/experiments/k2_1_symplectic_prior.py --smoke
 python chronos/k2/experiments/k2_1b_repair_controls.py --smoke
 python chronos/k2/experiments/k2_2a_transfer_h200.py --smoke
-python chronos/k2/experiments/k2_2b_transfer_h240.py
 ```
 
-These commands exercise the archived entrypoints and verdict wiring. The full
-Colab training sources are not fully restored in this repository yet.
+These commands exercise the archived entrypoints and verdict wiring for K2.1
+through K2.2-A.
 
-The archived K2.2-A and K2.2-B repository summaries can be regenerated with:
+The archived K2.2-A repository summary can be regenerated with:
 
 ```bash
 python chronos/k2/experiments/k2_2a_transfer_h200.py
+```
+
+K2.2-B is now the restored audit-fixed full Colab training source. Running it
+directly launches the expensive two-phase H=240 experiment:
+
+```bash
 python chronos/k2/experiments/k2_2b_transfer_h240.py
 ```
 
-The K2.2-A / K2.2-B archive scripts regenerate repository summaries and verdict
-wiring. They do not rerun the full Colab training experiments. The full claim is
-valid only for the original full experiment run with the registered K2.2
-gates:
+Use this only on an intended GPU runtime. For repository CI / syntax checking,
+use `py_compile` instead.
+
+The full claim is valid only for the original full experiment run with the
+registered K2.2 gates:
 
 - primary metric: rollout MSE at the transfer horizon
 - primary subset: graceful-baseline subset
 - controls: fair energy and fair L2, re-checked at the transfer horizon
 - mechanism: full `||J^T Omega J - Omega||` reduction above threshold
 
-K2.1 onward currently has repository archive entrypoints and verdict logic.
-Full training reproduction requires restoring the original Colab experiment
-sources. The predecessor K2.0 and K2.0-B stages are preserved as historical
-logs, and their source scripts are being reconstructed.
+K2.1, K2.1-B, and K2.2-A currently have repository archive entrypoints and
+verdict logic. K2.2-B has full audit-fixed Colab training source restored. The
+predecessor K2.0 and K2.0-B stages are preserved as historical logs, and their
+source scripts are being reconstructed.
 
 ## 8. CI
 
@@ -228,8 +234,8 @@ python -m py_compile chronos/k2/experiments/k2_2a_transfer_h200.py
 python -m py_compile chronos/k2/experiments/k2_2b_transfer_h240.py
 ```
 
-This confirms that the archived K2 entrypoints remain syntactically valid
-without running expensive training jobs.
+This confirms that the K2 entrypoints remain syntactically valid without
+running expensive training jobs.
 
 ## 9. K3: Candidate Regime Validation
 

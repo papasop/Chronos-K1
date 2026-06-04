@@ -29,12 +29,12 @@ boundary through open-ended horizon hunting.
 
 ## Source Availability
 
-Available archive entrypoints:
+Available entrypoints:
 
 - K2.1
 - K2.1-B
 - K2.2-A
-- K2.2-B archive entrypoint
+- K2.2-B full audit-fixed Colab source
 
 Missing code:
 
@@ -46,12 +46,12 @@ Available evidence:
 - K2.0 / K2.0-B logs
 - K2.1 / K2.1-B archive entrypoints and archived summaries
 - K2.2-A archive entrypoint, archived summary, and verdict wiring
-- K2.2-B archive entrypoint, archived summary, and verdict wiring
+- K2.2-B full audit-fixed Colab source, archived summary, and verdict wiring
 
-K2.1 onward currently has repository archive entrypoints and verdict logic.
-Full training reproduction requires restoring the original Colab experiment
-sources. The regime-discovery stages K2.0 and K2.0-B are preserved as logs and
-are being reconstructed.
+K2.1, K2.1-B, and K2.2-A currently have repository archive entrypoints and
+verdict logic. K2.2-B has the full audit-fixed Colab training source restored.
+The regime-discovery stages K2.0 and K2.0-B are preserved as logs and are being
+reconstructed.
 
 ## What K2 Established
 

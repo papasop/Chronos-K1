@@ -1,17 +1,20 @@
-# K2 Experiment Archive Entrypoints
+# K2 Experiment Entrypoints
 
-This directory contains archive entrypoints for the K2 symplectic-prior
+This directory contains repository entrypoints for the K2 symplectic-prior
 milestone.
 
-These scripts preserve:
+The K2.1, K2.1-B, and K2.2-A scripts preserve:
 
 - experiment configuration metadata
 - registered verdict semantics
 - archived summary generation
 - repository navigation for the K2 result chain
 
-They do not rerun the full GPU Colab training experiments unless the original
-training sources are explicitly restored.
+They do not rerun the full GPU Colab training experiments.
+
+The K2.2-B script is different: it is the restored audit-fixed full Colab
+training source for the two-phase H=240 transfer experiment. Running it directly
+starts the expensive full experiment.
 
 ## Current Entrypoints
 
@@ -22,6 +25,7 @@ training sources are explicitly restored.
 
 ## Boundary
 
-K2.1 through K2.2-B can currently be inspected through repository archive
-entrypoints and archived summaries. Full training reproduction remains pending
-restoration of the original Colab experiment sources.
+K2.1, K2.1-B, and K2.2-A can currently be inspected through repository archive
+entrypoints and archived summaries. K2.2-B can be inspected syntactically with
+`py_compile`, or run intentionally on a GPU runtime for the full H=240
+two-phase experiment.

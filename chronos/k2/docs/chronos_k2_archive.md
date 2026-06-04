@@ -28,13 +28,14 @@ K2 is now sealed as the first VPSL-certified structure milestone.
 K2.2-A tests transfer at H=200 after K2.1-B repaired the controls at H=160.
 K2.2-B extends the same transfer discipline to H=240.
 
-K2.1 onward currently has repository archive entrypoints and verdict logic.
-Full training reproduction requires restoring the original Colab experiment
-sources. K2.0 and K2.0-B established the FPU-β graceful-fail regime; their
-logs are archived, but source scripts are not currently available.
+K2.1, K2.1-B, and K2.2-A currently have repository archive entrypoints and
+verdict logic. K2.2-B has the full audit-fixed Colab training source restored.
+K2.0 and K2.0-B established the FPU-β graceful-fail regime; their logs are
+archived, but source scripts are not currently available.
 
-The K2.2-A and K2.2-B scripts regenerate archived repository summaries and
-verdict wiring. They do not rerun the full Colab training experiments.
+The K2.2-A script regenerates archived repository summaries and verdict wiring.
+The K2.2-B script runs the full two-phase H=240 experiment when executed
+directly; use `py_compile` for lightweight repository checks.
 
 The confirmed H=240 result requires the primary claim to hold on the
 graceful-baseline subset, not only in pooled results.
