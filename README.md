@@ -58,7 +58,7 @@ Chronos tracks physical structures as validation targets:
 
 | Structure Family | Program / System | Scope | Current Status |
 | --- | --- | --- | --- |
-| Structure recognition layer | S0 | Selects candidate physical language from diagnostics | `S0_V0_3_PASSED`; not a certifier |
+| Structure recognition layer | S0 | Selects candidate physical language from diagnostics | `S0_V0_4_PASSED`; emits recommendations, never certifies |
 | Pseudo-Riemannian / Lorentz structure | K1 / Klein-Gordon | Geometry, causality, metric signature, light-cone behavior | Partially confirmed; short-horizon evidence, mechanism transfer bounded |
 | Spectral / dispersion structure | K1 / Klein-Gordon | Frequencies, dispersion relation, mode dynamics | `BOUNDED_POSITIVE`; coupled with Lorentz-sensitive validation |
 | Symplectic / Hamiltonian structure | K2 / FPU-β | Phase space, Hamiltonian flow, long-horizon dynamics | `FULL_TRANSFER_CONFIRMED` through H=240; mechanism transfer confirmed |
@@ -80,7 +80,7 @@ performance, and mechanism all survive the relevant gates.
 
 | Stage | Result | Status |
 | --- | --- | --- |
-| S0 | Structure Recognition Layer | `S0_V0_3_PASSED`; recommends K-family, never certifies |
+| S0 | Structure Recognition Layer | `S0_V0_4_PASSED`; recommends K-family, emits `s0_recommendation.csv`, never certifies |
 | K1 | VPSL Framework Validation | Done |
 | K1 | Spectral Prior | BOUNDED_POSITIVE |
 | K2 | Symplectic Prior | FULL_TRANSFER_CONFIRMED through H=240 |
@@ -133,7 +133,7 @@ vortex-antivortex pair as a topological object.
 Current S0 verdict:
 
 ```text
-S0_V0_3_PASSED
+S0_V0_4_PASSED
 ```
 
 ## 4. VPSL Gates
@@ -210,8 +210,10 @@ Chronos/
 │   ├── s0/
 │   │   ├── README.md
 │   │   ├── S0_V0_3_PASSED.md
+│   │   ├── S0_V0_4_PASSED.md
 │   │   ├── adapters.py
 │   │   ├── diagnostics_schema.py
+│   │   ├── emitter.py
 │   │   ├── run_selector.py
 │   │   ├── structure_selector.py
 │   │   └── tests/
@@ -287,6 +289,6 @@ Current program:
 - K1: Framework Validation - done.
 - K2: First Certified Structure - done.
 - K3: Topological attempts - Stage-2 winding-density prior test negative; 2D vortex regime unresolved.
-- S0: Structure Recognition Layer - `S0_V0_3_PASSED`.
+- S0: Structure Recognition Layer - `S0_V0_4_PASSED`.
 - K4: Gauge / cross-family structure discovery - future.
 - K5: Hilbert / quantum-state representation - future.

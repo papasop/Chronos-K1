@@ -5,6 +5,7 @@ import tempfile
 
 from chronos.s0.adapters import diagnostics_from_k2_summary, diagnostics_from_k32d_summary, diagnostics_from_summary
 from chronos.k3 import verdicts as k3_verdicts
+from chronos.k3.verdicts import k32d_verdict
 from chronos.s0.diagnostics_schema import (
     ACT_CONTINUE,
     ACT_DO_NOT_PROMOTE,
@@ -16,8 +17,9 @@ from chronos.s0.diagnostics_schema import (
     K3_TOPOLOGICAL,
     UNRESOLVED,
 )
-from chronos.s0.run_selector import emit_recommendation, run_cli
-from chronos.s0.structure_selector import k32d_verdict, recommend
+from chronos.s0.emitter import emit_recommendation
+from chronos.s0.run_selector import run_cli
+from chronos.s0.structure_selector import Recommendation, recommend
 
 
 class StructureSelectorTests(unittest.TestCase):
@@ -214,6 +216,12 @@ class StructureSelectorTests(unittest.TestCase):
             rec = emit_recommendation("bogus", {}, tmpdir, verbose=False)
             self.assertIsNone(rec)
             self.assertFalse(os.path.exists(os.path.join(tmpdir, "s0_recommendation.csv")))
+
+    def test_recommendation_rejects_certifying_actions(self):
+        for bad_action in ("certified", "certify", "promote"):
+            with self.subTest(bad_action=bad_action):
+                with self.assertRaises(ValueError):
+                    Recommendation(K2_SYMPLECTIC, "high", "x", "mechanism", bad_action)
 
 
 if __name__ == "__main__":

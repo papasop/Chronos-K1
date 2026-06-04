@@ -1,4 +1,4 @@
-"""Chronos-S0 structure selector and K3.2D verdict helpers.
+"""Chronos-S0 structure selector.
 
 S0 is not a predictor and not a certifier. It recommends which K-family should
 enter VPSL validation next and at which gate. Certification happens only by
@@ -10,11 +10,10 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from typing import Any
 
-from chronos.k3.verdicts import k32d_explain, k32d_verdict
-
 from .diagnostics_schema import (
     ACT_CONTINUE,
     ACT_DO_NOT_PROMOTE,
+    ALLOWED_ACTIONS,
     CAUSAL_VIOLATION_SIGNIF,
     CONF_HIGH,
     CONF_LOW,
@@ -44,6 +43,13 @@ class Recommendation:
     reason: str
     next_vpsl_gate: str | None
     allowed_action: str
+
+    def __post_init__(self) -> None:
+        if self.allowed_action not in ALLOWED_ACTIONS:
+            raise ValueError(
+                f"allowed_action must be one of {sorted(ALLOWED_ACTIONS)} "
+                f"(S0 never certifies); got {self.allowed_action!r}"
+            )
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

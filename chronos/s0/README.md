@@ -3,7 +3,7 @@
 Current verdict:
 
 ```text
-S0_V0_3_PASSED
+S0_V0_4_PASSED
 ```
 
 S0 is the developmental layer of Chronos.
@@ -67,10 +67,12 @@ From the repository root:
 python -m unittest chronos.s0.tests.test_structure_selector
 ```
 
-Detailed verdict:
+Detailed verdicts:
 
 - `S0_V0_3_PASSED.md`
 - `results/s0_v0_3_summary.csv`
+- `S0_V0_4_PASSED.md`
+- `results/s0_v0_4_summary.csv`
 
 ## Run Selector And Emit
 
@@ -81,7 +83,7 @@ python -m chronos.s0.run_selector --kind k3_2d --summary chronos/k3/results/k3_2
 python -m chronos.s0.run_selector --kind k2 --summary chronos/k2/results/k2_3_reanalysis_summary.csv --out rec.json
 ```
 
-Experiment scripts can also call:
+Experiment scripts can also call the helper in `emitter.py`:
 
 ```python
 from chronos.s0 import emit_recommendation
@@ -91,6 +93,14 @@ emit_recommendation("k3_2d", summary, RESULTS_DIR)
 
 This writes `s0_recommendation.csv` next to the experiment summary and degrades
 without raising if the recommendation step fails.
+
+S0 recommendation actions are structurally limited to:
+
+- `continue`
+- `archive`
+- `do_not_promote`
+
+S0 never emits a certifying action.
 
 Supported adapters:
 

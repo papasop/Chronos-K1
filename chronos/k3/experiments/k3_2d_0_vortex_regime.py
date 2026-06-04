@@ -46,6 +46,7 @@ import torch.nn as nn
 from pathlib import Path
 
 from chronos.k3.verdicts import HARD_DIV_MAX, PAIR_INTACT_MIN, POS_ERR_CEIL, REF_CEIL, k32d_verdict
+from chronos.s0.emitter import emit_recommendation
 
 # ---- run mode ----
 RUN_MODE="SMOKE"     # SMOKE first; then FULL for the N=30 regime decision
@@ -264,10 +265,11 @@ def main():
         if not pair_ok: print("   pair annihilates too often")
         print("   Retune (sep, S, g, grid, epochs). This is not a prior test or topology rejection.")
     print("="*80)
-    pd.DataFrame([{'experiment':'k3_2d_0','verdict':v,'mode':RUN_MODE,'pipeline_ok':pipeline_ok,
-                   'transport_ok':transport_ok,'ref_med':ref_med,'pos_med':pos_med,
-                   'pair_frac':pair_frac,'hard_frac':hard_frac}]).to_csv(
-        RESULTS_DIR/"k3_2d_0_summary.csv",index=False)
+    summary = {'experiment':'k3_2d_0','verdict':v,'mode':RUN_MODE,'pipeline_ok':pipeline_ok,
+               'transport_ok':transport_ok,'ref_med':ref_med,'pos_med':pos_med,
+               'pair_frac':pair_frac,'hard_frac':hard_frac}
+    pd.DataFrame([summary]).to_csv(RESULTS_DIR/"k3_2d_0_summary.csv",index=False)
+    emit_recommendation("k3_2d", summary, RESULTS_DIR)
     print(f"\n✓ Saved to {RESULTS_DIR}")
     print(f"\n{'='*80}\nFINAL: {v}{' (SMOKE)' if RUN_MODE=='SMOKE' else ''}\n{'='*80}")
     return df,v

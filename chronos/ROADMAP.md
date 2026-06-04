@@ -48,7 +48,7 @@ Evidence:
 Status:
 
 ```text
-S0_V0_3_PASSED
+S0_V0_4_PASSED
 ```
 
 Role:
@@ -64,8 +64,8 @@ Current guardrail:
 - field prediction can be learnable while object transport fails
 - K3.2D.0 separates `pipeline_ok` from `transport_ok`
 - low `[Re psi, Im psi]` error is not enough to promote a topological regime
-- summary adapters and the `run_selector` CLI close the loop from experiment
-  summaries to S0 recommendations
+- summary adapters, the `run_selector` CLI, and `emit_recommendation` close
+  the loop from experiment summaries to emitted S0 recommendations
 
 ## K3 - Structure Discovery Program
 

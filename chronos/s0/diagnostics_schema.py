@@ -15,6 +15,7 @@ GATE_TRANSFER = "transfer"
 ACT_CONTINUE = "continue"
 ACT_ARCHIVE = "archive"
 ACT_DO_NOT_PROMOTE = "do_not_promote"
+ALLOWED_ACTIONS = frozenset({ACT_CONTINUE, ACT_ARCHIVE, ACT_DO_NOT_PROMOTE})
 
 CONF_LOW = "low"
 CONF_MED = "medium"

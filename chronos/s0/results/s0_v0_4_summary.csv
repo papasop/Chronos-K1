@@ -1,0 +1,2 @@
+experiment,verdict,scope,claim,not_claim,key_guardrail,closed_loop,test_scope
+S0_v0.4,S0_V0_4_PASSED,rule-based closed-loop structure recognition layer,developmental structure-language selector with emitted experiment recommendations,learned classifier or certified physics AI,field prediction ok != topological-object transport ok,summary adapters + run_selector CLI + emit_recommendation writes s0_recommendation.csv,selector verdict adapters CLI emit never-certify truth-table
