@@ -72,7 +72,7 @@ Detailed verdict:
 - `S0_V0_3_PASSED.md`
 - `results/s0_v0_3_summary.csv`
 
-## Run Selector
+## Run Selector And Emit
 
 S0 can also close the loop from an experiment summary file to a recommendation:
 
@@ -80,6 +80,17 @@ S0 can also close the loop from an experiment summary file to a recommendation:
 python -m chronos.s0.run_selector --kind k3_2d --summary chronos/k3/results/k3_2d_0_summary.csv
 python -m chronos.s0.run_selector --kind k2 --summary chronos/k2/results/k2_3_reanalysis_summary.csv --out rec.json
 ```
+
+Experiment scripts can also call:
+
+```python
+from chronos.s0 import emit_recommendation
+
+emit_recommendation("k3_2d", summary, RESULTS_DIR)
+```
+
+This writes `s0_recommendation.csv` next to the experiment summary and degrades
+without raising if the recommendation step fails.
 
 Supported adapters:
 

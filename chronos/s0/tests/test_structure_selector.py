@@ -16,7 +16,7 @@ from chronos.s0.diagnostics_schema import (
     K3_TOPOLOGICAL,
     UNRESOLVED,
 )
-from chronos.s0.run_selector import run_cli
+from chronos.s0.run_selector import emit_recommendation, run_cli
 from chronos.s0.structure_selector import k32d_verdict, recommend
 
 
@@ -195,6 +195,25 @@ class StructureSelectorTests(unittest.TestCase):
             rec = run_cli(["--kind", "k3_2d", "--summary", summary_path], quiet=True)
         self.assertEqual(rec["candidate_family"], K3_TOPOLOGICAL)
         self.assertEqual(rec["allowed_action"], ACT_DO_NOT_PROMOTE)
+
+    def test_emit_recommendation_writes_csv(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            rec = emit_recommendation(
+                "k3_2d",
+                {"pipeline_ok": True, "transport_ok": False, "hard_frac": 0.0, "pair_frac": 0.0},
+                tmpdir,
+                verbose=False,
+            )
+            out_path = os.path.join(tmpdir, "s0_recommendation.csv")
+            self.assertTrue(os.path.exists(out_path))
+            self.assertEqual(rec["candidate_family"], K3_TOPOLOGICAL)
+            self.assertEqual(rec["allowed_action"], ACT_DO_NOT_PROMOTE)
+
+    def test_emit_recommendation_degrades_without_crashing(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            rec = emit_recommendation("bogus", {}, tmpdir, verbose=False)
+            self.assertIsNone(rec)
+            self.assertFalse(os.path.exists(os.path.join(tmpdir, "s0_recommendation.csv")))
 
 
 if __name__ == "__main__":

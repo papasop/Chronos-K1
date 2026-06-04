@@ -65,12 +65,21 @@ failure diagnostic from globally shadowing a valid symplectic reading.
 
 ## Closed Loop
 
-S0 v0.3 includes summary adapters and a CLI:
+S0 v0.3 includes summary adapters, a CLI, and an experiment emit helper:
 
 ```bash
 python -m chronos.s0.run_selector --kind k3_2d --summary s.csv
 python -m chronos.s0.run_selector --kind k2 --summary s.json --out rec.json
 ```
+
+```python
+from chronos.s0 import emit_recommendation
+
+emit_recommendation("k3_2d", summary, results_dir)
+```
+
+`emit_recommendation` writes `s0_recommendation.csv` and degrades without
+raising, so experiment scripts can call it after saving their own summaries.
 
 The CLI returns a recommendation object with:
 

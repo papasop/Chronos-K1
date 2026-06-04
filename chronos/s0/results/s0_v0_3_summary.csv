@@ -1,2 +1,2 @@
 version,verdict,scope,claim,not_claim,primary_guard,cli,tests
-S0_v0.3,S0_V0_3_PASSED,rule-based structure recognition layer,developmental structure-language selector,learned classifier or certified physics AI,field prediction ok != topological-object transport ok,summary adapters + run_selector CLI,selector verdict adapters CLI truth-table
+S0_v0.3,S0_V0_3_PASSED,rule-based structure recognition layer,developmental structure-language selector,learned classifier or certified physics AI,field prediction ok != topological-object transport ok,summary adapters + run_selector CLI + emit_recommendation,selector verdict adapters CLI emit truth-table
