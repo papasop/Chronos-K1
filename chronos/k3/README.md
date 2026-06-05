@@ -31,6 +31,7 @@ Current entrypoint:
 - `experiments/k3_1_winding_density_prior.py`
 - `experiments/k3_2d_0_vortex_regime.py`
 - `run_active_topology_search.py`
+- `run_active_gp_search.py`
 
 Archived package:
 
@@ -52,6 +53,11 @@ K3-E2b active topology regime-search toy:
 
 - `ACTIVE_TOPOLOGY_SEARCH.md`
 - `K3_E2B_ACTIVE_TOPOLOGY_SEARCH_PASSED.md`
+
+K3-E2d active GP topology regime search:
+
+- `ACTIVE_GP_SEARCH.md`
+- `K3_E2D_GP_ACTIVE_SEARCH_PASSED.md`
 
 K3.0-D is baseline-only periodic Sine-Gordon regime validation using the angle
 representation `[sin(u), cos(u), u_t]`.
@@ -153,3 +159,30 @@ python -m chronos.k3.run_active_topology_search
 python -m chronos.k3.run_active_topology_search --json
 python -m unittest chronos.k3.tests.test_active_topology_search
 ```
+
+## K3-E2d Discriminating GP Truth-Only Active Search
+
+K3-E2d swaps the toy analytic evaluator for a cheap real GP evaluator with
+continuous vortex-position tracking.
+
+Status:
+
+```text
+GP_ACTIVE_DIAGNOSTIC_VALUE_PASSED
+```
+
+Run:
+
+```bash
+python -m chronos.k3.run_active_gp_search
+python -m chronos.k3.run_active_gp_search --json
+python -m unittest chronos.k3.tests.test_active_gp_search
+```
+
+Boundary:
+
+- not K3 prior validation
+- not proof that topological priors work
+- not full-resolution GP
+- active is guided search
+- S0 never certifies

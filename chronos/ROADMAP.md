@@ -229,6 +229,16 @@ Current active regime-search toy:
 - future path: K3-E2b toy landscape -> K3-E2c cheap GP truth-only active
   search -> K3.2D regime validation -> K3 prior test
 
+Current cheap-GP active regime search:
+
+- K3-E2d: discriminating GP truth-only active topology search
+- verdict: `GP_ACTIVE_DIAGNOSTIC_VALUE_PASSED`
+- summary: cheap real-GP evaluator with continuous vortex-position transport;
+  active passes registered admission criteria against random control
+- boundary: not K3 prior validation, not proof topological priors work, not
+  full-resolution GP, not robotics, not CNN/RL training
+- future path: harden the cheap-GP regime search before any K3.2D prior test
+
 Entry requirement:
 
 - pre-register regime, controls, mechanism, transfer horizon, and claim boundary

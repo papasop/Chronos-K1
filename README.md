@@ -63,7 +63,7 @@ Chronos tracks physical structures as validation targets:
 | Pseudo-Riemannian / Lorentz structure | K1 / Klein-Gordon | Geometry, causality, metric signature, light-cone behavior | Partially confirmed; short-horizon evidence, mechanism transfer bounded |
 | Spectral / dispersion structure | K1 / Klein-Gordon | Frequencies, dispersion relation, mode dynamics | `BOUNDED_POSITIVE`; coupled with Lorentz-sensitive validation |
 | Symplectic / Hamiltonian structure | K2 / FPU-β | Phase space, Hamiltonian flow, long-horizon dynamics | `FULL_TRANSFER_CONFIRMED` through H=240; mechanism transfer confirmed |
-| Topological / defect structure | K3.1 / K3.2D / K3-E2b | Winding density, vortex transport, active topology regime search | K3.1 `NO_EFFECT`; K3.2D regime unresolved; K3-E2b toy active search `PASSED` |
+| Topological / defect structure | K3.1 / K3.2D / K3-E2b / K3-E2d | Winding density, vortex transport, active topology regime search | K3.1 `NO_EFFECT`; K3.2D regime unresolved; K3-E2b toy active search `PASSED`; K3-E2d cheap GP active search `PASSED` |
 | Gauge structure | K4 candidate | Local symmetry and gauge invariants | Pending |
 | Hilbert / quantum-state structure | K5 candidate | Unitarity, quantum-state geometry, Born-compatible diagnostics | Pending |
 
@@ -85,11 +85,15 @@ performance, and mechanism all survive the relevant gates.
 | K1 | VPSL Framework Validation | Done |
 | K1 | Spectral Prior | BOUNDED_POSITIVE |
 | K2 | Symplectic Prior | FULL_TRANSFER_CONFIRMED through H=240 |
-| K3 | Topological / Winding-Density Search | No certified structure yet; K3.1 `NO_EFFECT`; K3-E2b active toy search passed |
+| K3 | Topological / Winding-Density Search | No certified structure yet; K3.1 `NO_EFFECT`; K3-E2b active toy search passed; K3-E2d cheap GP active search passed |
 
 K3-E2b: guided active topology regime search on a transparent toy landscape;
 active reaches a `transport_ok` regime while random control does not. Status:
 `PASSED`.
+
+K3-E2d: guided active topology regime search with a cheap real GP evaluator and
+continuous vortex-position transport metric. Active passes the registered
+admission criteria against a random control. Status: `PASSED`.
 
 K1 established a bounded framework result: metric-sensitive behavior appears
 under controlled normalization tests, but it is not promoted to a universal
@@ -361,8 +365,11 @@ Chronos/
 │   ├── k3/
 │   │   ├── K3_NEGATIVE_RESULTS_phi4_regime.md
 │   │   ├── K3_E2B_ACTIVE_TOPOLOGY_SEARCH_PASSED.md
+│   │   ├── K3_E2D_GP_ACTIVE_SEARCH_PASSED.md
 │   │   ├── README.md
+│   │   ├── active_gp_search.py
 │   │   ├── active_topology_search.py
+│   │   ├── run_active_gp_search.py
 │   │   ├── run_active_topology_search.py
 │   │   ├── verdicts.py
 │   │   ├── archives/
