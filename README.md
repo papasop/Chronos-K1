@@ -59,6 +59,7 @@ Chronos tracks physical structures as validation targets:
 | Structure Family | Program / System | Scope | Current Status |
 | --- | --- | --- | --- |
 | Structure recognition layer | S0 | Selects candidate physical language from diagnostics | `S0_V0_4_PASSED`; emits recommendations, never certifies |
+| Memory logging layer | S0-M0 | Append-only JSONL audit trail for runs, verdicts, recommendations, and claim boundaries | Logging only; does not learn or influence S0 |
 | Pseudo-Riemannian / Lorentz structure | K1 / Klein-Gordon | Geometry, causality, metric signature, light-cone behavior | Partially confirmed; short-horizon evidence, mechanism transfer bounded |
 | Spectral / dispersion structure | K1 / Klein-Gordon | Frequencies, dispersion relation, mode dynamics | `BOUNDED_POSITIVE`; coupled with Lorentz-sensitive validation |
 | Symplectic / Hamiltonian structure | K2 / FPU-β | Phase space, Hamiltonian flow, long-horizon dynamics | `FULL_TRANSFER_CONFIRMED` through H=240; mechanism transfer confirmed |
@@ -228,6 +229,27 @@ S0_E2B_ACTIVE_VALUE_PASSED
 This closes the E2 gap: active exploration is not just wired into the diagnostic
 loop, it is necessary for the correct diagnosis in this toy.
 
+### S0-M0: Memory Logging Layer
+
+S0-M0 is an append-only audit trail, not a learning layer:
+
+```text
+run/verdict/recommendation -> MemoryEvent JSONL record -> read-only summary
+```
+
+Every memory record must carry a non-empty `claim_boundary`, so successes are
+logged with what they do and do not establish. `allowed_action` mirrors S0's
+never-certify boundary: `continue`, `archive`, or `do_not_promote`.
+
+Current S0-M0 verdict:
+
+```text
+S0_M0_MEMORY_LOGGING_PASSED
+```
+
+S0-M0 does not change recommendations, rank future experiments, feed back into
+S0, or self-evolve.
+
 ## 4. VPSL Gates
 
 Historically, Chronos was positioned between learned world models and
@@ -320,6 +342,12 @@ Chronos/
 │   │   ├── emitter.py
 │   │   ├── run_selector.py
 │   │   ├── structure_selector.py
+│   │   └── tests/
+│   ├── memory/
+│   │   ├── README.md
+│   │   ├── S0_M0_MEMORY_LOGGING_PASSED.md
+│   │   ├── logging.py
+│   │   ├── run_memory_demo.py
 │   │   └── tests/
 │   ├── k1/
 │   │   └── archive.md

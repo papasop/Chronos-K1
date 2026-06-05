@@ -165,6 +165,23 @@ active -> K2_SYMPLECTIC / continue
 random -> UNRESOLVED / do_not_promote
 ```
 
+## S0-M0 - Memory Logging Layer
+
+Status:
+
+```text
+S0_M0_MEMORY_LOGGING_PASSED
+```
+
+Role:
+
+- append-only JSONL audit trail for Chronos run events
+- records module, experiment kind, verdict, S0 recommendation, score, payload,
+  claim boundary, and code version
+- requires a non-empty `claim_boundary` on every event
+- mirrors S0's never-certify action boundary
+- does not learn, rank, self-evolve, or feed back into S0
+
 ## K3 - Structure Discovery Program
 
 Status:

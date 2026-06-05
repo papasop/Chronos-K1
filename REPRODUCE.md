@@ -251,6 +251,7 @@ with:
 
 ```bash
 python -m unittest chronos.s0.tests.test_structure_selector
+python -m unittest chronos.memory.tests.test_memory_logging
 ```
 
 It can also run as a summary-to-recommendation CLI:
@@ -258,7 +259,12 @@ It can also run as a summary-to-recommendation CLI:
 ```bash
 python -m chronos.s0.run_selector --kind k3_2d --summary path/to/k3_2d_0_summary.csv
 python -m chronos.s0.run_selector --kind k2 --summary path/to/k2_summary.json --out rec.json
+python -m chronos.memory.run_memory_demo
+python -m chronos.memory.run_memory_demo --json
 ```
+
+S0-M0 is logging only. It writes append-only JSONL records with mandatory claim
+boundaries and does not feed back into S0.
 
 The S0-E0 embodied toy layer is also pure stdlib:
 
@@ -360,16 +366,19 @@ python -m unittest chronos.embodied_toy.tests.test_embodied_sim
 python -m unittest chronos.embodied_toy.tests.test_embodied_active
 python -m unittest chronos.embodied_toy.tests.test_embodied_active_value
 python -m unittest chronos.k3.tests.test_active_topology_search
+python -m unittest chronos.memory.tests.test_memory_logging
 python -m chronos.embodied_toy.run_toy_suite
 python -m chronos.embodied_toy.run_sim_suite
 python -m chronos.embodied_toy.run_active_suite
 python -m chronos.embodied_toy.run_active_value_suite
 python -m chronos.k3.run_active_topology_search
+python -m chronos.memory.run_memory_demo
 python -m py_compile chronos/s0/adapters.py chronos/s0/emitter.py chronos/s0/run_selector.py
 python -m py_compile chronos/embodied_toy/toy_worlds.py chronos/embodied_toy/run_toy_suite.py chronos/embodied_toy/simulations.py chronos/embodied_toy/extractors.py chronos/embodied_toy/run_sim_suite.py
 python -m py_compile chronos/embodied_toy/active.py chronos/embodied_toy/run_active_suite.py
 python -m py_compile chronos/embodied_toy/active_value.py chronos/embodied_toy/run_active_value_suite.py
 python -m py_compile chronos/k3/active_topology_search.py chronos/k3/run_active_topology_search.py
+python -m py_compile chronos/memory/logging.py chronos/memory/run_memory_demo.py
 python -m py_compile chronos/k3/verdicts.py
 python -m py_compile chronos/k3/experiments/k3_2d_0_vortex_regime.py
 python chronos/k3/archives/exp_k3_1_main/k3_1_main.py
