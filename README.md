@@ -72,8 +72,136 @@ Chronos is organized as milestones, not as a single architecture:
 - K2: first VPSL-certified structure, validating a symplectic prior on FPU-β.
 - K3: topological / winding-density structure search, with negative and
   unresolved regimes recorded.
+- K2→K3: bridge validation target where symplectic Jacobian grammar is tested
+  on nonlinear topological field systems such as Sine-Gordon.
 - K4: gauge / cross-family structure discovery.
 - K5: Hilbert / quantum-state representation.
+
+## Architecture Grammar vs Physical Testbeds
+
+Chronos separates **physical grammar** from **physical tasks**.
+
+A physical grammar defines how a learner is allowed to represent or transform
+states. A physical task provides the world where that grammar is tested.
+
+| Layer | Object | Role | Chronos position |
+| --- | --- | --- | --- |
+| Grammar layer | `(Df)^T Omega (Df) = Omega` | Algebraic constraint on the learned update map | K2 symplectic / Hamiltonian grammar |
+| Task layer | Sine-Gordon equation | Nonlinear field testbed with soliton and topological structure | K3 topology testbed and K2→K3 bridge |
+| Validation layer | VPSL gates | Tests whether the grammar survives controls, diagnostics, mechanism checks, and transfer | ClaimRecord / evidence ladder |
+
+In short:
+
+```text
+grammar = how the model is allowed to learn
+task    = what physical world the grammar is tested on
+VPSL    = whether the evidence is strong enough to promote the grammar
+```
+
+### K2: Symplectic Grammar
+
+K2 asks whether a learned state update preserves Hamiltonian phase-space
+structure.
+
+For a learned update map `f`, the core mechanism condition is:
+
+```text
+(Df)^T Omega (Df) = Omega
+```
+
+Here:
+
+- `Df` is the Jacobian of the learned update map.
+- `Omega` is the canonical symplectic form.
+- The condition says that the learned deformation must preserve the symplectic
+  structure.
+
+This grammar is task-independent. It can apply to FPU chains, harmonic
+oscillators, orbital systems, Sine-Gordon fields, and other Hamiltonian
+systems.
+
+```text
+K2_SYMPLECTIC_JACOBIAN
+role: architecture-level grammar
+object: Jacobian of the learned update map
+diagnostic: (Df)^T Omega (Df) = Omega
+question: does the model preserve Hamiltonian phase-space structure?
+controls: wrong-Omega, shuffled-Omega, random antisymmetric Omega
+```
+
+K2 therefore does not merely ask whether prediction loss improves. It asks
+whether the model's internal dynamics lives inside the correct symplectic
+geometry.
+
+### K3: Topological Grammar
+
+K3 asks whether the learner preserves topological objects, not just field
+values.
+
+A low field-prediction error is not enough if a defect, vortex, kink,
+anti-kink, winding number, or soliton identity disappears during rollout.
+
+```text
+K3_TOPOLOGICAL_OBJECT
+role: topology-level representation grammar
+object: defect / winding / soliton identity
+diagnostic: topological charge, winding density, defect transport
+question: does the model preserve topological object identity under evolution?
+controls: topology-blind predictors, field-error-only baselines
+```
+
+K3 therefore tests whether the representation carries object persistence in a
+field, rather than only pixel-level or field-level accuracy.
+
+### Sine-Gordon as the K2→K3 Bridge
+
+The Sine-Gordon equation is the planned bridge between K2 and K3:
+
+```text
+phi_tt - phi_xx + sin(phi) = 0
+```
+
+It is useful because it combines:
+
+- Hamiltonian field dynamics -> K2
+- nonlinear wave evolution -> field prediction
+- kink / anti-kink / soliton structure -> K3
+- winding and topological charge -> K3 mechanism check
+- possible failure of pure symplectic grammar -> motivation for an additional
+  topology grammar
+
+In Chronos terms:
+
+```text
+K2K3_SINE_GORDON_BRIDGE
+role: bridge benchmark between symplectic dynamics and topological object persistence
+task: Sine-Gordon nonlinear field evolution
+K2 question: does the learned update preserve symplectic phase-space grammar?
+K3 question: does the learned representation preserve kink / soliton / winding identity?
+status: planned or experimental; not yet certified unless supported by a ClaimRecord
+```
+
+The purpose of Sine-Gordon is not only to solve one equation. Its purpose is to
+expose whether symplectic grammar alone is sufficient, or whether a separate
+topology grammar is required.
+
+### Grammar / Task / Validation Map
+
+| Grammar | Testbed | VPSL question | Possible output |
+| --- | --- | --- | --- |
+| K1 Lorentz / causal grammar | Klein-Gordon / causal contact tasks | Does the learner respect causal or metric structure? | `K1_LORENTZ / bounded` |
+| K2 symplectic grammar: `(Df)^T Omega (Df) = Omega` | FPU-β chain | Does the learner preserve Hamiltonian phase-space dynamics? | `K2_SYMPLECTIC / certified or continue` |
+| K3 topological grammar: angle / winding / defect continuity | Sine-Gordon field | Does the learner preserve soliton and topological identity? | `K3_TOPOLOGICAL / continue or unresolved` |
+| K2→K3 bridge | Sine-Gordon | Can one representation preserve both symplectic dynamics and topological object persistence? | `K2K3_SINE_GORDON_BRIDGE / planned or experimental` |
+
+This distinction is central to Chronos:
+
+```text
+Physics is not only a loss term.
+Physics is a representation grammar.
+Tasks are where the grammar is tested.
+VPSL decides whether the grammar deserves to be promoted.
+```
 
 ## VPSL Structure Map
 
@@ -108,6 +236,7 @@ performance, and mechanism all survive the relevant gates.
 | K1 | VPSL Framework Validation | Done |
 | K1 | Spectral Prior | BOUNDED_POSITIVE |
 | K2 | Symplectic Prior | FULL_TRANSFER_CONFIRMED through H=240 |
+| K2→K3 | Sine-Gordon Bridge | Planned / experimental; not certified unless backed by a ClaimRecord |
 | K3 | Topological / Winding-Density Search | No certified structure yet; K3.1 `NO_EFFECT`; K3-E2b active toy search passed; K3-E2d cheap GP active search passed |
 
 K3-E2b: guided active topology regime search on a transparent toy landscape;
