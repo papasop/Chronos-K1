@@ -326,7 +326,7 @@ class ClaimRecord:
     evidence_level: str
     gate: str
     diagnostics: dict[str, Any]
-    controls: list[str]
+    controls: dict[str, Any]
     supports: list[str]
     does_not_support: list[str]
     failure_mode: str | None
@@ -335,11 +335,13 @@ class ClaimRecord:
     allowed_action: str
     timestamp: str = field(default_factory=new_timestamp)
     claim_status: str = CLAIM_ACTIVE
+    source_module: str = ""
+    code_version: str = "unversioned"
     superseded_by: str | None = None
     superseded_reason: str | None = None
 
     def __post_init__(self) -> None:
-        for field_name in ("claim_id", "structure_family", "verdict", "claim_boundary", "timestamp"):
+        for field_name in ("claim_id", "structure_family", "verdict", "claim_boundary", "timestamp", "source_module"):
             _require_nonempty(getattr(self, field_name), field_name)
         if self.allowed_action not in ALLOWED_ACTIONS or self.allowed_action in BANNED_ALLOWED_ACTIONS:
             raise ValueError(f"allowed_action must be one of {sorted(ALLOWED_ACTIONS)}; got {self.allowed_action!r}")
@@ -349,6 +351,10 @@ class ClaimRecord:
             raise ValueError("supports must be non-empty")
         if not self.does_not_support:
             raise ValueError("does_not_support must be non-empty")
+        if not isinstance(self.controls, dict):
+            raise TypeError("controls must be a dict")
+        if not isinstance(self.diagnostics, dict):
+            raise TypeError("diagnostics must be a dict")
         if not is_known_failure_mode(self.failure_mode):
             raise ValueError(f"unknown failure_mode: {self.failure_mode!r}")
         if "CERTIFIED" in self.verdict.upper():
@@ -374,7 +380,7 @@ def claim_from_k3_e2b(summary: dict[str, Any]) -> ClaimRecord:
         evidence_level="toy_active_regime_search",
         gate=GATE_REGIME,
         diagnostics={"active_best_score": summary.get("active_best_score")},
-        controls=["random_action_search"],
+        controls={"random_action_search": True},
         supports=["guided active search beats blind random search on a transparent toy topology landscape"]
         if passed
         else ["toy topology search ran but did not establish active advantage"],
@@ -383,6 +389,8 @@ def claim_from_k3_e2b(summary: dict[str, Any]) -> ClaimRecord:
         next_gate="K3-E2c cheap GP truth-only active search" if passed else None,
         claim_boundary="toy search landscape only; not GP truth, not K3 prior validation",
         allowed_action=ACT_CONTINUE if passed else ACT_DO_NOT_PROMOTE,
+        source_module="chronos.k3.run_active_topology_search",
+        code_version="claims_v1",
     )
 
 
@@ -396,7 +404,7 @@ def claim_from_k3_e2c(summary: dict[str, Any]) -> ClaimRecord:
         evidence_level="cheap_gp_truth_active_search",
         gate=GATE_REGIME,
         diagnostics={"active_best_score": summary.get("active_best_score")},
-        controls=["random_action_search"],
+        controls={"random_action_search": True},
         supports=["cheap GP evaluator swap ran and showed the landscape was too trivial to separate active from random"],
         does_not_support=[
             "active diagnostic value in the cheap-GP E2c setting",
@@ -405,9 +413,11 @@ def claim_from_k3_e2c(summary: dict[str, Any]) -> ClaimRecord:
             "proof that topological priors work",
         ],
         failure_mode=ACTIVE_NO_ADVANTAGE if no_advantage else None,
-        next_gate=None if no_advantage else "K3-E2d discriminating GP truth-only active search",
+        next_gate="K3-E2d discriminating GP truth active search",
         claim_boundary="cheap real-GP truth, but too trivial to establish active advantage; not prior validation",
-        allowed_action=ACT_DO_NOT_PROMOTE if no_advantage else ACT_CONTINUE,
+        allowed_action=ACT_ARCHIVE if no_advantage else ACT_CONTINUE,
+        source_module="chronos.k3.run_gp_active_search",
+        code_version="claims_v1",
     )
 
 
@@ -421,7 +431,7 @@ def claim_from_k3_e2d(summary: dict[str, Any]) -> ClaimRecord:
         evidence_level="gp_truth_active_search",
         gate=GATE_REGIME,
         diagnostics={"active_best_score": summary.get("active_best_score")},
-        controls=["random_action_search"],
+        controls={"random_action_search": True},
         supports=["guided active search finds a cheap GP vortex-position regime better than random control"]
         if passed
         else ["cheap GP active search ran but did not establish active diagnostic value"],
@@ -430,6 +440,8 @@ def claim_from_k3_e2d(summary: dict[str, Any]) -> ClaimRecord:
         next_gate="K3.2D.0 CNN baseline regime validation" if passed else None,
         claim_boundary="truth-level cheap GP only; not CNN validation, not K3 prior validation",
         allowed_action=ACT_CONTINUE if passed else ACT_DO_NOT_PROMOTE,
+        source_module="chronos.k3.run_gp_active_search",
+        code_version="claims_v1",
     )
 
 
@@ -437,12 +449,11 @@ def claim_from_k3_2d_0_summary(summary: dict[str, Any]) -> ClaimRecord:
     verdict = str(summary.get("verdict", "REGIME_UNRESOLVED"))
     pipeline_ok = bool(summary.get("pipeline_ok"))
     transport_ok = bool(summary.get("transport_ok"))
-    passed = verdict in {"SMOKE_TRANSPORT_OK", "FULL_REGIME_VALIDATED"} and pipeline_ok and transport_ok
-    failure_mode = None
-    if pipeline_ok and not transport_ok:
-        failure_mode = PIPELINE_OK_TRANSPORT_FAIL
-    elif not passed:
-        failure_mode = REGIME_INVALID
+    if not (pipeline_ok and not transport_ok):
+        raise ValueError(
+            "claim_from_k3_2d_0_summary currently only handles the PIPELINE_OK_TRANSPORT_FAIL case "
+            f"(pipeline_ok=True, transport_ok=False); got pipeline_ok={pipeline_ok}, transport_ok={transport_ok}"
+        )
     return ClaimRecord(
         claim_id=str(summary.get("claim_id") or summary.get("run_id") or f"k3_2d_0:{new_timestamp()}"),
         structure_family=K3_TOPOLOGICAL,
@@ -450,15 +461,15 @@ def claim_from_k3_2d_0_summary(summary: dict[str, Any]) -> ClaimRecord:
         evidence_level="cnn_baseline_regime_validation",
         gate=GATE_REGIME,
         diagnostics={"pipeline_ok": pipeline_ok, "transport_ok": transport_ok},
-        controls=["baseline_only_no_prior"],
-        supports=["CNN baseline regime is learnable and transports the vortex pair"]
-        if passed
-        else ["K3.2D.0 regime validation ran without testing any prior"],
+        controls={"baseline_only": True},
+        supports=["CNN baseline can learn bounded field prediction in smoke mode", "vortex transport gate fails"],
         does_not_support=["K3 prior validation", "certification", "field prediction alone implies topology"],
-        failure_mode=failure_mode,
-        next_gate="K3.2D.1 topological prior test" if passed else None,
+        failure_mode=PIPELINE_OK_TRANSPORT_FAIL,
+        next_gate="K3.2D.0-B neural baseline learnability rescue or archive as regime unresolved",
         claim_boundary="baseline-only CNN regime validation; no topology prior tested",
-        allowed_action=ACT_CONTINUE if passed else ACT_DO_NOT_PROMOTE,
+        allowed_action=ACT_DO_NOT_PROMOTE,
+        source_module="chronos.k3.experiments.k3_2d_0_vortex_regime",
+        code_version="claims_v1",
     )
 
 
@@ -472,13 +483,15 @@ def claim_from_k2_summary(summary: dict[str, Any]) -> ClaimRecord:
         evidence_level="vpsl_certified_structure" if certified else "vpsl_transfer_confirmed",
         gate=GATE_TRANSFER if certified or "TRANSFER" in verdict.upper() else GATE_MECHANISM,
         diagnostics={"transfer_horizon": summary.get("transfer_horizon")},
-        controls=["energy_control", "l2_control", "wrong_omega_control"],
+        controls={"energy_control": True, "l2_control": True, "wrong_omega_control": True},
         supports=["symplectic structure survives VPSL transfer/mechanism controls"],
         does_not_support=["universal claim about all physical systems", "new K-family beyond K2"],
         failure_mode=None,
         next_gate=None,
         claim_boundary="K2 claim is bounded to the archived VPSL transfer/mechanism evidence",
         allowed_action=ACT_ARCHIVE if summary.get("archived") else ACT_CONTINUE,
+        source_module="chronos.k2",
+        code_version="claims_v1",
     )
 
 
@@ -571,7 +584,7 @@ def _claim(**overrides: Any) -> ClaimRecord:
         "evidence_level": "gp_truth_active_search",
         "gate": GATE_REGIME,
         "diagnostics": {"score": 1.0},
-        "controls": ["random_action_search"],
+        "controls": {"random_action_search": True},
         "supports": ["active search finds a GP vortex regime better than random"],
         "does_not_support": ["K3 prior validation"],
         "failure_mode": None,
@@ -579,6 +592,8 @@ def _claim(**overrides: Any) -> ClaimRecord:
         "claim_boundary": "truth-level GP only; not prior validation",
         "allowed_action": ACT_CONTINUE,
         "timestamp": "2026-06-05T00:00:00+00:00",
+        "source_module": "chronos.test",
+        "code_version": "claims_test",
     }
     base.update(overrides)
     return ClaimRecord(**base)
@@ -674,18 +689,24 @@ def _tests_claims() -> int:
         check(True)
     check(_claim(verdict="K2_CERTIFIED", gate=GATE_TRANSFER, evidence_level="vpsl_certified_structure").verdict)
     e2c = claim_from_k3_e2c({"verdict": "GP_ACTIVE_NO_ADVANTAGE"})
-    check(e2c.allowed_action == ACT_DO_NOT_PROMOTE)
-    check(e2c.next_gate is None)
+    check(e2c.allowed_action == ACT_ARCHIVE)
+    check(e2c.next_gate == "K3-E2d discriminating GP truth active search")
     e2d = claim_from_k3_e2d({"verdict": "GP_ACTIVE_DIAGNOSTIC_VALUE_PASSED"})
     check(e2d.next_gate == "K3.2D.0 CNN baseline regime validation")
     k32 = claim_from_k3_2d_0_summary({"pipeline_ok": True, "transport_ok": False})
     check(k32.failure_mode == PIPELINE_OK_TRANSPORT_FAIL and k32.allowed_action == ACT_DO_NOT_PROMOTE)
+    try:
+        claim_from_k3_2d_0_summary({"pipeline_ok": True, "transport_ok": True})
+        check(False)
+    except ValueError:
+        check(True)
     k2 = claim_from_k2_summary({"verdict": "K2_VPSL_CERTIFIED"})
     check(k2.evidence_level == "vpsl_certified_structure" and k2.gate == GATE_TRANSFER)
     claims = [e2c, e2d, k32, k2]
     summary = summarize_claims(claims)
     check(summary["count_total"] == 4)
-    check(summary["count_by_allowed_action"][ACT_DO_NOT_PROMOTE] == 2)
+    check(summary["count_by_allowed_action"][ACT_ARCHIVE] == 1)
+    check(summary["count_by_allowed_action"][ACT_DO_NOT_PROMOTE] == 1)
     check(len(claims_requiring_next_gate(claims)) == 1)
     with tempfile.TemporaryDirectory() as temp_dir:
         path = os.path.join(temp_dir, "claims.jsonl")

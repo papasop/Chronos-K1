@@ -20,9 +20,10 @@ from chronos.claims import (
 from chronos.claims.failure_taxonomy import (
     ACTIVE_NO_ADVANTAGE,
     PIPELINE_OK_TRANSPORT_FAIL,
+    RANDOM_ALSO_SUCCEEDS,
     REGIME_INVALID,
 )
-from chronos.s0.diagnostics_schema import ACT_CONTINUE, ACT_DO_NOT_PROMOTE, K2_SYMPLECTIC, K3_TOPOLOGICAL
+from chronos.s0.diagnostics_schema import ACT_ARCHIVE, ACT_CONTINUE, ACT_DO_NOT_PROMOTE, K2_SYMPLECTIC, K3_TOPOLOGICAL
 
 
 def _claim(**overrides):
@@ -33,7 +34,7 @@ def _claim(**overrides):
         "evidence_level": "gp_truth_active_search",
         "gate": "regime",
         "diagnostics": {"score": 1.0},
-        "controls": ["random_action_search"],
+        "controls": {"random_action_search": True},
         "supports": ["active search finds a GP vortex regime better than random"],
         "does_not_support": ["K3 prior validation"],
         "failure_mode": None,
@@ -41,6 +42,8 @@ def _claim(**overrides):
         "claim_boundary": "truth-level GP only; not prior validation",
         "allowed_action": ACT_CONTINUE,
         "timestamp": "2026-06-05T00:00:00+00:00",
+        "source_module": "chronos.test",
+        "code_version": "claims_test",
     }
     base.update(overrides)
     return ClaimRecord(**base)
@@ -54,6 +57,8 @@ class ClaimRecordTests(unittest.TestCase):
             with self.subTest(field=field):
                 with self.assertRaises(ValueError):
                     _claim(**{field: ""})
+        with self.assertRaises(ValueError):
+            _claim(source_module="")
 
     def test_allowed_action_bans_certification_words_only_as_actions(self):
         for action in ("certified", "promote", "proved", "validated"):
@@ -94,6 +99,12 @@ class ClaimRecordTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             _claim(failure_mode="MADE_UP")
 
+    def test_controls_and_diagnostics_must_be_dicts(self):
+        with self.assertRaises(TypeError):
+            _claim(controls=["random_action_search"])
+        with self.assertRaises(TypeError):
+            _claim(diagnostics=["score"])
+
 
 class BuilderTests(unittest.TestCase):
     def test_k3_e2b_builder(self):
@@ -101,24 +112,40 @@ class BuilderTests(unittest.TestCase):
         self.assertEqual(claim.structure_family, K3_TOPOLOGICAL)
         self.assertEqual(claim.allowed_action, ACT_CONTINUE)
         self.assertIn("toy", claim.claim_boundary)
+        self.assertEqual(claim.source_module, "chronos.k3.run_active_topology_search")
+        self.assertEqual(claim.code_version, "claims_v1")
+        self.assertIsInstance(claim.controls, dict)
 
     def test_k3_e2c_builder_records_no_advantage(self):
-        claim = claim_from_k3_e2c({"verdict": "GP_ACTIVE_NO_ADVANTAGE"})
+        claim = claim_from_k3_e2c(
+            {
+                "verdict": "GP_ACTIVE_NO_ADVANTAGE",
+                "active_rec": {"allowed_action": "continue"},
+                "random_success_count_20": 18,
+            }
+        )
+        self.assertEqual(claim.failure_mode, RANDOM_ALSO_SUCCEEDS)
+        self.assertEqual(claim.allowed_action, ACT_ARCHIVE)
+        self.assertEqual(claim.next_gate, "K3-E2d discriminating GP truth active search")
+        self.assertIn("active/random comparison is operational", claim.supports)
+        self.assertIn("active exploration has diagnostic advantage", claim.does_not_support[0])
+
+    def test_k3_e2c_no_advantage_never_continue(self):
+        claim = claim_from_k3_e2c({"verdict": "GP_ACTIVE_NO_ADVANTAGE", "active_rec": {"allowed_action": "continue"}})
         self.assertEqual(claim.failure_mode, ACTIVE_NO_ADVANTAGE)
-        self.assertEqual(claim.allowed_action, ACT_DO_NOT_PROMOTE)
-        self.assertIsNone(claim.next_gate)
-        self.assertIn("too trivial", claim.supports[0])
+        self.assertEqual(claim.allowed_action, ACT_ARCHIVE)
 
     def test_k3_e2d_builder_next_gate(self):
         claim = claim_from_k3_e2d(
             {
                 "verdict": "GP_ACTIVE_DIAGNOSTIC_VALUE_PASSED",
-                "active_best_score": 0.96,
+                "active": {"best_score": 0.96, "best_metrics": {"mean_pos_err": 0.31, "pair_intact": True}},
                 "random_median_best_score": 0.82,
             }
         )
         self.assertEqual(claim.next_gate, "K3.2D.0 CNN baseline regime validation")
-        self.assertIn("CNN learnability", claim.does_not_support)
+        self.assertIn("CNN baseline regime validation", claim.does_not_support)
+        self.assertEqual(claim.diagnostics["active_mean_pos_err"], 0.31)
 
     def test_k3_2d_0_transport_fail_builder(self):
         claim = claim_from_k3_2d_0_summary(
@@ -134,16 +161,20 @@ class BuilderTests(unittest.TestCase):
         )
         self.assertEqual(claim.failure_mode, PIPELINE_OK_TRANSPORT_FAIL)
         self.assertEqual(claim.allowed_action, ACT_DO_NOT_PROMOTE)
+        self.assertEqual(claim.next_gate, "K3.2D.0-B neural baseline learnability rescue or archive as regime unresolved")
 
     def test_k3_2d_0_invalid_builder(self):
-        claim = claim_from_k3_2d_0_summary({"verdict": "REGIME_UNRESOLVED"})
-        self.assertEqual(claim.failure_mode, REGIME_INVALID)
+        with self.assertRaises(ValueError):
+            claim_from_k3_2d_0_summary({"verdict": "REGIME_UNRESOLVED"})
+        with self.assertRaises(ValueError):
+            claim_from_k3_2d_0_summary({"pipeline_ok": True, "transport_ok": True})
 
     def test_k2_builder_allows_certified_when_transfer_evidence(self):
         claim = claim_from_k2_summary({"verdict": "K2_VPSL_CERTIFIED"})
         self.assertEqual(claim.structure_family, K2_SYMPLECTIC)
         self.assertEqual(claim.evidence_level, "vpsl_certified_structure")
         self.assertEqual(claim.gate, "transfer")
+        self.assertEqual(claim.source_module, "chronos.k2")
 
 
 class ReplayTests(unittest.TestCase):

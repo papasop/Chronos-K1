@@ -47,7 +47,7 @@ class ClaimRecord:
     evidence_level: str
     gate: str
     diagnostics: dict[str, Any]
-    controls: list[str]
+    controls: dict[str, Any]
     supports: list[str]
     does_not_support: list[str]
     failure_mode: str | None
@@ -56,11 +56,20 @@ class ClaimRecord:
     allowed_action: str
     timestamp: str = field(default_factory=new_timestamp)
     claim_status: str = CLAIM_ACTIVE
+    source_module: str = ""
+    code_version: str = "unversioned"
     superseded_by: str | None = None
     superseded_reason: str | None = None
 
     def __post_init__(self) -> None:
-        for field_name in ("claim_id", "structure_family", "verdict", "claim_boundary", "timestamp"):
+        for field_name in (
+            "claim_id",
+            "structure_family",
+            "verdict",
+            "claim_boundary",
+            "timestamp",
+            "source_module",
+        ):
             _require_nonempty(getattr(self, field_name), field_name)
 
         if self.allowed_action not in ALLOWED_ACTIONS or self.allowed_action in BANNED_ALLOWED_ACTIONS:
@@ -78,6 +87,10 @@ class ClaimRecord:
             raise ValueError("supports must be non-empty")
         if not self.does_not_support:
             raise ValueError("does_not_support must be non-empty")
+        if not isinstance(self.controls, dict):
+            raise TypeError("controls must be a dict")
+        if not isinstance(self.diagnostics, dict):
+            raise TypeError("diagnostics must be a dict")
 
         if not is_known_failure_mode(self.failure_mode):
             raise ValueError(f"unknown failure_mode: {self.failure_mode!r}")

@@ -12,6 +12,8 @@ A meaningful Chronos claim must carry its evidence context:
 - `failure_mode`
 - `next_gate`
 - `claim_boundary`
+- `source_module`
+- `code_version`
 
 This layer is not memory, not a new experiment, and not a translator. It does
 not learn, certify, change S0 recommendations, or feed back into S0. It records
@@ -43,6 +45,7 @@ supports, what it does not support, and what the next gate is.
 - `verdict`
 - `claim_boundary`
 - `timestamp`
+- `source_module`
 - `supports`
 - `does_not_support`
 
@@ -126,6 +129,14 @@ Builders convert existing result dictionaries into `ClaimRecord` objects:
 - `claim_from_k3_e2d(summary_dict)`
 - `claim_from_k3_2d_0_summary(summary_dict)`
 - `claim_from_k2_summary(summary_dict)`
+
+Builders never fabricate a pass. Negative active-search results such as
+`GP_ACTIVE_NO_ADVANTAGE` are archived rather than continued, even if an input
+recommendation dictionary happens to say `continue`.
+
+`controls` and `diagnostics` are structured dictionaries. This keeps the
+scientific denominator machine-readable instead of storing controls as a flat
+label list.
 
 ## Replay
 

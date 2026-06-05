@@ -18,3 +18,8 @@
   `chronos/k3/`.
 - `chronos_memory.py`: portable S0-M0 memory logging mirror for Colab. The
   canonical implementation lives in `chronos/memory/`.
+- `chronos_claims.py`: portable ClaimRecord scientific-denominator mirror for
+  Colab. The canonical implementation lives in `chronos/claims/`.
+- `chronos_core.py`: portable pure-stdlib core for S0 recommendations, memory
+  logging, and ClaimRecord scientific denominators. Canonical implementations
+  live in `chronos/s0/`, `chronos/memory/`, and `chronos/claims/`.
