@@ -1,9 +1,10 @@
-"""chronos_claims.py - Chronos Claim Denominator Layer (single self-contained file).
+"""chronos_claims.py - Chronos Claim Denominator Layer v2 (single self-contained file).
 
 Canonical implementation lives in ``chronos/claims/``. This file is a
 pure-stdlib standalone mirror for ClaimRecord scientific denominators only. It
-does not learn, certify, change S0 recommendations, run experiments, or define
-new K-families.
+includes v2 audit fields (claim_type, confidence_level, evidence_scope,
+replication, risk_flags). It does not learn, certify, change S0
+recommendations, run experiments, or define new K-families.
 
 Run:
     python colab/chronos_claims.py
@@ -33,6 +34,17 @@ CLAIM_SUPERSEDED = "superseded"
 CLAIM_ARCHIVED = "archived"
 ALLOWED_CLAIM_STATUSES = frozenset({CLAIM_ACTIVE, CLAIM_SUPERSEDED, CLAIM_ARCHIVED})
 BANNED_ALLOWED_ACTIONS = frozenset({"certified", "promote", "proved", "validated"})
+CLAIM_TYPES = frozenset(
+    {
+        "positive_evidence",
+        "negative_result",
+        "unresolved_result",
+        "handoff",
+        "certified_structure",
+        "boundary_note",
+    }
+)
+CONFIDENCE_LEVELS = frozenset({"low", "medium", "high", "certified"})
 
 PIPELINE_OK_TRANSPORT_FAIL = "PIPELINE_OK_TRANSPORT_FAIL"
 ACTIVE_NO_ADVANTAGE = "ACTIVE_NO_ADVANTAGE"
@@ -59,7 +71,7 @@ KNOWN_FAILURE_MODES = frozenset(
     }
 )
 
-_CODE = "claims_v1"
+_CODE = "claims_v2"
 _PASS_E2B = "ACTIVE_DIAGNOSTIC_VALUE_PASSED"
 
 
@@ -97,12 +109,19 @@ class ClaimRecord:
     code_version: str = "unversioned"
     superseded_by: str | None = None
     superseded_reason: str | None = None
+    claim_type: str = "positive_evidence"
+    confidence_level: str = "medium"
+    evidence_scope: dict[str, Any] = field(default_factory=dict)
+    replication: dict[str, Any] = field(default_factory=dict)
+    risk_flags: list[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         for field_name in (
             "claim_id",
             "structure_family",
             "verdict",
+            "evidence_level",
+            "gate",
             "claim_boundary",
             "timestamp",
             "source_module",
@@ -125,6 +144,20 @@ class ClaimRecord:
         if "CERTIFIED" in self.verdict.upper():
             if self.gate != "transfer" or self.evidence_level != "vpsl_certified_structure":
                 raise ValueError("CERTIFIED verdicts require transfer gate and vpsl_certified_structure evidence")
+        if self.claim_type not in CLAIM_TYPES:
+            raise ValueError(f"claim_type must be one of {sorted(CLAIM_TYPES)}; got {self.claim_type!r}")
+        if self.confidence_level not in CONFIDENCE_LEVELS:
+            raise ValueError(
+                f"confidence_level must be one of {sorted(CONFIDENCE_LEVELS)}; got {self.confidence_level!r}"
+            )
+        if self.confidence_level == "certified" and self.evidence_level != "vpsl_certified_structure":
+            raise ValueError("confidence_level='certified' is reserved for vpsl_certified_structure evidence")
+        if not isinstance(self.evidence_scope, dict):
+            raise TypeError("evidence_scope must be a dict")
+        if not isinstance(self.replication, dict):
+            raise TypeError("replication must be a dict")
+        if not isinstance(self.risk_flags, list):
+            raise TypeError("risk_flags must be a list")
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -173,6 +206,20 @@ def claim_from_k3_e2b(result: dict) -> ClaimRecord:
         claim_boundary="toy search landscape only; not GP truth; not K3 prior validation",
         source_module="chronos.k3.run_active_topology_search",
         code_version=_CODE,
+        claim_type="positive_evidence" if verdict == _PASS_E2B else "negative_result",
+        confidence_level="medium" if verdict == _PASS_E2B else "low",
+        evidence_scope={
+            "system": "toy vortex regime",
+            "regime": "analytic toy landscape",
+            "model": "truth-only toy evaluator",
+            "compute": "CPU toy",
+        },
+        replication={
+            "n_seeds": 20 if result.get("random_success_count_20") is not None else None,
+            "random_success_count": result.get("random_success_count_20"),
+            "random_median_best": result.get("random_median_best_score"),
+        },
+        risk_flags=["toy_landscape", "cpu_only", "no_cnn_training"],
     )
 
 
@@ -212,6 +259,20 @@ def claim_from_k3_e2c(result: dict) -> ClaimRecord:
         claim_boundary="cheap GP truth only; non-discriminating landscape; not prior validation",
         source_module="chronos.k3.run_gp_active_search",
         code_version=_CODE,
+        claim_type="negative_result" if verdict == "GP_ACTIVE_NO_ADVANTAGE" else "positive_evidence",
+        confidence_level="low",
+        evidence_scope={
+            "system": "GP vortex pair",
+            "regime": "cheap GP non-discriminating landscape",
+            "model": "truth-only GP evaluator",
+            "compute": "CPU",
+        },
+        replication={
+            "n_seeds": 20,
+            "random_success_count": random_success_count,
+            "random_median_best": result.get("random_median_best_score"),
+        },
+        risk_flags=["cheap_gp", "cpu_only", "no_cnn_training", "random_also_succeeds"],
     )
 
 
@@ -245,6 +306,20 @@ def claim_from_k3_e2d(result: dict) -> ClaimRecord:
         claim_boundary="truth-level GP active search only; not CNN validation; not K3 prior validation",
         source_module="chronos.k3.run_gp_active_search",
         code_version=_CODE,
+        claim_type="positive_evidence",
+        confidence_level="medium",
+        evidence_scope={
+            "system": "GP vortex pair",
+            "regime": "discriminating GP with push failure dimension",
+            "model": "truth-only GP evaluator",
+            "compute": "CPU",
+        },
+        replication={
+            "n_seeds": 20,
+            "random_success_count": result.get("random_success_count_20"),
+            "random_median_best": result.get("random_median_best_score"),
+        },
+        risk_flags=["cpu_only", "no_cnn_training", "designed_failure_dimension"],
     )
 
 
@@ -278,6 +353,21 @@ def claim_from_k3_2d_0_summary(summary: dict) -> ClaimRecord:
         claim_boundary="smoke only; CNN transport failed; no prior test allowed",
         source_module="chronos.k3.experiments.k3_2d_0_vortex_regime",
         code_version=_CODE,
+        claim_type="unresolved_result",
+        confidence_level="low",
+        evidence_scope={
+            "system": "GP vortex pair",
+            "regime": "K3.2D.0 smoke",
+            "model": "CNN baseline",
+            "compute": "GPU smoke",
+        },
+        replication={
+            "n_seeds": summary.get("n_seeds"),
+            "ref_med": summary.get("ref_med"),
+            "pair_frac": summary.get("pair_frac"),
+            "pos_med": summary.get("pos_med"),
+        },
+        risk_flags=["smoke_only", "transport_fail", "no_prior_test"],
     )
 
 
@@ -302,6 +392,16 @@ def claim_from_k2_summary(summary: dict) -> ClaimRecord:
         claim_boundary="certified only for tested FPU-beta regime and VPSL controls",
         source_module="chronos.k2",
         code_version=_CODE,
+        claim_type="certified_structure",
+        confidence_level="certified",
+        evidence_scope={
+            "system": "FPU-beta",
+            "regime": "H=240",
+            "model": "prior vs fair controls",
+            "compute": "FULL",
+        },
+        replication=summary.get("replication", {"n_seeds": summary.get("n_seeds")}),
+        risk_flags=["scope_limited_to_FPU_beta"],
     )
 
 
@@ -328,12 +428,34 @@ def summarize_claims(claims: list[ClaimRecord]) -> dict[str, Any]:
         "count_by_allowed_action": _count_by(claims, "allowed_action"),
         "count_by_failure_mode": _count_by(claims, "failure_mode"),
         "count_by_claim_status": _count_by(claims, "claim_status"),
+        "count_by_claim_type": _count_by(claims, "claim_type"),
+        "count_by_confidence_level": _count_by(claims, "confidence_level"),
         "latest_claim_by_structure_family": {family: claim.to_dict() for family, (_idx, claim) in latest.items()},
     }
 
 
 def claims_requiring_next_gate(claims: list[ClaimRecord]) -> list[ClaimRecord]:
     return [claim for claim in claims if claim.allowed_action == ACT_CONTINUE and claim.next_gate]
+
+
+def claims_with_risk_flag(claims: list[ClaimRecord], flag: str) -> list[ClaimRecord]:
+    return [claim for claim in claims if flag in claim.risk_flags]
+
+
+def human_readable_summary(claim: ClaimRecord) -> str:
+    support = claim.supports[0] if claim.supports else "a result"
+    does_not = ", ".join(claim.does_not_support[:3]) if claim.does_not_support else "nothing further"
+    strength = {
+        "low": "weak",
+        "medium": "moderate",
+        "high": "strong",
+        "certified": "VPSL-certified",
+    }.get(claim.confidence_level, claim.confidence_level)
+    next_gate = f"; next gate: {claim.next_gate}" if claim.next_gate else ""
+    return (
+        f"{claim.claim_id} ({claim.claim_type}, {strength} evidence): {support}. "
+        f"It does NOT establish: {does_not}. Action: {claim.allowed_action}{next_gate}."
+    )
 
 
 def supersede_claim(claims: list[ClaimRecord], claim_id: str, reason: str | None = None) -> list[ClaimRecord]:
@@ -395,8 +517,10 @@ def _tests() -> int:
     c = claim_from_k3_e2d({"active": {"best_score": 0.97, "best_metrics": {"mean_pos_err": 0.31}}})
     check(c.next_gate == "K3.2D.0 CNN baseline regime validation")
     check(c.diagnostics["active_mean_pos_err"] == 0.31)
+    check(c.claim_type == "positive_evidence")
     c = claim_from_k3_2d_0_summary({"pipeline_ok": True, "transport_ok": False})
     check(c.failure_mode == PIPELINE_OK_TRANSPORT_FAIL)
+    check(c.claim_type == "unresolved_result")
     try:
         claim_from_k3_2d_0_summary({"pipeline_ok": True, "transport_ok": True})
         check(False)
@@ -422,6 +546,46 @@ def _tests() -> int:
         check(False)
     except ValueError:
         check(True)
+    try:
+        ClaimRecord(
+            claim_id="bad2",
+            structure_family=K3_TOPOLOGICAL,
+            verdict="X",
+            evidence_level="x",
+            gate="regime",
+            diagnostics={},
+            controls={},
+            supports=["x"],
+            does_not_support=["y"],
+            failure_mode=None,
+            next_gate=None,
+            claim_boundary="x",
+            allowed_action=ACT_CONTINUE,
+            source_module="test",
+            confidence_level="certified",
+        )
+        check(False)
+    except ValueError:
+        check(True)
+    check(
+        ClaimRecord(
+            claim_id="high-but-blocked",
+            structure_family=K3_TOPOLOGICAL,
+            verdict="X",
+            evidence_level="x",
+            gate="regime",
+            diagnostics={},
+            controls={},
+            supports=["x"],
+            does_not_support=["y"],
+            failure_mode=None,
+            next_gate=None,
+            claim_boundary="x",
+            allowed_action=ACT_DO_NOT_PROMOTE,
+            source_module="test",
+            confidence_level="high",
+        ).allowed_action == ACT_DO_NOT_PROMOTE
+    )
     check(is_known_failure_mode(MECHANISM_DECAYS))
     check(is_known_failure_mode(DIAGNOSTICS_INSUFFICIENT))
     check(is_known_failure_mode(PRIOR_NO_EFFECT))
@@ -431,7 +595,10 @@ def _tests() -> int:
         check(load_claims(path)[0].source_module == "chronos.k2")
     summary = summarize_claims([claim_from_k3_e2b({}), claim_from_k3_e2c({}), claim_from_k2_summary({})])
     check(summary["count_by_allowed_action"][ACT_ARCHIVE] == 1)
+    check("count_by_claim_type" in summary and "count_by_confidence_level" in summary)
     check(len(claims_requiring_next_gate([claim_from_k3_e2d({}), claim_from_k3_e2c({})])) == 1)
+    check(claims_with_risk_flag([claim_from_k3_2d_0_summary({"pipeline_ok": True, "transport_ok": False})], "transport_fail"))
+    check("does NOT establish" in human_readable_summary(claim_from_k3_e2c({})))
     return count
 
 
@@ -440,6 +607,6 @@ if __name__ == "__main__":
     if not quiet:
         claims = [claim_from_k3_e2c({}), claim_from_k3_e2d({}), claim_from_k2_summary({})]
         print("=== chronos_claims portable mirror ===")
-        print(json.dumps(summarize_claims(claims)["count_by_allowed_action"], ensure_ascii=False))
+        print(json.dumps(summarize_claims(claims)["count_by_claim_type"], ensure_ascii=False))
     print("\n=== tests ===")
     print(f"  ok all {_tests()} assertions passed")

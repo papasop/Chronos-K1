@@ -10,7 +10,7 @@ from __future__ import annotations
 from chronos.claims.schema import ClaimRecord
 from chronos.claims import failure_taxonomy as F
 
-_CODE = "claims_v1"
+_CODE = "claims_v2"
 _PASS_E2B = "ACTIVE_DIAGNOSTIC_VALUE_PASSED"
 
 
@@ -54,6 +54,20 @@ def claim_from_k3_e2b(result: dict) -> ClaimRecord:
         claim_boundary="toy search landscape only; not GP truth; not K3 prior validation",
         source_module="chronos.k3.run_active_topology_search",
         code_version=_CODE,
+        claim_type="positive_evidence" if verdict == _PASS_E2B else "negative_result",
+        confidence_level="medium" if verdict == _PASS_E2B else "low",
+        evidence_scope={
+            "system": "toy vortex regime",
+            "regime": "analytic toy landscape",
+            "model": "truth-only toy evaluator",
+            "compute": "CPU toy",
+        },
+        replication={
+            "n_seeds": 20 if result.get("random_success_count_20") is not None else None,
+            "random_success_count": result.get("random_success_count_20"),
+            "random_median_best": result.get("random_median_best_score"),
+        },
+        risk_flags=["toy_landscape", "cpu_only", "no_cnn_training"],
     )
 
 
@@ -96,6 +110,20 @@ def claim_from_k3_e2c(result: dict) -> ClaimRecord:
         claim_boundary="cheap GP truth only; non-discriminating landscape; not prior validation",
         source_module="chronos.k3.run_gp_active_search",
         code_version=_CODE,
+        claim_type="negative_result" if verdict == "GP_ACTIVE_NO_ADVANTAGE" else "positive_evidence",
+        confidence_level="low",
+        evidence_scope={
+            "system": "GP vortex pair",
+            "regime": "cheap GP non-discriminating landscape",
+            "model": "truth-only GP evaluator",
+            "compute": "CPU",
+        },
+        replication={
+            "n_seeds": 20,
+            "random_success_count": random_success_count,
+            "random_median_best": result.get("random_median_best_score"),
+        },
+        risk_flags=["cheap_gp", "cpu_only", "no_cnn_training", "random_also_succeeds"],
     )
 
 
@@ -135,6 +163,20 @@ def claim_from_k3_e2d(result: dict) -> ClaimRecord:
         claim_boundary="truth-level GP active search only; not CNN validation; not K3 prior validation",
         source_module="chronos.k3.run_gp_active_search",
         code_version=_CODE,
+        claim_type="positive_evidence",
+        confidence_level="medium",
+        evidence_scope={
+            "system": "GP vortex pair",
+            "regime": "discriminating GP with push failure dimension",
+            "model": "truth-only GP evaluator",
+            "compute": "CPU",
+        },
+        replication={
+            "n_seeds": 20,
+            "random_success_count": result.get("random_success_count_20"),
+            "random_median_best": result.get("random_median_best_score"),
+        },
+        risk_flags=["cpu_only", "no_cnn_training", "designed_failure_dimension"],
     )
 
 
@@ -183,6 +225,21 @@ def claim_from_k3_2d_0_summary(summary: dict) -> ClaimRecord:
         claim_boundary="smoke only; CNN transport failed; no prior test allowed",
         source_module="chronos.k3.experiments.k3_2d_0_vortex_regime",
         code_version=_CODE,
+        claim_type="unresolved_result",
+        confidence_level="low",
+        evidence_scope={
+            "system": "GP vortex pair",
+            "regime": "K3.2D.0 smoke",
+            "model": "CNN baseline",
+            "compute": "GPU smoke",
+        },
+        replication={
+            "n_seeds": summary.get("n_seeds"),
+            "ref_med": summary.get("ref_med"),
+            "pair_frac": summary.get("pair_frac"),
+            "pos_med": summary.get("pos_med"),
+        },
+        risk_flags=["smoke_only", "transport_fail", "no_prior_test"],
     )
 
 
@@ -213,6 +270,16 @@ def claim_from_k2_summary(summary: dict) -> ClaimRecord:
         claim_boundary="certified only for tested FPU-beta regime and VPSL controls",
         source_module="chronos.k2",
         code_version=_CODE,
+        claim_type="certified_structure",
+        confidence_level="certified",
+        evidence_scope={
+            "system": "FPU-beta",
+            "regime": "H=240",
+            "model": "prior vs fair controls",
+            "compute": "FULL",
+        },
+        replication=summary.get("replication", {"n_seeds": summary.get("n_seeds")}),
+        risk_flags=["scope_limited_to_FPU_beta"],
     )
 
 

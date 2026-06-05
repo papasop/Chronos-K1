@@ -1,8 +1,11 @@
-"""Chronos pure-stdlib core: S0 selector + M0 memory + claim denominator.
+"""Chronos pure-stdlib core v2: S0 selector + M0 memory + claim denominator.
 
 This is a single-file portable mirror for bare Colab / standalone use. In the
 repository, prefer the packages under ``chronos.s0``, ``chronos.memory``, and
 ``chronos.claims`` as the canonical source of truth.
+
+Claims include v2 audit fields: claim_type, confidence_level, evidence_scope,
+replication, and risk_flags. confidence_level never changes allowed_action.
 
 No torch, no numpy, no GP/CNN training, no self-evolution.
 
@@ -288,6 +291,17 @@ CLAIM_SUPERSEDED = "superseded"
 CLAIM_ARCHIVED = "archived"
 ALLOWED_CLAIM_STATUSES = frozenset({CLAIM_ACTIVE, CLAIM_SUPERSEDED, CLAIM_ARCHIVED})
 BANNED_ALLOWED_ACTIONS = frozenset({"certified", "promote", "proved", "validated"})
+CLAIM_TYPES = frozenset(
+    {
+        "positive_evidence",
+        "negative_result",
+        "unresolved_result",
+        "handoff",
+        "certified_structure",
+        "boundary_note",
+    }
+)
+CONFIDENCE_LEVELS = frozenset({"low", "medium", "high", "certified"})
 
 PIPELINE_OK_TRANSPORT_FAIL = "PIPELINE_OK_TRANSPORT_FAIL"
 ACTIVE_NO_ADVANTAGE = "ACTIVE_NO_ADVANTAGE"
@@ -345,9 +359,23 @@ class ClaimRecord:
     code_version: str = "unversioned"
     superseded_by: str | None = None
     superseded_reason: str | None = None
+    claim_type: str = "positive_evidence"
+    confidence_level: str = "medium"
+    evidence_scope: dict[str, Any] = field(default_factory=dict)
+    replication: dict[str, Any] = field(default_factory=dict)
+    risk_flags: list[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
-        for field_name in ("claim_id", "structure_family", "verdict", "claim_boundary", "timestamp", "source_module"):
+        for field_name in (
+            "claim_id",
+            "structure_family",
+            "verdict",
+            "evidence_level",
+            "gate",
+            "claim_boundary",
+            "timestamp",
+            "source_module",
+        ):
             _require_nonempty(getattr(self, field_name), field_name)
         if self.allowed_action not in ALLOWED_ACTIONS or self.allowed_action in BANNED_ALLOWED_ACTIONS:
             raise ValueError(f"allowed_action must be one of {sorted(ALLOWED_ACTIONS)}; got {self.allowed_action!r}")
@@ -366,6 +394,20 @@ class ClaimRecord:
         if "CERTIFIED" in self.verdict.upper():
             if self.gate != GATE_TRANSFER or self.evidence_level != "vpsl_certified_structure":
                 raise ValueError("CERTIFIED verdicts require transfer gate and vpsl_certified_structure evidence")
+        if self.claim_type not in CLAIM_TYPES:
+            raise ValueError(f"claim_type must be one of {sorted(CLAIM_TYPES)}; got {self.claim_type!r}")
+        if self.confidence_level not in CONFIDENCE_LEVELS:
+            raise ValueError(
+                f"confidence_level must be one of {sorted(CONFIDENCE_LEVELS)}; got {self.confidence_level!r}"
+            )
+        if self.confidence_level == "certified" and self.evidence_level != "vpsl_certified_structure":
+            raise ValueError("confidence_level='certified' is reserved for vpsl_certified_structure evidence")
+        if not isinstance(self.evidence_scope, dict):
+            raise TypeError("evidence_scope must be a dict")
+        if not isinstance(self.replication, dict):
+            raise TypeError("replication must be a dict")
+        if not isinstance(self.risk_flags, list):
+            raise TypeError("risk_flags must be a list")
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -376,78 +418,156 @@ class ClaimRecord:
         return cls(**{key: value for key, value in payload.items() if key in known})
 
 
-def claim_from_k3_e2b(summary: dict[str, Any]) -> ClaimRecord:
-    verdict = str(summary.get("verdict", "ACTIVE_DIAGNOSTIC_VALUE_PASSED"))
-    passed = verdict == "ACTIVE_DIAGNOSTIC_VALUE_PASSED"
+def _action_from(result: dict[str, Any], default: str) -> str:
+    rec = result.get("active_rec") or {}
+    action = rec.get("allowed_action")
+    return action if action in ALLOWED_ACTIONS else default
+
+
+def claim_from_k3_e2b(result: dict[str, Any]) -> ClaimRecord:
+    verdict = result.get("verdict", "ACTIVE_DIAGNOSTIC_VALUE_PASSED")
+    active = result.get("active", {})
     return ClaimRecord(
-        claim_id=str(summary.get("claim_id") or summary.get("run_id") or f"k3_e2b:{new_timestamp()}"),
+        claim_id="k3_e2b_active_topology_search",
         structure_family=K3_TOPOLOGICAL,
-        verdict=verdict,
         evidence_level="toy_active_regime_search",
-        gate=GATE_REGIME,
-        diagnostics={"active_best_score": summary.get("active_best_score")},
-        controls={"random_action_search": True},
-        supports=["guided active search beats blind random search on a transparent toy topology landscape"]
-        if passed
-        else ["toy topology search ran but did not establish active advantage"],
-        does_not_support=["K3 prior validation", "GP truth", "CNN learnability", "certification"],
-        failure_mode=None if passed else ACTIVE_NO_ADVANTAGE,
-        next_gate="K3-E2c cheap GP truth-only active search" if passed else None,
-        claim_boundary="toy search landscape only; not GP truth, not K3 prior validation",
-        allowed_action=ACT_CONTINUE if passed else ACT_DO_NOT_PROMOTE,
-        source_module="chronos.k3.run_active_topology_search",
-        code_version="claims_v1",
-    )
-
-
-def claim_from_k3_e2c(summary: dict[str, Any]) -> ClaimRecord:
-    verdict = str(summary.get("verdict", "GP_ACTIVE_NO_ADVANTAGE"))
-    no_advantage = verdict == "GP_ACTIVE_NO_ADVANTAGE"
-    return ClaimRecord(
-        claim_id=str(summary.get("claim_id") or summary.get("run_id") or f"k3_e2c:{new_timestamp()}"),
-        structure_family=K3_TOPOLOGICAL,
         verdict=verdict,
-        evidence_level="cheap_gp_truth_active_search",
-        gate=GATE_REGIME,
-        diagnostics={"active_best_score": summary.get("active_best_score")},
-        controls={"random_action_search": True},
-        supports=["cheap GP evaluator swap ran and showed the landscape was too trivial to separate active from random"],
+        gate="active_search",
+        diagnostics={
+            "active_best_score": active.get("best_score"),
+            "active_found_transport_ok": active.get("found_transport_ok"),
+        },
+        controls={
+            "random_median_best_score": result.get("random_median_best_score"),
+            "random_success_count_20": result.get("random_success_count_20"),
+        },
+        supports=["guided active regime search finds a topology-trackable toy vortex regime better than random search"],
         does_not_support=[
-            "active diagnostic value in the cheap-GP E2c setting",
+            "Gross-Pitaevskii truth validation",
+            "CNN baseline learnability",
             "K3 prior validation",
-            "full-resolution GP",
-            "proof that topological priors work",
+            "VPSL certification",
         ],
-        failure_mode=ACTIVE_NO_ADVANTAGE if no_advantage else None,
-        next_gate="K3-E2d discriminating GP truth active search",
-        claim_boundary="cheap real-GP truth, but too trivial to establish active advantage; not prior validation",
-        allowed_action=ACT_ARCHIVE if no_advantage else ACT_CONTINUE,
-        source_module="chronos.k3.run_gp_active_search",
-        code_version="claims_v1",
+        failure_mode=None if verdict == "ACTIVE_DIAGNOSTIC_VALUE_PASSED" else ACTIVE_NO_ADVANTAGE,
+        next_gate="K3-E2c cheap GP truth-only active search",
+        claim_boundary="toy search landscape only; not GP truth, not K3 prior validation",
+        allowed_action=_action_from(result, ACT_CONTINUE),
+        source_module="chronos.k3.run_active_topology_search",
+        code_version="claims_v2",
+        claim_type="positive_evidence" if verdict == "ACTIVE_DIAGNOSTIC_VALUE_PASSED" else "negative_result",
+        confidence_level="medium" if verdict == "ACTIVE_DIAGNOSTIC_VALUE_PASSED" else "low",
+        evidence_scope={
+            "system": "toy vortex regime",
+            "regime": "analytic toy landscape",
+            "model": "truth-only toy evaluator",
+            "compute": "CPU toy",
+        },
+        replication={
+            "n_seeds": 20 if result.get("random_success_count_20") is not None else None,
+            "random_success_count": result.get("random_success_count_20"),
+            "random_median_best": result.get("random_median_best_score"),
+        },
+        risk_flags=["toy_landscape", "cpu_only", "no_cnn_training"],
     )
 
 
-def claim_from_k3_e2d(summary: dict[str, Any]) -> ClaimRecord:
-    verdict = str(summary.get("verdict", "GP_ACTIVE_DIAGNOSTIC_VALUE_PASSED"))
-    passed = verdict == "GP_ACTIVE_DIAGNOSTIC_VALUE_PASSED"
+def claim_from_k3_e2c(result: dict[str, Any]) -> ClaimRecord:
+    verdict = result.get("verdict", "GP_ACTIVE_NO_ADVANTAGE")
+    random_success_count = result.get("random_success_count_20")
+    failure_mode = (
+        RANDOM_ALSO_SUCCEEDS
+        if isinstance(random_success_count, (int, float)) and random_success_count > 5
+        else ACTIVE_NO_ADVANTAGE
+    )
+    action = ACT_ARCHIVE if verdict == "GP_ACTIVE_NO_ADVANTAGE" else _action_from(result, ACT_DO_NOT_PROMOTE)
     return ClaimRecord(
-        claim_id=str(summary.get("claim_id") or summary.get("run_id") or f"k3_e2d:{new_timestamp()}"),
+        claim_id="k3_e2c_cheap_gp_active_search",
         structure_family=K3_TOPOLOGICAL,
+        evidence_level="cheap_gp_truth_active_search",
         verdict=verdict,
-        evidence_level="gp_truth_active_search",
-        gate=GATE_REGIME,
-        diagnostics={"active_best_score": summary.get("active_best_score")},
-        controls={"random_action_search": True},
-        supports=["guided active search finds a cheap GP vortex-position regime better than random control"]
-        if passed
-        else ["cheap GP active search ran but did not establish active diagnostic value"],
-        does_not_support=["CNN learnability", "K3 prior validation", "certification", "full-resolution GP"],
-        failure_mode=None if passed else ACTIVE_NO_ADVANTAGE,
-        next_gate="K3.2D.0 CNN baseline regime validation" if passed else None,
-        claim_boundary="truth-level cheap GP only; not CNN validation, not K3 prior validation",
-        allowed_action=ACT_CONTINUE if passed else ACT_DO_NOT_PROMOTE,
+        gate="truth_active_search",
+        diagnostics={"active_best_score": result.get("active", {}).get("best_score")},
+        controls={
+            "random_median_best_score": result.get("random_median_best_score"),
+            "random_success_count_20": random_success_count,
+        },
+        supports=[
+            "cheap GP truth evaluator and vortex tracker run successfully",
+            "active/random comparison is operational",
+        ],
+        does_not_support=[
+            "active exploration has diagnostic advantage on this cheap GP landscape",
+            "CNN baseline learnability",
+            "K3 prior validation",
+            "VPSL certification",
+        ],
+        failure_mode=failure_mode,
+        next_gate="K3-E2d discriminating GP truth active search",
+        claim_boundary="cheap GP truth only; non-discriminating landscape; not prior validation",
+        allowed_action=action,
         source_module="chronos.k3.run_gp_active_search",
-        code_version="claims_v1",
+        code_version="claims_v2",
+        claim_type="negative_result" if verdict == "GP_ACTIVE_NO_ADVANTAGE" else "positive_evidence",
+        confidence_level="low",
+        evidence_scope={
+            "system": "GP vortex pair",
+            "regime": "cheap GP non-discriminating landscape",
+            "model": "truth-only GP evaluator",
+            "compute": "CPU",
+        },
+        replication={
+            "n_seeds": 20,
+            "random_success_count": random_success_count,
+            "random_median_best": result.get("random_median_best_score"),
+        },
+        risk_flags=["cheap_gp", "cpu_only", "no_cnn_training", "random_also_succeeds"],
+    )
+
+
+def claim_from_k3_e2d(result: dict[str, Any]) -> ClaimRecord:
+    active = result.get("active", {})
+    metrics = active.get("best_metrics") or {}
+    return ClaimRecord(
+        claim_id="k3_e2d_discriminating_gp_active_search",
+        structure_family=K3_TOPOLOGICAL,
+        evidence_level="gp_truth_active_search",
+        verdict=result.get("verdict", "GP_ACTIVE_DIAGNOSTIC_VALUE_PASSED"),
+        gate="truth_active_search",
+        diagnostics={
+            "active_best_score": active.get("best_score"),
+            "active_mean_pos_err": metrics.get("mean_pos_err"),
+            "active_pair_intact": metrics.get("pair_intact"),
+        },
+        controls={
+            "random_median_best_score": result.get("random_median_best_score"),
+            "random_success_count_20": result.get("random_success_count_20"),
+            "random_success_frac_20": result.get("random_success_frac_20"),
+        },
+        supports=[
+            "guided active search finds a GP vortex regime with better transport diagnostics than random",
+            "active reaches transport_ok while random rarely does",
+        ],
+        does_not_support=["CNN baseline regime validation", "K3 prior validation", "VPSL certification"],
+        failure_mode=None,
+        next_gate="K3.2D.0 CNN baseline regime validation",
+        claim_boundary="truth-level GP active search only; not CNN validation; not K3 prior validation",
+        allowed_action=_action_from(result, ACT_CONTINUE),
+        source_module="chronos.k3.run_gp_active_search",
+        code_version="claims_v2",
+        claim_type="positive_evidence",
+        confidence_level="medium",
+        evidence_scope={
+            "system": "GP vortex pair",
+            "regime": "discriminating GP with push failure dimension",
+            "model": "truth-only GP evaluator",
+            "compute": "CPU",
+        },
+        replication={
+            "n_seeds": 20,
+            "random_success_count": result.get("random_success_count_20"),
+            "random_median_best": result.get("random_median_best_score"),
+        },
+        risk_flags=["cpu_only", "no_cnn_training", "designed_failure_dimension"],
     )
 
 
@@ -464,40 +584,72 @@ def claim_from_k3_2d_0_summary(summary: dict[str, Any]) -> ClaimRecord:
         claim_id=str(summary.get("claim_id") or summary.get("run_id") or f"k3_2d_0:{new_timestamp()}"),
         structure_family=K3_TOPOLOGICAL,
         verdict=verdict,
-        evidence_level="cnn_baseline_regime_validation",
+        evidence_level="neural_baseline_regime_validation_smoke",
         gate=GATE_REGIME,
         diagnostics={"pipeline_ok": pipeline_ok, "transport_ok": transport_ok},
-        controls={"baseline_only": True},
+        controls={
+            "baseline_only": True,
+            "ref_med": summary.get("ref_med"),
+            "pair_frac": summary.get("pair_frac"),
+            "pos_med": summary.get("pos_med"),
+        },
         supports=["CNN baseline can learn bounded field prediction in smoke mode", "vortex transport gate fails"],
-        does_not_support=["K3 prior validation", "certification", "field prediction alone implies topology"],
+        does_not_support=["K3.2D regime validation", "K3 prior test readiness", "topology prior validation"],
         failure_mode=PIPELINE_OK_TRANSPORT_FAIL,
         next_gate="K3.2D.0-B neural baseline learnability rescue or archive as regime unresolved",
-        claim_boundary="baseline-only CNN regime validation; no topology prior tested",
+        claim_boundary="smoke only; CNN transport failed; no prior test allowed",
         allowed_action=ACT_DO_NOT_PROMOTE,
         source_module="chronos.k3.experiments.k3_2d_0_vortex_regime",
-        code_version="claims_v1",
+        code_version="claims_v2",
+        claim_type="unresolved_result",
+        confidence_level="low",
+        evidence_scope={
+            "system": "GP vortex pair",
+            "regime": "K3.2D.0 smoke",
+            "model": "CNN baseline",
+            "compute": "GPU smoke",
+        },
+        replication={
+            "n_seeds": summary.get("n_seeds"),
+            "ref_med": summary.get("ref_med"),
+            "pair_frac": summary.get("pair_frac"),
+            "pos_med": summary.get("pos_med"),
+        },
+        risk_flags=["smoke_only", "transport_fail", "no_prior_test"],
     )
 
 
 def claim_from_k2_summary(summary: dict[str, Any]) -> ClaimRecord:
-    verdict = str(summary.get("verdict", "FULL_TRANSFER_CONFIRMED"))
-    certified = "CERTIFIED" in verdict.upper()
     return ClaimRecord(
         claim_id=str(summary.get("claim_id") or summary.get("run_id") or f"k2:{new_timestamp()}"),
         structure_family=K2_SYMPLECTIC,
-        verdict=verdict,
-        evidence_level="vpsl_certified_structure" if certified else "vpsl_transfer_confirmed",
-        gate=GATE_TRANSFER if certified or "TRANSFER" in verdict.upper() else GATE_MECHANISM,
-        diagnostics={"transfer_horizon": summary.get("transfer_horizon")},
-        controls={"energy_control": True, "l2_control": True, "wrong_omega_control": True},
-        supports=["symplectic structure survives VPSL transfer/mechanism controls"],
-        does_not_support=["universal claim about all physical systems", "new K-family beyond K2"],
+        verdict="FULL_TRANSFER_CONFIRMED",
+        evidence_level="vpsl_certified_structure",
+        gate=GATE_TRANSFER,
+        diagnostics=summary.get("diagnostics", {"transfer": "full", "H": 240}),
+        controls={"fair_energy_control": True, "fair_l2_control": True, "horizon": 240},
+        supports=[
+            "symplectic prior beats baseline",
+            "symplectic prior beats fair energy and fair L2 controls",
+            "full symplectic Jacobian mechanism transfers through H=240",
+        ],
+        does_not_support=["all physical priors work", "K3/K4/K5 claims", "universal physics AI"],
         failure_mode=None,
-        next_gate=None,
-        claim_boundary="K2 claim is bounded to the archived VPSL transfer/mechanism evidence",
-        allowed_action=ACT_ARCHIVE if summary.get("archived") else ACT_CONTINUE,
+        next_gate="wrong-Omega hardening and broader-system transfer",
+        claim_boundary="certified only for tested FPU-beta regime and VPSL controls",
+        allowed_action=ACT_CONTINUE,
         source_module="chronos.k2",
-        code_version="claims_v1",
+        code_version="claims_v2",
+        claim_type="certified_structure",
+        confidence_level="certified",
+        evidence_scope={
+            "system": "FPU-beta",
+            "regime": "H=240",
+            "model": "prior vs fair controls",
+            "compute": "FULL",
+        },
+        replication=summary.get("replication", {"n_seeds": summary.get("n_seeds")}),
+        risk_flags=["scope_limited_to_FPU_beta"],
     )
 
 
@@ -515,12 +667,34 @@ def summarize_claims(claims: list[ClaimRecord]) -> dict[str, Any]:
         "count_by_allowed_action": _count_by(claims, "allowed_action"),
         "count_by_failure_mode": _count_by(claims, "failure_mode"),
         "count_by_claim_status": _count_by(claims, "claim_status"),
+        "count_by_claim_type": _count_by(claims, "claim_type"),
+        "count_by_confidence_level": _count_by(claims, "confidence_level"),
         "latest_claim_by_structure_family": {family: claim.to_dict() for family, (_idx, claim) in latest.items()},
     }
 
 
 def claims_requiring_next_gate(claims: list[ClaimRecord]) -> list[ClaimRecord]:
     return [claim for claim in claims if claim.allowed_action == ACT_CONTINUE and claim.next_gate]
+
+
+def claims_with_risk_flag(claims: list[ClaimRecord], flag: str) -> list[ClaimRecord]:
+    return [claim for claim in claims if flag in claim.risk_flags]
+
+
+def human_readable_summary(claim: ClaimRecord) -> str:
+    support = claim.supports[0] if claim.supports else "a result"
+    does_not = ", ".join(claim.does_not_support[:3]) if claim.does_not_support else "nothing further"
+    strength = {
+        "low": "weak",
+        "medium": "moderate",
+        "high": "strong",
+        "certified": "VPSL-certified",
+    }.get(claim.confidence_level, claim.confidence_level)
+    next_gate = f"; next gate: {claim.next_gate}" if claim.next_gate else ""
+    return (
+        f"{claim.claim_id} ({claim.claim_type}, {strength} evidence): {support}. "
+        f"It does NOT establish: {does_not}. Action: {claim.allowed_action}{next_gate}."
+    )
 
 
 def supersede_claim(claims: list[ClaimRecord], claim_id: str, reason: str | None = None) -> list[ClaimRecord]:
@@ -688,6 +862,17 @@ def _tests_claims() -> int:
         check(False)
     except ValueError:
         check(True)
+    try:
+        _claim(claim_type="bad")
+        check(False)
+    except ValueError:
+        check(True)
+    try:
+        _claim(confidence_level="certified", evidence_level="gp_truth_active_search")
+        check(False)
+    except ValueError:
+        check(True)
+    check(_claim(confidence_level="high", allowed_action=ACT_DO_NOT_PROMOTE).allowed_action == ACT_DO_NOT_PROMOTE)
     check(is_known_failure_mode(MECHANISM_DECAYS))
     check(is_known_failure_mode(DIAGNOSTICS_INSUFFICIENT))
     check(is_known_failure_mode(PRIOR_NO_EFFECT))
@@ -699,11 +884,15 @@ def _tests_claims() -> int:
     check(_claim(verdict="K2_CERTIFIED", gate=GATE_TRANSFER, evidence_level="vpsl_certified_structure").verdict)
     e2c = claim_from_k3_e2c({"verdict": "GP_ACTIVE_NO_ADVANTAGE"})
     check(e2c.allowed_action == ACT_ARCHIVE)
+    check(e2c.claim_type == "negative_result")
     check(e2c.next_gate == "K3-E2d discriminating GP truth active search")
+    e2c_random = claim_from_k3_e2c({"verdict": "GP_ACTIVE_NO_ADVANTAGE", "random_success_count_20": 18})
+    check(e2c_random.failure_mode == RANDOM_ALSO_SUCCEEDS)
     e2d = claim_from_k3_e2d({"verdict": "GP_ACTIVE_DIAGNOSTIC_VALUE_PASSED"})
     check(e2d.next_gate == "K3.2D.0 CNN baseline regime validation")
     k32 = claim_from_k3_2d_0_summary({"pipeline_ok": True, "transport_ok": False})
     check(k32.failure_mode == PIPELINE_OK_TRANSPORT_FAIL and k32.allowed_action == ACT_DO_NOT_PROMOTE)
+    check(k32.claim_type == "unresolved_result")
     try:
         claim_from_k3_2d_0_summary({"pipeline_ok": True, "transport_ok": True})
         check(False)
@@ -711,12 +900,16 @@ def _tests_claims() -> int:
         check(True)
     k2 = claim_from_k2_summary({"verdict": "K2_VPSL_CERTIFIED"})
     check(k2.evidence_level == "vpsl_certified_structure" and k2.gate == GATE_TRANSFER)
+    check(k2.confidence_level == "certified" and k2.claim_type == "certified_structure")
     claims = [e2c, e2d, k32, k2]
     summary = summarize_claims(claims)
     check(summary["count_total"] == 4)
     check(summary["count_by_allowed_action"][ACT_ARCHIVE] == 1)
     check(summary["count_by_allowed_action"][ACT_DO_NOT_PROMOTE] == 1)
-    check(len(claims_requiring_next_gate(claims)) == 1)
+    check("count_by_claim_type" in summary and "count_by_confidence_level" in summary)
+    check(len(claims_requiring_next_gate(claims)) == 2)
+    check(claims_with_risk_flag(claims, "transport_fail") == [k32])
+    check("does NOT establish" in human_readable_summary(e2c))
     with tempfile.TemporaryDirectory() as temp_dir:
         path = os.path.join(temp_dir, "claims.jsonl")
         append_claim(e2d, path)
@@ -727,13 +920,15 @@ def _tests_claims() -> int:
 if __name__ == "__main__":
     quiet = "--quiet" in sys.argv
     if not quiet:
-        print("=== chronos_core: S0 + memory + claims (pure stdlib) ===")
+        print("=== chronos_core v2: S0 + memory + claims (pure stdlib) ===")
         print("[S0]", recommend({"symplectic_improves_vs_controls": True}).to_dict())
         claims = [
             claim_from_k3_e2c({"verdict": "GP_ACTIVE_NO_ADVANTAGE"}),
             claim_from_k3_e2d({"verdict": "GP_ACTIVE_DIAGNOSTIC_VALUE_PASSED"}),
         ]
-        print("[claims]", summarize_claims(claims)["count_by_allowed_action"])
+        print("[claims]", summarize_claims(claims)["count_by_claim_type"])
+        for claim in claims:
+            print("[claim]", human_readable_summary(claim))
     n_s0 = _tests_s0()
     n_mem = _tests_memory()
     n_claims = _tests_claims()

@@ -26,6 +26,20 @@ CLAIM_ARCHIVED = "archived"
 ALLOWED_CLAIM_STATUSES = frozenset({CLAIM_ACTIVE, CLAIM_SUPERSEDED, CLAIM_ARCHIVED})
 
 BANNED_ALLOWED_ACTIONS = frozenset({"certified", "promote", "proved", "validated"})
+CERTIFIED_EVIDENCE = "vpsl_certified_structure"
+CERTIFIED_GATE = "transfer"
+
+CLAIM_TYPES = frozenset(
+    {
+        "positive_evidence",
+        "negative_result",
+        "unresolved_result",
+        "handoff",
+        "certified_structure",
+        "boundary_note",
+    }
+)
+CONFIDENCE_LEVELS = frozenset({"low", "medium", "high", "certified"})
 
 
 def new_timestamp() -> str:
@@ -60,12 +74,19 @@ class ClaimRecord:
     code_version: str = "unversioned"
     superseded_by: str | None = None
     superseded_reason: str | None = None
+    claim_type: str = "positive_evidence"
+    confidence_level: str = "medium"
+    evidence_scope: dict[str, Any] = field(default_factory=dict)
+    replication: dict[str, Any] = field(default_factory=dict)
+    risk_flags: list[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         for field_name in (
             "claim_id",
             "structure_family",
             "verdict",
+            "evidence_level",
+            "gate",
             "claim_boundary",
             "timestamp",
             "source_module",
@@ -96,11 +117,29 @@ class ClaimRecord:
             raise ValueError(f"unknown failure_mode: {self.failure_mode!r}")
 
         if "CERTIFIED" in self.verdict.upper():
-            if self.gate != "transfer" or self.evidence_level != "vpsl_certified_structure":
+            if self.gate != CERTIFIED_GATE or self.evidence_level != CERTIFIED_EVIDENCE:
                 raise ValueError(
-                    "CERTIFIED verdicts require gate='transfer' and "
-                    "evidence_level='vpsl_certified_structure'"
+                    f"CERTIFIED verdicts require gate={CERTIFIED_GATE!r} and "
+                    f"evidence_level={CERTIFIED_EVIDENCE!r}"
                 )
+
+        if self.claim_type not in CLAIM_TYPES:
+            raise ValueError(f"claim_type must be one of {sorted(CLAIM_TYPES)}; got {self.claim_type!r}")
+        if self.confidence_level not in CONFIDENCE_LEVELS:
+            raise ValueError(
+                f"confidence_level must be one of {sorted(CONFIDENCE_LEVELS)}; got {self.confidence_level!r}"
+            )
+        if self.confidence_level == "certified" and self.evidence_level != CERTIFIED_EVIDENCE:
+            raise ValueError(
+                "confidence_level='certified' is reserved for vpsl_certified_structure evidence; "
+                "it describes evidence strength and never authorizes an action"
+            )
+        if not isinstance(self.evidence_scope, dict):
+            raise TypeError("evidence_scope must be a dict")
+        if not isinstance(self.replication, dict):
+            raise TypeError("replication must be a dict")
+        if not isinstance(self.risk_flags, list):
+            raise TypeError("risk_flags must be a list")
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -117,9 +156,13 @@ __all__ = [
     "ACT_DO_NOT_PROMOTE",
     "ALLOWED_CLAIM_STATUSES",
     "BANNED_ALLOWED_ACTIONS",
+    "CERTIFIED_EVIDENCE",
+    "CERTIFIED_GATE",
     "CLAIM_ACTIVE",
     "CLAIM_ARCHIVED",
     "CLAIM_SUPERSEDED",
+    "CLAIM_TYPES",
+    "CONFIDENCE_LEVELS",
     "ClaimRecord",
     "new_timestamp",
 ]

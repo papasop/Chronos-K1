@@ -14,6 +14,11 @@ A meaningful Chronos claim must carry its evidence context:
 - `claim_boundary`
 - `source_module`
 - `code_version`
+- `claim_type`
+- `confidence_level`
+- `evidence_scope`
+- `replication`
+- `risk_flags`
 
 This layer is not memory, not a new experiment, and not a translator. It does
 not learn, certify, change S0 recommendations, or feed back into S0. It records
@@ -48,6 +53,22 @@ supports, what it does not support, and what the next gate is.
 - `source_module`
 - `supports`
 - `does_not_support`
+
+## V2 Audit Fields
+
+Claims also carry second-layer audit fields:
+
+- `claim_type`: one of `positive_evidence`, `negative_result`, `unresolved_result`,
+  `handoff`, `certified_structure`, or `boundary_note`
+- `confidence_level`: one of `low`, `medium`, `high`, or `certified`
+- `evidence_scope`: structured scope such as system, regime, model, and compute
+- `replication`: structured repeatability metadata such as seeds and control counts
+- `risk_flags`: audit tags such as `toy_landscape`, `transport_fail`, or `no_prior_test`
+
+`confidence_level` is evidence strength only. It never changes
+`allowed_action`. A claim may have `confidence_level = high` and still have
+`allowed_action = do_not_promote`. `confidence_level = certified` is reserved
+for `evidence_level = vpsl_certified_structure`.
 
 `allowed_action` must be one of:
 
@@ -147,6 +168,8 @@ label list.
 
 - `summarize_claims(claims)`
 - `claims_requiring_next_gate(claims)`
+- `claims_with_risk_flag(claims, flag)`
+- `human_readable_summary(claim)`
 - `supersede_claim(claims, claim_id, reason)`
 - `append_claim(claim, path)`
 - `write_claims(claims, path)`

@@ -35,6 +35,8 @@ def summarize_claims(claims: list[ClaimRecord]) -> dict[str, Any]:
         "count_by_allowed_action": _count_by(claims, "allowed_action"),
         "count_by_failure_mode": _count_by(claims, "failure_mode"),
         "count_by_claim_status": _count_by(claims, "claim_status"),
+        "count_by_claim_type": _count_by(claims, "claim_type"),
+        "count_by_confidence_level": _count_by(claims, "confidence_level"),
         "latest_claim_by_structure_family": {
             family: claim.to_dict() for family, (_index, claim) in latest.items()
         },
@@ -43,6 +45,26 @@ def summarize_claims(claims: list[ClaimRecord]) -> dict[str, Any]:
 
 def claims_requiring_next_gate(claims: list[ClaimRecord]) -> list[ClaimRecord]:
     return [claim for claim in claims if claim.allowed_action == ACT_CONTINUE and claim.next_gate]
+
+
+def claims_with_risk_flag(claims: list[ClaimRecord], flag: str) -> list[ClaimRecord]:
+    return [claim for claim in claims if flag in claim.risk_flags]
+
+
+def human_readable_summary(claim: ClaimRecord) -> str:
+    support = claim.supports[0] if claim.supports else "a result"
+    does_not = ", ".join(claim.does_not_support[:3]) if claim.does_not_support else "nothing further"
+    strength = {
+        "low": "weak",
+        "medium": "moderate",
+        "high": "strong",
+        "certified": "VPSL-certified",
+    }.get(claim.confidence_level, claim.confidence_level)
+    next_gate = f"; next gate: {claim.next_gate}" if claim.next_gate else ""
+    return (
+        f"{claim.claim_id} ({claim.claim_type}, {strength} evidence): {support}. "
+        f"It does NOT establish: {does_not}. Action: {claim.allowed_action}{next_gate}."
+    )
 
 
 def supersede_claim(claims: list[ClaimRecord], claim_id: str, reason: str | None = None) -> list[ClaimRecord]:
@@ -101,6 +123,8 @@ def load_claims(path: str) -> list[ClaimRecord]:
 __all__ = [
     "append_claim",
     "claims_requiring_next_gate",
+    "claims_with_risk_flag",
+    "human_readable_summary",
     "load_claims",
     "summarize_claims",
     "supersede_claim",
