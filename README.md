@@ -105,6 +105,14 @@ structure.
 
 For a learned update map `f`, the core mechanism condition is:
 
+Mathematically:
+
+```math
+(Df)^\top \Omega (Df)=\Omega .
+```
+
+Machine-readable diagnostic:
+
 ```text
 (Df)^T Omega (Df) = Omega
 ```
@@ -185,13 +193,17 @@ The purpose of Sine-Gordon is not only to solve one equation. Its purpose is to
 expose whether symplectic grammar alone is sufficient, or whether a separate
 topology grammar is required.
 
+Current repository status: no Sine-Gordon benchmark implementation is included
+yet. This bridge is a roadmap target and must not be read as an existing
+certified result.
+
 ### Grammar / Task / Validation Map
 
 | Grammar | Testbed | VPSL question | Possible output |
 | --- | --- | --- | --- |
 | K1 Lorentz / causal grammar | Klein-Gordon / causal contact tasks | Does the learner respect causal or metric structure? | `K1_LORENTZ / bounded` |
 | K2 symplectic grammar: `(Df)^T Omega (Df) = Omega` | FPU-β chain | Does the learner preserve Hamiltonian phase-space dynamics? | `K2_SYMPLECTIC / certified or continue` |
-| K3 topological grammar: angle / winding / defect continuity | Sine-Gordon field | Does the learner preserve soliton and topological identity? | `K3_TOPOLOGICAL / continue or unresolved` |
+| K3 topological grammar: angle / winding / defect continuity | vortex / winding tasks; Sine-Gordon planned | Does the learner preserve defect, soliton, or winding identity? | `K3_TOPOLOGICAL / unresolved or continue only with ClaimRecord` |
 | K2→K3 bridge | Sine-Gordon | Can one representation preserve both symplectic dynamics and topological object persistence? | `K2K3_SINE_GORDON_BRIDGE / planned or experimental` |
 
 This distinction is central to Chronos:
@@ -238,6 +250,10 @@ performance, and mechanism all survive the relevant gates.
 | K2 | Symplectic Prior | FULL_TRANSFER_CONFIRMED through H=240 |
 | K2→K3 | Sine-Gordon Bridge | Planned / experimental; not certified unless backed by a ClaimRecord |
 | K3 | Topological / Winding-Density Search | No certified structure yet; K3.1 `NO_EFFECT`; K3-E2b active toy search passed; K3-E2d cheap GP active search passed |
+
+A roadmap item is not a promoted claim. Promotion requires a `ClaimRecord`
+with diagnostics, controls, evidence level, failure modes, and explicit claim
+boundaries.
 
 K3-E2b: guided active topology regime search on a transparent toy landscape;
 active reaches a `transport_ok` regime while random control does not. Status:
