@@ -10,6 +10,7 @@ from chronos.claims import (
     claim_from_k3_e2b,
     claim_from_k3_e2c,
     claim_from_k3_e2d,
+    claim_from_language_grounding_summary,
     claims_requiring_next_gate,
     claims_with_risk_flag,
     human_readable_summary,
@@ -216,6 +217,24 @@ class BuilderTests(unittest.TestCase):
         self.assertEqual(claim.claim_type, "certified_structure")
         self.assertEqual(claim.confidence_level, "certified")
 
+    def test_language_grounding_builder_uses_claim_denominator(self):
+        claim = claim_from_language_grounding_summary(
+            {"passed": True, "n_assertions": 16, "levels": ["L1", "L2", "L4"]}
+        )
+        self.assertEqual(claim.structure_family, "LANGUAGE_GROUNDING")
+        self.assertEqual(claim.allowed_action, ACT_CONTINUE)
+        self.assertEqual(claim.claim_type, "positive_evidence")
+        self.assertEqual(claim.confidence_level, "medium")
+        self.assertNotEqual(claim.confidence_level, "certified")
+        self.assertIn("general language understanding", claim.does_not_support)
+        self.assertIn("L2 correlation is not treated as cause", claim.supports)
+        self.assertEqual(claim.next_gate, "L3 quantifier + L5 temporal + ambiguous reference controls")
+        self.assertIn("hand_authored_claims", claim.risk_flags)
+
+        failed = claim_from_language_grounding_summary({"passed": False, "n_assertions": 12})
+        self.assertEqual(failed.allowed_action, ACT_DO_NOT_PROMOTE)
+        self.assertEqual(failed.failure_mode, DIAGNOSTICS_INSUFFICIENT)
+
 
 class ReplayTests(unittest.TestCase):
     def test_summarize_and_next_gate(self):
@@ -236,6 +255,23 @@ class ReplayTests(unittest.TestCase):
         e2d = claim_from_k3_e2d({})
         self.assertEqual(claims_with_risk_flag([transport_fail, e2d], "transport_fail"), [transport_fail])
         self.assertIn("does NOT establish", human_readable_summary(transport_fail))
+
+    def test_language_and_physics_claims_share_replay_denominator(self):
+        physical_claims = [
+            claim_from_k2_summary({}),
+            claim_from_k3_e2c({"verdict": "GP_ACTIVE_NO_ADVANTAGE", "random_success_count_20": 18}),
+            claim_from_k3_e2d({}),
+        ]
+        language_claim = claim_from_language_grounding_summary(
+            {"passed": True, "n_assertions": 16, "levels": ["L1", "L2", "L4"]}
+        )
+        physical_summary = summarize_claims(physical_claims)
+        mixed_summary = summarize_claims(physical_claims + [language_claim])
+        self.assertEqual(physical_summary["count_total"], 3)
+        self.assertEqual(mixed_summary["count_total"], 4)
+        self.assertEqual(mixed_summary["count_by_claim_type"]["positive_evidence"], 2)
+        self.assertEqual(language_claim.allowed_action, ACT_CONTINUE)
+        self.assertIn("does NOT establish", human_readable_summary(language_claim))
 
     def test_supersede_claim(self):
         updated = supersede_claim([_claim()], "c1", "narrowed by later evidence")

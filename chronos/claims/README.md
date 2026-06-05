@@ -25,6 +25,13 @@ not learn, certify, change S0 recommendations, or feed back into S0. It records
 what a result supports, what it does not support, and the boundary under which
 the claim is valid.
 
+The denominator is shared across physical and language-representation claims.
+For example, a physics claim such as `K2_SYMPLECTIC` and a grounded-language
+claim such as `LANGUAGE_GROUNDING` use the same `supports`,
+`does_not_support`, `next_gate`, and `allowed_action` fields. A language claim
+therefore cannot silently overclaim general language understanding any more
+than a physical claim can silently overclaim certification.
+
 ## Claim Semantics
 
 A `ClaimRecord` is not meaningful because of its name alone. Its semantics come
@@ -153,6 +160,7 @@ Builders convert existing result dictionaries into `ClaimRecord` objects:
 - `claim_from_k3_e2d(summary_dict)`
 - `claim_from_k3_2d_0_summary(summary_dict)`
 - `claim_from_k2_summary(summary_dict)`
+- `claim_from_language_grounding_summary(summary_dict)`
 
 Builders never fabricate a pass. Negative active-search results such as
 `GP_ACTIVE_NO_ADVANTAGE` are archived rather than continued, even if an input

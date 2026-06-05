@@ -6,6 +6,7 @@ from .builders import (
     claim_from_k3_e2b,
     claim_from_k3_e2c,
     claim_from_k3_e2d,
+    claim_from_language_grounding_summary,
 )
 from .failure_taxonomy import KNOWN_FAILURE_MODES, is_known_failure_mode
 from .replay import (
@@ -31,6 +32,7 @@ __all__ = [
     "claim_from_k3_e2b",
     "claim_from_k3_e2c",
     "claim_from_k3_e2d",
+    "claim_from_language_grounding_summary",
     "claims_requiring_next_gate",
     "claims_with_risk_flag",
     "human_readable_summary",

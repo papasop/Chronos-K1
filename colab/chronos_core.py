@@ -653,6 +653,63 @@ def claim_from_k2_summary(summary: dict[str, Any]) -> ClaimRecord:
     )
 
 
+def claim_from_language_grounding_summary(result: dict[str, Any]) -> ClaimRecord:
+    """No-LLM grounded language MVP (L1 negation / L2 causality / L4 reference). Never certifies."""
+    passed = bool(result.get("passed"))
+    levels = result.get("levels", ["L1", "L2", "L4"])
+    n_assertions = result.get("n_assertions")
+    return ClaimRecord(
+        claim_id=str(
+            result.get("claim_id")
+            or result.get("run_id")
+            or "L_VPSL_GROUNDED_LANGUAGE_L1_L2_L4_TOY_MVP"
+        ),
+        structure_family="LANGUAGE_GROUNDING",
+        verdict="PASSED_TOY_MVP" if passed else "TOY_MVP_FAILED",
+        evidence_level="toy_bounded_positive",
+        gate="toy_mechanism",
+        diagnostics={"n_assertions": n_assertions, "passed": passed},
+        controls={"no_llm": True, "no_torch": True, "stdlib_only": True, "levels_covered": levels},
+        supports=[
+            "no-LLM grounded utterance generation from verified semantic claims",
+            "L1 not-visible negation",
+            "L1 contrastive correction",
+            "L2 causal explanation only with causal evidence",
+            "L2 correlation is not treated as cause",
+            "L4 single-object pronoun reference",
+            "does_not_support preserved in unsupported why-questions",
+        ],
+        does_not_support=[
+            "general language understanding",
+            "open-domain conversation",
+            "LLM-level fluency",
+            "autonomous robot intelligence",
+            "causal discovery",
+            "ambiguous multi-object reference",
+            "real-world robot deployment",
+        ],
+        failure_mode=None if passed else DIAGNOSTICS_INSUFFICIENT,
+        next_gate="L3 quantifier + L5 temporal + ambiguous reference controls",
+        claim_boundary=(
+            "toy no-LLM grounded language MVP using hand-authored semantic claims, controlled examples, "
+            "and stdlib-only surface realization; not a general language model"
+        ),
+        allowed_action=ACT_CONTINUE if passed else ACT_DO_NOT_PROMOTE,
+        source_module="chronos.language_grounding",
+        code_version="claims_v2",
+        claim_type="positive_evidence" if passed else "negative_result",
+        confidence_level="medium" if passed else "low",
+        evidence_scope={
+            "system": "hand-authored semantic claims",
+            "regime": "controlled toy examples",
+            "model": "template realizer (no LLM)",
+            "compute": "CPU stdlib",
+        },
+        replication={"n_assertions": n_assertions, "deterministic": True},
+        risk_flags=["toy_examples", "hand_authored_claims", "no_real_robot", "no_llm_baseline_comparison"],
+    )
+
+
 def summarize_claims(claims: list[ClaimRecord]) -> dict[str, Any]:
     latest: dict[str, tuple[int, ClaimRecord]] = {}
     for index, claim in enumerate(claims):
@@ -910,6 +967,25 @@ def _tests_claims() -> int:
     check(len(claims_requiring_next_gate(claims)) == 2)
     check(claims_with_risk_flag(claims, "transport_fail") == [k32])
     check("does NOT establish" in human_readable_summary(e2c))
+    physics_claims = [k2, e2c_random, e2d]
+    physics_summary = summarize_claims(physics_claims)
+    check(physics_summary["count_total"] == 3)
+    check(physics_summary["count_by_claim_type"]["positive_evidence"] == 1)
+    language_claim = claim_from_language_grounding_summary(
+        {"passed": True, "n_assertions": 16, "levels": ["L1", "L2", "L4"]}
+    )
+    mixed_summary = summarize_claims(physics_claims + [language_claim])
+    check(mixed_summary["count_total"] == 4)
+    check(mixed_summary["count_by_claim_type"]["positive_evidence"] == 2)
+    check(language_claim.structure_family == "LANGUAGE_GROUNDING")
+    check(language_claim.allowed_action == ACT_CONTINUE)
+    check(language_claim.confidence_level == "medium")
+    check("general language understanding" in language_claim.does_not_support)
+    check("L2 correlation is not treated as cause" in language_claim.supports)
+    check("does NOT establish" in human_readable_summary(language_claim))
+    failed_language = claim_from_language_grounding_summary({"passed": False, "n_assertions": 11})
+    check(failed_language.allowed_action == ACT_DO_NOT_PROMOTE)
+    check(failed_language.failure_mode == DIAGNOSTICS_INSUFFICIENT)
     with tempfile.TemporaryDirectory() as temp_dir:
         path = os.path.join(temp_dir, "claims.jsonl")
         append_claim(e2d, path)
@@ -923,8 +999,12 @@ if __name__ == "__main__":
         print("=== chronos_core v2: S0 + memory + claims (pure stdlib) ===")
         print("[S0]", recommend({"symplectic_improves_vs_controls": True}).to_dict())
         claims = [
+            claim_from_k2_summary({}),
             claim_from_k3_e2c({"verdict": "GP_ACTIVE_NO_ADVANTAGE"}),
             claim_from_k3_e2d({"verdict": "GP_ACTIVE_DIAGNOSTIC_VALUE_PASSED"}),
+            claim_from_language_grounding_summary(
+                {"passed": True, "n_assertions": 16, "levels": ["L1", "L2", "L4"]}
+            ),
         ]
         print("[claims]", summarize_claims(claims)["count_by_claim_type"])
         for claim in claims:

@@ -405,6 +405,68 @@ def claim_from_k2_summary(summary: dict) -> ClaimRecord:
     )
 
 
+def claim_from_language_grounding_summary(result: dict) -> ClaimRecord:
+    passed = bool(result.get("passed"))
+    n_assertions = result.get("n_assertions")
+    levels = result.get("levels", ["L1", "L2", "L4"])
+    return ClaimRecord(
+        claim_id="L_VPSL_GROUNDED_LANGUAGE_L1_L2_L4_TOY_MVP",
+        structure_family="LANGUAGE_GROUNDING",
+        evidence_level="toy_bounded_positive",
+        verdict="PASSED_TOY_MVP" if passed else "TOY_MVP_FAILED",
+        gate="toy_mechanism",
+        allowed_action=ACT_CONTINUE if passed else ACT_DO_NOT_PROMOTE,
+        supports=[
+            "no-LLM grounded utterance generation from verified semantic claims",
+            "L1 not-visible negation",
+            "L1 contrastive correction",
+            "L2 causal explanation only with causal evidence",
+            "L2 correlation is not treated as cause",
+            "L4 single-object pronoun reference",
+            "does_not_support preserved in unsupported why-questions",
+        ],
+        does_not_support=[
+            "general language understanding",
+            "open-domain conversation",
+            "LLM-level fluency",
+            "autonomous robot intelligence",
+            "causal discovery",
+            "ambiguous multi-object reference",
+            "real-world robot deployment",
+        ],
+        controls={
+            "no_llm": True,
+            "no_torch": True,
+            "stdlib_only": True,
+            "levels_covered": levels,
+        },
+        diagnostics={"n_assertions": n_assertions, "passed": passed},
+        failure_mode=None if passed else DIAGNOSTICS_INSUFFICIENT,
+        next_gate="L3 quantifier + L5 temporal + ambiguous reference controls",
+        claim_boundary=(
+            "toy no-LLM grounded language MVP using hand-authored semantic claims, "
+            "controlled examples, and stdlib-only surface realization; not a general language model"
+        ),
+        source_module="chronos.language_grounding",
+        code_version=_CODE,
+        claim_type="positive_evidence" if passed else "negative_result",
+        confidence_level="medium" if passed else "low",
+        evidence_scope={
+            "system": "hand-authored semantic claims",
+            "regime": "controlled toy examples",
+            "model": "template realizer (no LLM)",
+            "compute": "CPU stdlib",
+        },
+        replication={"n_assertions": n_assertions, "deterministic": True},
+        risk_flags=[
+            "toy_examples",
+            "hand_authored_claims",
+            "no_real_robot",
+            "no_llm_baseline_comparison",
+        ],
+    )
+
+
 def _count_by(claims: list[ClaimRecord], attr: str) -> dict[str, int]:
     counts: dict[str, int] = {}
     for claim in claims:
@@ -599,14 +661,30 @@ def _tests() -> int:
     check(len(claims_requiring_next_gate([claim_from_k3_e2d({}), claim_from_k3_e2c({})])) == 1)
     check(claims_with_risk_flag([claim_from_k3_2d_0_summary({"pipeline_ok": True, "transport_ok": False})], "transport_fail"))
     check("does NOT establish" in human_readable_summary(claim_from_k3_e2c({})))
+    physical_claims = [claim_from_k2_summary({}), claim_from_k3_e2c({"random_success_count_20": 18}), claim_from_k3_e2d({})]
+    language_claim = claim_from_language_grounding_summary({"passed": True, "n_assertions": 16, "levels": ["L1", "L2", "L4"]})
+    mixed = summarize_claims(physical_claims + [language_claim])
+    check(mixed["count_total"] == 4)
+    check(mixed["count_by_claim_type"]["positive_evidence"] == 2)
+    check(language_claim.confidence_level == "medium" and language_claim.allowed_action == ACT_CONTINUE)
+    check("general language understanding" in language_claim.does_not_support)
+    check("L2 correlation is not treated as cause" in language_claim.supports)
+    check("does NOT establish" in human_readable_summary(language_claim))
     return count
 
 
 if __name__ == "__main__":
     quiet = "--quiet" in sys.argv
     if not quiet:
-        claims = [claim_from_k3_e2c({}), claim_from_k3_e2d({}), claim_from_k2_summary({})]
+        claims = [
+            claim_from_k3_e2c({}),
+            claim_from_k3_e2d({}),
+            claim_from_k2_summary({}),
+            claim_from_language_grounding_summary({"passed": True, "n_assertions": 16, "levels": ["L1", "L2", "L4"]}),
+        ]
         print("=== chronos_claims portable mirror ===")
         print(json.dumps(summarize_claims(claims)["count_by_claim_type"], ensure_ascii=False))
+        for claim in claims:
+            print("  -", human_readable_summary(claim))
     print("\n=== tests ===")
     print(f"  ok all {_tests()} assertions passed")

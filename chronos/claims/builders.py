@@ -283,10 +283,80 @@ def claim_from_k2_summary(summary: dict) -> ClaimRecord:
     )
 
 
+def claim_from_language_grounding_summary(result: dict) -> ClaimRecord:
+    """Build a bounded no-LLM grounded-language claim.
+
+    This is a language-representation claim, not a physics result. It uses the
+    same ClaimRecord denominator as K-family claims so grounded language claims
+    carry explicit supports, non-supports, next gates, and allowed actions.
+    """
+
+    passed = bool(result.get("passed"))
+    n_assertions = result.get("n_assertions")
+    levels = result.get("levels", ["L1", "L2", "L4"])
+    return ClaimRecord(
+        claim_id="L_VPSL_GROUNDED_LANGUAGE_L1_L2_L4_TOY_MVP",
+        structure_family="LANGUAGE_GROUNDING",
+        evidence_level="toy_bounded_positive",
+        verdict="PASSED_TOY_MVP" if passed else "TOY_MVP_FAILED",
+        gate="toy_mechanism",
+        allowed_action="continue" if passed else "do_not_promote",
+        supports=[
+            "no-LLM grounded utterance generation from verified semantic claims",
+            "L1 not-visible negation",
+            "L1 contrastive correction",
+            "L2 causal explanation only with causal evidence",
+            "L2 correlation is not treated as cause",
+            "L4 single-object pronoun reference",
+            "does_not_support preserved in unsupported why-questions",
+        ],
+        does_not_support=[
+            "general language understanding",
+            "open-domain conversation",
+            "LLM-level fluency",
+            "autonomous robot intelligence",
+            "causal discovery",
+            "ambiguous multi-object reference",
+            "real-world robot deployment",
+        ],
+        controls={
+            "no_llm": True,
+            "no_torch": True,
+            "stdlib_only": True,
+            "levels_covered": levels,
+        },
+        diagnostics={"n_assertions": n_assertions, "passed": passed},
+        failure_mode=None if passed else F.DIAGNOSTICS_INSUFFICIENT,
+        next_gate="L3 quantifier + L5 temporal + ambiguous reference controls",
+        claim_boundary=(
+            "toy no-LLM grounded language MVP using hand-authored semantic claims, "
+            "controlled examples, and stdlib-only surface realization; not a general language model"
+        ),
+        source_module="chronos.language_grounding",
+        code_version=_CODE,
+        claim_type="positive_evidence" if passed else "negative_result",
+        confidence_level="medium" if passed else "low",
+        evidence_scope={
+            "system": "hand-authored semantic claims",
+            "regime": "controlled toy examples",
+            "model": "template realizer (no LLM)",
+            "compute": "CPU stdlib",
+        },
+        replication={"n_assertions": n_assertions, "deterministic": True},
+        risk_flags=[
+            "toy_examples",
+            "hand_authored_claims",
+            "no_real_robot",
+            "no_llm_baseline_comparison",
+        ],
+    )
+
+
 __all__ = [
     "claim_from_k2_summary",
     "claim_from_k3_2d_0_summary",
     "claim_from_k3_e2b",
     "claim_from_k3_e2c",
     "claim_from_k3_e2d",
+    "claim_from_language_grounding_summary",
 ]
