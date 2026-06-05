@@ -18,6 +18,8 @@ from chronos.s0.diagnostics_schema import (
     ALLOWED_ACTIONS,
 )
 
+from .failure_taxonomy import is_known_failure_mode
+
 CLAIM_ACTIVE = "active"
 CLAIM_SUPERSEDED = "superseded"
 CLAIM_ARCHIVED = "archived"
@@ -76,6 +78,9 @@ class ClaimRecord:
             raise ValueError("supports must be non-empty")
         if not self.does_not_support:
             raise ValueError("does_not_support must be non-empty")
+
+        if not is_known_failure_mode(self.failure_mode):
+            raise ValueError(f"unknown failure_mode: {self.failure_mode!r}")
 
         if "CERTIFIED" in self.verdict.upper():
             if self.gate != "transfer" or self.evidence_level != "vpsl_certified_structure":

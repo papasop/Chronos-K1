@@ -91,9 +91,9 @@ def claim_from_k3_e2c(summary: dict[str, Any]) -> ClaimRecord:
             "proof that topological priors work",
         ],
         failure_mode=ACTIVE_NO_ADVANTAGE if no_advantage else None,
-        next_gate="K3-E2d discriminating GP truth-only active search",
+        next_gate=None if no_advantage else "K3-E2d discriminating GP truth-only active search",
         claim_boundary="cheap real-GP truth, but too trivial to establish active advantage; not prior validation",
-        allowed_action=ACT_CONTINUE if no_advantage else ACT_CONTINUE,
+        allowed_action=ACT_DO_NOT_PROMOTE if no_advantage else ACT_CONTINUE,
         timestamp=_timestamp(summary),
     )
 

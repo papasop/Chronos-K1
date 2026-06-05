@@ -90,6 +90,10 @@ class ClaimRecordTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             _claim(claim_status="validated")
 
+    def test_unknown_failure_mode_raises(self):
+        with self.assertRaises(ValueError):
+            _claim(failure_mode="MADE_UP")
+
 
 class BuilderTests(unittest.TestCase):
     def test_k3_e2b_builder(self):
@@ -101,7 +105,8 @@ class BuilderTests(unittest.TestCase):
     def test_k3_e2c_builder_records_no_advantage(self):
         claim = claim_from_k3_e2c({"verdict": "GP_ACTIVE_NO_ADVANTAGE"})
         self.assertEqual(claim.failure_mode, ACTIVE_NO_ADVANTAGE)
-        self.assertEqual(claim.allowed_action, ACT_CONTINUE)
+        self.assertEqual(claim.allowed_action, ACT_DO_NOT_PROMOTE)
+        self.assertIsNone(claim.next_gate)
         self.assertIn("too trivial", claim.supports[0])
 
     def test_k3_e2d_builder_next_gate(self):
