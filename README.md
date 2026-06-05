@@ -5,6 +5,23 @@ Validated Physics Structure Learning (VPSL)
 A framework for discovering, validating, and transferring physics structure
 priors.
 
+## North Star
+
+Chronos is the validation stack for a future physics-native baby-talk robot AI.
+
+The long-term goal is not to add physics as a loss after learning, but to let a
+developing agent choose a physical representation language first: Lorentz /
+causal, symplectic / Hamiltonian, topological / defect, gauge, or Hilbert /
+quantum-state.
+
+Current status:
+
+- Today: reproducible VPSL research prototype.
+- S0: pre-robot developmental structure-recognition layer.
+- K1/K2/K3: controlled validation of candidate physical representation
+  languages.
+- Not yet: a deployed robot, an RL agent, or a complete baby-talk system.
+
 [![tests](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml)
 [![k2-syntax](https://github.com/papasop/Chronos-K1/actions/workflows/k2_syntax.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/k2_syntax.yml)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/papasop/Chronos-K1/blob/main/colab/chronos_k1_quickstart.ipynb)
