@@ -62,7 +62,7 @@ Chronos tracks physical structures as validation targets:
 | Pseudo-Riemannian / Lorentz structure | K1 / Klein-Gordon | Geometry, causality, metric signature, light-cone behavior | Partially confirmed; short-horizon evidence, mechanism transfer bounded |
 | Spectral / dispersion structure | K1 / Klein-Gordon | Frequencies, dispersion relation, mode dynamics | `BOUNDED_POSITIVE`; coupled with Lorentz-sensitive validation |
 | Symplectic / Hamiltonian structure | K2 / FPU-β | Phase space, Hamiltonian flow, long-horizon dynamics | `FULL_TRANSFER_CONFIRMED` through H=240; mechanism transfer confirmed |
-| Topological / winding-density structure | K3.0-D / K3.1 candidate | Local topological-charge density, Sine-Gordon winding density | Stage-2 prior test negative: `NO_EFFECT` |
+| Topological / defect structure | K3.1 / K3.2D / K3-E2b | Winding density, vortex transport, active topology regime search | K3.1 `NO_EFFECT`; K3.2D regime unresolved; K3-E2b toy active search `PASSED` |
 | Gauge structure | K4 candidate | Local symmetry and gauge invariants | Pending |
 | Hilbert / quantum-state structure | K5 candidate | Unitarity, quantum-state geometry, Born-compatible diagnostics | Pending |
 
