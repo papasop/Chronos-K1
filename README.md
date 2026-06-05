@@ -12,6 +12,10 @@ priors.
 The Colab badge opens the K1 quickstart. K2 archive scripts live under
 `chronos/k2/experiments/`.
 
+`colab/chronos_core.py` is the portable pure-stdlib core for S0
+recommendations, memory logging, and ClaimRecord scientific denominators. It
+contains no torch, no GP/CNN training, and no self-evolution.
+
 Current K2 scripts preserve archived verdict logic and summaries. Full Colab
 training sources are still being restored.
 
