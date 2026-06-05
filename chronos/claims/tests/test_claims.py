@@ -19,7 +19,10 @@ from chronos.claims import (
 )
 from chronos.claims.failure_taxonomy import (
     ACTIVE_NO_ADVANTAGE,
+    DIAGNOSTICS_INSUFFICIENT,
+    MECHANISM_DECAYS,
     PIPELINE_OK_TRANSPORT_FAIL,
+    PRIOR_NO_EFFECT,
     RANDOM_ALSO_SUCCEEDS,
     REGIME_INVALID,
 )
@@ -215,6 +218,9 @@ class ReplayTests(unittest.TestCase):
     def test_failure_mode_taxonomy(self):
         self.assertTrue(is_known_failure_mode(None))
         self.assertTrue(is_known_failure_mode(PIPELINE_OK_TRANSPORT_FAIL))
+        self.assertTrue(is_known_failure_mode(MECHANISM_DECAYS))
+        self.assertTrue(is_known_failure_mode(DIAGNOSTICS_INSUFFICIENT))
+        self.assertTrue(is_known_failure_mode(PRIOR_NO_EFFECT))
         self.assertFalse(is_known_failure_mode("MADE_UP"))
 
 

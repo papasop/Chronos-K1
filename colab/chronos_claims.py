@@ -1,4 +1,4 @@
-"""Portable Chronos Claims mirror for Colab.
+"""chronos_claims.py - Chronos Claim Denominator Layer (single self-contained file).
 
 Canonical implementation lives in ``chronos/claims/``. This file is a
 pure-stdlib standalone mirror for ClaimRecord scientific denominators only. It
@@ -41,6 +41,9 @@ TRUTH_STABLE_NEURAL_UNLEARNABLE = "TRUTH_STABLE_NEURAL_UNLEARNABLE"
 PENDING_GPU_VALIDATION = "PENDING_GPU_VALIDATION"
 CONTROL_DEGENERATE = "CONTROL_DEGENERATE"
 REGIME_INVALID = "REGIME_INVALID"
+MECHANISM_DECAYS = "MECHANISM_DECAYS"
+DIAGNOSTICS_INSUFFICIENT = "DIAGNOSTICS_INSUFFICIENT"
+PRIOR_NO_EFFECT = "PRIOR_NO_EFFECT"
 KNOWN_FAILURE_MODES = frozenset(
     {
         PIPELINE_OK_TRANSPORT_FAIL,
@@ -50,6 +53,9 @@ KNOWN_FAILURE_MODES = frozenset(
         PENDING_GPU_VALIDATION,
         CONTROL_DEGENERATE,
         REGIME_INVALID,
+        MECHANISM_DECAYS,
+        DIAGNOSTICS_INSUFFICIENT,
+        PRIOR_NO_EFFECT,
     }
 )
 
@@ -416,6 +422,9 @@ def _tests() -> int:
         check(False)
     except ValueError:
         check(True)
+    check(is_known_failure_mode(MECHANISM_DECAYS))
+    check(is_known_failure_mode(DIAGNOSTICS_INSUFFICIENT))
+    check(is_known_failure_mode(PRIOR_NO_EFFECT))
     with tempfile.TemporaryDirectory() as temp_dir:
         path = os.path.join(temp_dir, "claims.jsonl")
         append_claim(claim_from_k2_summary({}), path)

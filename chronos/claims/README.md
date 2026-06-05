@@ -119,6 +119,9 @@ Standard failure modes include:
 | `PENDING_GPU_VALIDATION` | A result is waiting for GPU validation. |
 | `CONTROL_DEGENERATE` | A control prior degenerates or collapses. |
 | `REGIME_INVALID` | The graceful regime window is invalid or unresolved. |
+| `MECHANISM_DECAYS` | A mechanism signal weakens or fails at later mechanism or transfer checks. |
+| `DIAGNOSTICS_INSUFFICIENT` | Diagnostics are too thin to support a bounded structure claim. |
+| `PRIOR_NO_EFFECT` | A prior does not beat the baseline and controls. |
 
 ## Builders
 
