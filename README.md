@@ -86,6 +86,10 @@ performance, and mechanism all survive the relevant gates.
 | K2 | Symplectic Prior | FULL_TRANSFER_CONFIRMED through H=240 |
 | K3 | Topological / Winding-Density Search | No certified structure yet; K3.1 `NO_EFFECT`; K3-E2b active toy search passed |
 
+K3-E2b: guided active topology regime search on a transparent toy landscape;
+active reaches a `transport_ok` regime while random control does not. Status:
+`PASSED`.
+
 K1 established a bounded framework result: metric-sensitive behavior appears
 under controlled normalization tests, but it is not promoted to a universal
 physics-prior claim.

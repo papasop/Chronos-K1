@@ -203,6 +203,9 @@ Current active regime-search toy:
 
 - K3-E2b: active topology regime search on an interpretable toy landscape
 - verdict: `ACTIVE_DIAGNOSTIC_VALUE_PASSED`
+- summary: guided active topology regime search on a transparent toy
+  landscape; active reaches a `transport_ok` regime while random control does
+  not. Status: `PASSED`.
 - claim: guided regime search beats blind random search
 - boundary: not K3 prior validation, not GP truth, not robotics, not RL/CNN
   training

@@ -50,6 +50,7 @@ K3.2D.0 unresolved 2D vortex regime note:
 
 K3-E2b active topology regime-search toy:
 
+- `ACTIVE_TOPOLOGY_SEARCH.md`
 - `K3_E2B_ACTIVE_TOPOLOGY_SEARCH_PASSED.md`
 
 K3.0-D is baseline-only periodic Sine-Gordon regime validation using the angle
@@ -122,6 +123,9 @@ The shared K3.2D verdict helper lives in:
 ## K3-E2b Active Topology Regime Search
 
 K3-E2b tests active regime search on an interpretable toy landscape.
+
+K3-E2b: guided active topology regime search on a transparent toy landscape;
+active reaches a `transport_ok` regime while random control does not.
 
 Status:
 
