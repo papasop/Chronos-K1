@@ -333,6 +333,11 @@ K3.2D.0 starts the 2D restart with baseline-only Gross-Pitaevskii
 vortex-antivortex regime validation. It runs in `SMOKE` mode by default and is
 not a scientific regime decision until promoted to `FULL`.
 
+The current smoke config uses a higher-motion GP setting (`S_FIXED=40`,
+`PAIR_SEP=6`, `L=48`) so vortex position error has dynamic range instead of
+staying pinned at the near-static discretization floor. Optional K3-E2d handoff
+metadata is recorded as provenance only; it does not validate the CNN regime.
+
 The smoke verdict is intentionally two-layered:
 
 - `SMOKE_PIPELINE_FAIL`: the baseline did not learn the field map.

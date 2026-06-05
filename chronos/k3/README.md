@@ -105,6 +105,12 @@ Role:
 Run mode is intentionally `SMOKE` by default. A scientific regime decision
 requires switching the script to `FULL`.
 
+Current smoke tuning uses a higher-motion GP probe (`S_FIXED=40`, `PAIR_SEP=6`,
+`L=48`) because the earlier `S=4` setting was near-static and pinned vortex
+position error at the discretization floor. The script can optionally record a
+K3-E2d active-search handoff candidate, but that remains
+`PENDING_CNN_REGIME_VALIDATION` until this CNN baseline regime gate runs.
+
 Developmental lesson:
 
 ```text

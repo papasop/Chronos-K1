@@ -34,7 +34,7 @@ VERDICT (regime gate):
   SMOKE_TRANSPORT_OK                  smoke sanity passes for both pipeline and vortex transport; promote
                                       to FULL for the N=30 regime decision.
   FULL_REGIME_VALIDATED               baseline trains, pair mostly intact across H, position error rises
-                                      but stays bounded/graceful, hard_div low → proceed to K3.2D.1.
+                                      but stays bounded/graceful, hard_div low -> proceed to K3.2D.1.
   REGIME_UNRESOLVED                   position error saturates, pair annihilates, hard-div rises, or baseline
                                       cannot fit. This is not a prior test or a rejection of 2D topology.
 """
@@ -55,13 +55,46 @@ RESULTS_DIR=Path("/content/exp_k3_2d_0"); RESULTS_DIR.mkdir(parents=True, exist_
 EPS=1e-8
 
 # ---- 2D GP physics ----
-L=32; DX=1.0; G=1.0; DT_PHYS=0.02
-S_FIXED=4                 # GP substeps per model step
+# NOTE: SMOKE revealed the pair was near-static at S=4 (pos_err pinned at the
+# 0.5 discretization floor, identical across seeds -> no graceful-degradation
+# signal). Sandbox tuning: S=40 with sep=6 makes the opposite-sign dipole
+# co-translate over H while staying intact, giving position error real dynamic
+# range. L=48 keeps the moving pair resolved.
+L=48; DX=1.0; G=1.0; DT_PHYS=0.02
+S_FIXED=40                # GP substeps per model step
 SETTLE=5                  # settle steps to clean vortex cores before t=0
-PAIR_SEP=10               # vortex-antivortex separation
-CORE=3.0                  # core size in tanh profile
-HORIZON=40                # model steps for regime probe
-REF_HORIZON=10
+PAIR_SEP=6                # smaller -> faster co-translation, still intact
+CORE=2.5                  # core size in tanh profile
+HORIZON=30                # model steps for regime probe
+REF_HORIZON=8
+
+# ---- optional handoff from K3-E2d (active-found truth regime) ----
+# If set, load best_regime from the handoff JSON and override PAIR_SEP/CORE.
+# This does NOT validate anything: the CNN regime validation remains pending,
+# and field learnability that fails transport is still REGIME_UNRESOLVED.
+HANDOFF_PATH=None         # e.g. "chronos/k3/handoffs/k3_e2d_best_regime.json"
+_handoff_meta={
+    "handoff_source":"none",
+    "handoff_status":"no_handoff",
+    "active_found_pair_sep":"",
+    "active_found_core_size":"",
+    "active_found_push":"",
+}
+if HANDOFF_PATH:
+    with open(HANDOFF_PATH) as _handoff_file:
+        _handoff = json.load(_handoff_file)
+    _best_regime = _handoff.get("best_regime", {})
+    PAIR_SEP = float(_best_regime.get("pair_sep", PAIR_SEP))
+    CORE = float(_best_regime.get("core_size", CORE))
+    _handoff_meta = {
+        "handoff_source": _handoff.get("source", "unknown"),
+        "handoff_status": _handoff.get("status", "unknown"),
+        "active_found_pair_sep": _best_regime.get("pair_sep", ""),
+        "active_found_core_size": _best_regime.get("core_size", ""),
+        "active_found_push": _best_regime.get("push", ""),
+    }
+    print(f"Using active-found K3-E2d regime candidate (sep={PAIR_SEP}, core={CORE}).")
+    print("This is PENDING_CNN_REGIME_VALIDATION, not a prior test.")
 
 # ---- model / training ----
 HIDDEN=48; N_LAYERS=3; RADIUS=2; LR=3e-4; EPOCHS=80; N_SEEDS=30
@@ -70,8 +103,12 @@ FUNC_DIV_THR=10.0
 # regime gate thresholds
 
 if RUN_MODE=="SMOKE":
-    N_SEEDS=3; EPOCHS=15; N_TRAIN_TRAJ=8; TRAIN_STEPS=20; HORIZON=20
-    print("⚠️  SMOKE MODE — tiny config, results NOT valid (pipeline + can-baseline-learn check only).\n")
+    # SMOKE #2 finding: S=40 vortex-transport dynamics need more training
+    # budget than the old 15-epoch/8-traj smoke. This is still far below FULL:
+    # it only checks whether the baseline can learn transport before N=30.
+    N_SEEDS=3; EPOCHS=60; N_TRAIN_TRAJ=16; TRAIN_STEPS=30; HORIZON=20
+    print("⚠️  SMOKE MODE — tiny config, results NOT valid (pipeline + can-baseline-learn-TRANSPORT +")
+    print("    does-the-vortex-MOVE check only). Watch: pos_err OFF the 8.0 ceiling AND pair_intact>0.\n")
 
 DEVICE="cuda" if torch.cuda.is_available() else "cpu"
 torch.set_num_threads(2)
@@ -207,14 +244,38 @@ def evaluate(model,seed):
         Tr=min(len(predr),len(ref)); ref_mse=float(np.mean((predr[:Tr]-ref[:Tr])**2))
         pred=denormalize(model.rollout(u0,HORIZON).squeeze(0).cpu().numpy())
     if not (np.all(np.isfinite(pred)) and np.max(np.abs(pred))<1e4):
-        return dict(roll_mse=1e4,pos_err=POS_ERR_CEIL,pair_intact=0,ref_mse=ref_mse,hard_div=1.0)
+        return dict(
+            roll_mse=1e4,
+            pos_err=POS_ERR_CEIL,
+            pair_intact=0,
+            ref_mse=ref_mse,
+            hard_div=1.0,
+            plus_detected=0,
+            minus_detected=0,
+            net_charge_err=1.0,
+        )
     T=min(len(pred),len(true)); roll=float(np.mean((pred[:T]-true[:T])**2))
     pos_err=position_error(pred[T-1],true[T-1])
     _,_,pos_charge,neg_charge=vortex_centroids(pred[T-1])
     pair_intact=int(pos_charge==1 and neg_charge==-1)   # net +1/-1 pair (charge-based, robust)
+    # TOPOLOGY metrics — test that +1 and -1 are transported as topological
+    # OBJECTS, not merely that the image matches.
+    _,_,tpos,tneg=vortex_centroids(true[T-1])
+    plus_detected=int(pos_charge==tpos)
+    minus_detected=int(neg_charge==tneg)
+    net_charge_err=abs((pos_charge+neg_charge)-(tpos+tneg))
     per=np.mean((pred[:T]-true[:T])**2,axis=(1,2,3)); over=per>FUNC_DIV_THR
     hard=bool(over[-1] and over[max(0,T-5):].mean()>0.8)
-    return dict(roll_mse=roll,pos_err=pos_err,pair_intact=pair_intact,ref_mse=ref_mse,hard_div=1.0 if hard else 0.0)
+    return dict(
+        roll_mse=roll,
+        pos_err=pos_err,
+        pair_intact=pair_intact,
+        ref_mse=ref_mse,
+        hard_div=1.0 if hard else 0.0,
+        plus_detected=plus_detected,
+        minus_detected=minus_detected,
+        net_charge_err=net_charge_err,
+    )
 
 def main():
     print("\n"+"🌀"*20); print("EXPERIMENT K3.2D.0: 2D VORTEX REGIME VALIDATION"); print("🌀"*20+"\n")
@@ -222,6 +283,7 @@ def main():
             "HORIZON":HORIZON,"N_SEEDS":N_SEEDS,"EPOCHS":EPOCHS,"state":"[Re psi, Im psi]",
             "regime_gate":{"REF_CEIL":REF_CEIL,"POS_ERR_CEIL":POS_ERR_CEIL,"PAIR_INTACT_MIN":PAIR_INTACT_MIN,
                            "HARD_DIV_MAX":HARD_DIV_MAX},
+            "handoff":_handoff_meta,
             "device":DEVICE,"torch":torch.__version__,"numpy":np.__version__}
     with open(RESULTS_DIR/"config.json","w") as f: json.dump(config,f,indent=2,default=str)
     import time; rows=[]
@@ -234,41 +296,68 @@ def main():
     df=pd.DataFrame(rows); df.to_csv(RESULTS_DIR/"k3_2d_0_results.csv",index=False)
     ref_med=df['ref_mse'].median(); pos_med=df['pos_err'].median()
     pair_frac=df['pair_intact'].mean(); hard_frac=df['hard_div'].mean()
+    plus_frac=df['plus_detected'].mean() if 'plus_detected' in df else np.nan
+    minus_frac=df['minus_detected'].mean() if 'minus_detected' in df else np.nan
+    netq_med=df['net_charge_err'].median() if 'net_charge_err' in df else np.nan
     print("\n"+"="*80); print(f"REGIME GATE @ H={HORIZON}"); print("="*80+"\n")
-    print(f"  baseline ref@{REF_HORIZON} median = {ref_med:.4f} (need < {REF_CEIL}) → {'✓' if ref_med<REF_CEIL else '✗ baseline did not train'}")
-    print(f"  vortex position error median = {pos_med:.2f} (need < {POS_ERR_CEIL}) → {'✓' if pos_med<POS_ERR_CEIL else '✗ saturated'}")
-    print(f"  pair-intact fraction = {pair_frac:.2f} (need >= {PAIR_INTACT_MIN}) → {'✓' if pair_frac>=PAIR_INTACT_MIN else '✗ pair annihilates'}")
-    print(f"  hard-div fraction = {hard_frac:.2f} (need <= {HARD_DIV_MAX}) → {'✓' if hard_frac<=HARD_DIV_MAX else '✗'}")
-    trained=ref_med<REF_CEIL; graceful=pos_med<POS_ERR_CEIL; pair_ok=pair_frac>=PAIR_INTACT_MIN; div_ok=hard_frac<=HARD_DIV_MAX
-    pipeline_ok = trained and div_ok
-    transport_ok = graceful and pair_ok
+    pipeline_ok = (ref_med<REF_CEIL) and (hard_frac<=HARD_DIV_MAX)
+    transport_ok = (pair_frac>=PAIR_INTACT_MIN) and (pos_med<POS_ERR_CEIL)
+    print("  [PIPELINE] field prediction learnable & bounded:")
+    print(f"    baseline ref@{REF_HORIZON} median = {ref_med:.4f} (need < {REF_CEIL}) → {'✓' if ref_med<REF_CEIL else '✗ did not train'}")
+    print(f"    hard-div fraction = {hard_frac:.2f} (need <= {HARD_DIV_MAX}) → {'✓' if hard_frac<=HARD_DIV_MAX else '✗'}")
+    print(f"    → PIPELINE_OK = {pipeline_ok}")
+    print("  [TRANSPORT] vortex pair topologically transported:")
+    print(f"    pair-intact fraction = {pair_frac:.2f} (need >= {PAIR_INTACT_MIN}) → {'✓' if pair_frac>=PAIR_INTACT_MIN else '✗ pair lost'}")
+    print(f"    position error median = {pos_med:.2f} (need < {POS_ERR_CEIL}) → {'✓' if pos_med<POS_ERR_CEIL else '✗ saturated'}")
+    if np.isfinite(plus_frac):
+        print(f"    +vortex detected = {plus_frac:.2f}, -vortex detected = {minus_frac:.2f}, net_charge_err median = {netq_med:.1f}")
+    print(f"    → TRANSPORT_OK = {transport_ok}")
     v = k32d_verdict(RUN_MODE, ref_med, hard_frac, pair_frac, pos_med)
     print("\n"+"="*80)
     if RUN_MODE=="SMOKE":
-        print("⚠️  SMOKE — pipeline + transport sanity check only. NOT a regime decision.")
-        if v == "SMOKE_TRANSPORT_OK":
-            print("   pipeline learns AND vortex transport is intact; promotable to FULL.")
-        elif v == "SMOKE_PIPELINE_OK_TRANSPORT_FAIL":
-            print("   pipeline learns field prediction, but vortex transport fails. Do NOT promote yet.")
-            print("   Low field MSE does not imply topological-object transport.")
+        if v=="SMOKE_PIPELINE_FAIL":
+            print("⚠️ SMOKE_PIPELINE_FAIL — baseline did not even learn field prediction (ref bad or hard-div).")
+            print("   Fix training/regime (sep/S/g/grid/epochs) before anything else. Do not promote to FULL.")
+        elif v=="SMOKE_PIPELINE_OK_TRANSPORT_FAIL":
+            print("⚠️ SMOKE_PIPELINE_OK_TRANSPORT_FAIL")
+            print("   Do not promote to FULL. Baseline learns field prediction but fails vortex transport.")
+            print("   Low field MSE does NOT imply the topological object is transported.")
         else:
-            print("   pipeline failed (ref bad or hard-div); fix sep/S/g/grid/epochs before FULL.")
+            print("✅ SMOKE_TRANSPORT_OK — pipeline learns AND the vortex pair is transported.")
+            print("   Regime looks promotable; switch RUN_MODE='FULL' for the N=30 regime decision.")
     elif v == "FULL_REGIME_VALIDATED":
         print("✅ FULL_REGIME_VALIDATED — baseline trains, pair mostly intact, position error graceful,")
         print("   hard-div low. A continuous (vortex-position) metric degrades gracefully. → proceed to")
         print("   K3.2D.1 (2D topological prior test with off-target / smoothness / increment controls).")
     else:
         print("⚠️ REGIME_UNRESOLVED — regime not testable as-is:")
-        if not trained: print("   baseline did not train (ref bad)")
-        if not div_ok: print("   too much hard divergence")
-        if not graceful: print("   position error saturated (no graceful band)")
-        if not pair_ok: print("   pair annihilates too often")
+        if not (ref_med<REF_CEIL): print("   baseline did not train (ref bad)")
+        if not (hard_frac<=HARD_DIV_MAX): print("   too much hard divergence")
+        if not (pos_med<POS_ERR_CEIL): print("   position error saturated (no graceful band)")
+        if not (pair_frac>=PAIR_INTACT_MIN): print("   pair annihilates too often")
         print("   Retune (sep, S, g, grid, epochs) or archive as future work before any K3.2D prior test.")
         print("   This is not a prior test or topology rejection.")
     print("="*80)
-    summary = {'experiment':'k3_2d_0','verdict':v,'mode':RUN_MODE,'pipeline_ok':pipeline_ok,
-               'transport_ok':transport_ok,'ref_med':ref_med,'pos_med':pos_med,
-               'pair_frac':pair_frac,'hard_frac':hard_frac}
+    summary = {
+        'experiment':'k3_2d_0',
+        'verdict':v,
+        'mode':RUN_MODE,
+        'pipeline_ok':pipeline_ok,
+        'transport_ok':transport_ok,
+        'ref_med':ref_med,
+        'pos_med':pos_med,
+        'pair_frac':pair_frac,
+        'hard_frac':hard_frac,
+        'plus_frac':plus_frac,
+        'minus_frac':minus_frac,
+        'netq_med':netq_med,
+        'handoff_source':_handoff_meta['handoff_source'],
+        'handoff_status':_handoff_meta['handoff_status'],
+        'active_found_pair_sep':_handoff_meta['active_found_pair_sep'],
+        'active_found_core_size':_handoff_meta['active_found_core_size'],
+        'active_found_push':_handoff_meta['active_found_push'],
+        'cnn_validation_status':('PENDING_GPU_CNN_VALIDATION' if RUN_MODE=='SMOKE' else 'CNN_RAN'),
+    }
     pd.DataFrame([summary]).to_csv(RESULTS_DIR/"k3_2d_0_summary.csv",index=False)
     emit_recommendation("k3_2d", summary, RESULTS_DIR)
     print(f"\n✓ Saved to {RESULTS_DIR}")
