@@ -283,6 +283,62 @@ def claim_from_k2_summary(summary: dict) -> ClaimRecord:
     )
 
 
+_LANG_LEVEL_SUPPORTS = {
+    "L1": ["L1 not-visible negation", "L1 contrastive correction"],
+    "L2": [
+        "L2 causal explanation only with causal evidence",
+        "L2 correlation is not treated as cause",
+    ],
+    "L3": [
+        "L3 visible-set grounded counting",
+        "L3 all/some/none/not_all distinction",
+        "L3 unknown when visible-set evidence is missing",
+    ],
+    "L4": ["L4 single-object pronoun reference"],
+    "L4A": [
+        "L4A ambiguous reference is rejected or expanded",
+        "L4A multi-object pronoun use is blocked unless salience is sufficient",
+    ],
+    "L5": [
+        "L5 evidence-backed temporal ordering",
+        "L5 missing temporal evidence produces unknown",
+        "L5 no invented intermediate events",
+    ],
+}
+_LANG_LEVEL_DOES_NOT_SUPPORT = {
+    "L2": ["causal discovery"],
+    "L4A": ["ambiguous reference beyond toy salience model"],
+    "L5": ["temporal reasoning beyond explicit event order evidence"],
+}
+_LANG_LEVEL_ORDER = ["L1", "L2", "L3", "L4", "L4A", "L5"]
+_LANG_NEXT_GATE = {
+    "L1": "L1 not-visible negation",
+    "L2": "L2 causal boundary",
+    "L3": "L3 quantifier",
+    "L4": "L4 reference",
+    "L4A": "L4A ambiguity-hardened reference",
+    "L5": "L5 temporal ordering",
+}
+_LANG_FULL_NEXT_GATE = "multi-step action grounding + real sensor trace replay"
+
+
+def next_missing_level(levels):
+    """Return the first uncovered language level in ladder order."""
+
+    covered = set(levels)
+    for level in _LANG_LEVEL_ORDER:
+        if level not in covered:
+            return level
+    return None
+
+
+def _lang_claim_id(levels):
+    """Build the language claim_id from the levels actually covered."""
+
+    tag = "_".join(level for level in _LANG_LEVEL_ORDER if level in levels)
+    return f"L_VPSL_GROUNDED_LANGUAGE_{tag}_TOY_MVP"
+
+
 def claim_from_language_grounding_summary(result: dict) -> ClaimRecord:
     """Build a bounded no-LLM grounded-language claim.
 
@@ -293,32 +349,75 @@ def claim_from_language_grounding_summary(result: dict) -> ClaimRecord:
 
     passed = bool(result.get("passed"))
     n_assertions = result.get("n_assertions")
-    levels = result.get("levels", ["L1", "L2", "L4"])
+    raw_levels = result.get("levels", ["L1", "L2", "L3", "L4"])
+    if isinstance(raw_levels, str) or not isinstance(raw_levels, (list, tuple, set)):
+        raise TypeError(
+            "levels must be a list/tuple/set of tokens, "
+            f"not {type(raw_levels).__name__}; got {raw_levels!r}"
+        )
+    unknown_levels = [level for level in raw_levels if level not in _LANG_LEVEL_ORDER]
+    if unknown_levels:
+        raise ValueError(
+            f"unknown language level token(s) {unknown_levels}; "
+            f"valid levels are {_LANG_LEVEL_ORDER}"
+        )
+    levels = [level for level in _LANG_LEVEL_ORDER if level in set(raw_levels)]
+    if not levels:
+        raise ValueError("language claim requires at least one covered level in result['levels'].")
+
+    if passed:
+        supports = ["no-LLM grounded utterance generation from verified semantic claims"]
+        for level in levels:
+            supports.extend(_LANG_LEVEL_SUPPORTS[level])
+        question_types = []
+        if "L2" in levels:
+            question_types.append("why")
+        if "L3" in levels:
+            question_types.append("quantifier")
+        if "L4" in levels or "L4A" in levels:
+            question_types.append("reference")
+        if "L5" in levels:
+            question_types.append("temporal")
+        if question_types:
+            joined = ", ".join(question_types[:-1]) + (
+                ", and " + question_types[-1] if len(question_types) > 1 else question_types[-1]
+            )
+            supports.append(f"does_not_support preserved in unsupported {joined} questions")
+    else:
+        supports = [
+            "language grounding test suite ran and produced diagnostics",
+            "controlled examples were evaluated",
+        ]
+
+    does_not_support = [
+        "general language understanding",
+        "open-domain conversation",
+        "LLM-level fluency",
+        "autonomous robot intelligence",
+        "real-world robot deployment",
+    ]
+    if passed:
+        for level in levels:
+            does_not_support.extend(_LANG_LEVEL_DOES_NOT_SUPPORT.get(level, []))
+    else:
+        does_not_support.append("any language level capability (test did not pass)")
+    missing = [level for level in _LANG_LEVEL_ORDER if level not in levels]
+    for level in missing:
+        does_not_support.append(f"{level} capability (not yet covered)")
+
+    next_level = next_missing_level(levels)
+    next_gate = _LANG_NEXT_GATE[next_level] if next_level is not None else _LANG_FULL_NEXT_GATE
+    contiguous = not missing or levels == _LANG_LEVEL_ORDER[: len(levels)]
+
     return ClaimRecord(
-        claim_id="L_VPSL_GROUNDED_LANGUAGE_L1_L2_L4_TOY_MVP",
+        claim_id=_lang_claim_id(levels),
         structure_family="LANGUAGE_GROUNDING",
-        evidence_level="toy_bounded_positive",
+        evidence_level="toy_bounded_positive" if passed else "toy_bounded_negative",
         verdict="PASSED_TOY_MVP" if passed else "TOY_MVP_FAILED",
         gate="toy_mechanism",
         allowed_action="continue" if passed else "do_not_promote",
-        supports=[
-            "no-LLM grounded utterance generation from verified semantic claims",
-            "L1 not-visible negation",
-            "L1 contrastive correction",
-            "L2 causal explanation only with causal evidence",
-            "L2 correlation is not treated as cause",
-            "L4 single-object pronoun reference",
-            "does_not_support preserved in unsupported why-questions",
-        ],
-        does_not_support=[
-            "general language understanding",
-            "open-domain conversation",
-            "LLM-level fluency",
-            "autonomous robot intelligence",
-            "causal discovery",
-            "ambiguous multi-object reference",
-            "real-world robot deployment",
-        ],
+        supports=supports,
+        does_not_support=does_not_support,
         controls={
             "no_llm": True,
             "no_torch": True,
@@ -327,17 +426,24 @@ def claim_from_language_grounding_summary(result: dict) -> ClaimRecord:
         },
         diagnostics={"n_assertions": n_assertions, "passed": passed},
         failure_mode=None if passed else F.DIAGNOSTICS_INSUFFICIENT,
-        next_gate="L3 quantifier + L5 temporal + ambiguous reference controls",
+        next_gate=next_gate,
         claim_boundary=(
             "toy no-LLM grounded language MVP using hand-authored semantic claims, "
-            "controlled examples, and stdlib-only surface realization; not a general language model"
+            "verified visible object sets, controlled salience scores, explicit event order evidence, "
+            "and stdlib-only surface realization; not a general language model"
+            + (
+                ""
+                if contiguous
+                else "; levels may be non-contiguous: a higher level does not imply lower ones "
+                "(e.g. L4 does not imply L3)"
+            )
         ),
         source_module="chronos.language_grounding",
         code_version=_CODE,
         claim_type="positive_evidence" if passed else "negative_result",
         confidence_level="medium" if passed else "low",
         evidence_scope={
-            "system": "hand-authored semantic claims",
+            "system": "hand-authored semantic claims + verified visible object sets",
             "regime": "controlled toy examples",
             "model": "template realizer (no LLM)",
             "compute": "CPU stdlib",
@@ -359,4 +465,5 @@ __all__ = [
     "claim_from_k3_e2c",
     "claim_from_k3_e2d",
     "claim_from_language_grounding_summary",
+    "next_missing_level",
 ]

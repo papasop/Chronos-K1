@@ -16,6 +16,7 @@ from chronos.claims import (
     human_readable_summary,
     is_known_failure_mode,
     load_claims,
+    next_missing_level,
     summarize_claims,
     supersede_claim,
     write_claims,
@@ -217,23 +218,53 @@ class BuilderTests(unittest.TestCase):
         self.assertEqual(claim.claim_type, "certified_structure")
         self.assertEqual(claim.confidence_level, "certified")
 
-    def test_language_grounding_builder_uses_claim_denominator(self):
+    def test_language_grounding_builder_full_levels(self):
         claim = claim_from_language_grounding_summary(
-            {"passed": True, "n_assertions": 16, "levels": ["L1", "L2", "L4"]}
+            {"passed": True, "n_assertions": 40, "levels": ["L1", "L2", "L3", "L4", "L4A", "L5"]}
         )
+        self.assertEqual(claim.claim_id, "L_VPSL_GROUNDED_LANGUAGE_L1_L2_L3_L4_L4A_L5_TOY_MVP")
         self.assertEqual(claim.structure_family, "LANGUAGE_GROUNDING")
+        self.assertEqual(claim.evidence_level, "toy_bounded_positive")
         self.assertEqual(claim.allowed_action, ACT_CONTINUE)
         self.assertEqual(claim.claim_type, "positive_evidence")
         self.assertEqual(claim.confidence_level, "medium")
         self.assertNotEqual(claim.confidence_level, "certified")
-        self.assertIn("general language understanding", claim.does_not_support)
-        self.assertIn("L2 correlation is not treated as cause", claim.supports)
-        self.assertEqual(claim.next_gate, "L3 quantifier + L5 temporal + ambiguous reference controls")
+        self.assertEqual(claim.next_gate, "multi-step action grounding + real sensor trace replay")
+        self.assertEqual(claim.controls["levels_covered"], ["L1", "L2", "L3", "L4", "L4A", "L5"])
+        self.assertIn("L3 visible-set grounded counting", claim.supports)
+        self.assertIn("L4A ambiguous reference is rejected or expanded", claim.supports)
+        self.assertIn("L5 evidence-backed temporal ordering", claim.supports)
+        self.assertIn("LLM-level fluency", claim.does_not_support)
+        self.assertIn("temporal reasoning beyond explicit event order evidence", claim.does_not_support)
         self.assertIn("hand_authored_claims", claim.risk_flags)
 
+    def test_language_grounding_builder_partial_levels(self):
+        claim = claim_from_language_grounding_summary(
+            {"passed": True, "n_assertions": 16, "levels": ["L1", "L2", "L4"]}
+        )
+        self.assertEqual(claim.claim_id, "L_VPSL_GROUNDED_LANGUAGE_L1_L2_L4_TOY_MVP")
+        self.assertIn("L2 correlation is not treated as cause", claim.supports)
+        self.assertNotIn("L3 visible-set grounded counting", claim.supports)
+        self.assertIn("L3 capability (not yet covered)", claim.does_not_support)
+        self.assertEqual(claim.next_gate, "L3 quantifier")
+        self.assertEqual(next_missing_level(["L1", "L2", "L4"]), "L3")
+
+    def test_language_grounding_builder_failed_run_no_capability_supports(self):
         failed = claim_from_language_grounding_summary({"passed": False, "n_assertions": 12})
         self.assertEqual(failed.allowed_action, ACT_DO_NOT_PROMOTE)
+        self.assertEqual(failed.claim_type, "negative_result")
+        self.assertEqual(failed.evidence_level, "toy_bounded_negative")
         self.assertEqual(failed.failure_mode, DIAGNOSTICS_INSUFFICIENT)
+        self.assertNotIn("L1 not-visible negation", failed.supports)
+        self.assertIn("any language level capability (test did not pass)", failed.does_not_support)
+
+    def test_language_grounding_builder_rejects_malformed_levels(self):
+        with self.assertRaises(TypeError):
+            claim_from_language_grounding_summary({"passed": True, "n_assertions": 1, "levels": "L1"})
+
+    def test_language_grounding_builder_rejects_unknown_level(self):
+        with self.assertRaises(ValueError):
+            claim_from_language_grounding_summary({"passed": True, "n_assertions": 1, "levels": ["L1", "L6"]})
 
 
 class ReplayTests(unittest.TestCase):
@@ -263,7 +294,7 @@ class ReplayTests(unittest.TestCase):
             claim_from_k3_e2d({}),
         ]
         language_claim = claim_from_language_grounding_summary(
-            {"passed": True, "n_assertions": 16, "levels": ["L1", "L2", "L4"]}
+            {"passed": True, "n_assertions": 40, "levels": ["L1", "L2", "L3", "L4", "L4A", "L5"]}
         )
         physical_summary = summarize_claims(physical_claims)
         mixed_summary = summarize_claims(physical_claims + [language_claim])
