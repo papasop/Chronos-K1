@@ -189,10 +189,17 @@ Chronos/VPSL treats selected physical structure as representation grammar. A
 structure that becomes grammar is not merely encouraged after the fact; it
 constrains the allowed representation or transformation space.
 
+| Style | Physics role | Failure mode |
+| --- | --- | --- |
+| Physics-as-loss | Adds a soft penalty after prediction | The model may violate the structure and only pays a loss |
+| Chronos/VPSL | Defines the allowed representation or transformation grammar | A promoted grammar constrains what the representation is allowed to be |
+
+Examples:
+
 | Family | Grammar | Meaning |
 | --- | --- | --- |
-| K2 symplectic | `(Df)^T Omega (Df) = Omega` | learned state updates must preserve canonical symplectic structure |
-| K3 topology | `(sin φ, cos φ)` / `S¹` representation | angular fields are represented on the circle, so winding and defect identity are not reduced to scalar field error |
+| K2 symplectic | `(Df)^T Ω (Df) = Ω` | learned state updates must preserve canonical symplectic structure |
+| K3 topology | `(sin φ, cos φ)` / `S¹` target manifold | angular fields live on the circle; winding is not scalar error |
 | L-VPSL language | `SemanticClaim -> GroundedUtterance -> ClaimRecord` | utterances must come from verified semantic claims and carry `does_not_support` boundaries |
 
 In short:
@@ -254,12 +261,6 @@ values.
 A low field-prediction error is not enough if a defect, vortex, kink,
 anti-kink, winding number, or soliton identity disappears during rollout.
 
-For angular/topological fields, Chronos treats `(sin φ, cos φ)` as the
-representation track for `S¹`-valued structure. This is not only an output
-formatting choice. It is the topological grammar that prevents angle
-wrap-around, winding, and kink identity from being reduced to ordinary scalar
-regression.
-
 ```text
 K3_TOPOLOGICAL_OBJECT
 role: topology-level representation grammar
@@ -271,6 +272,14 @@ controls: topology-blind predictors, field-error-only baselines
 
 K3 therefore tests whether the representation carries object persistence in a
 field, rather than only pixel-level or field-level accuracy.
+
+For angular or phase-valued fields, Chronos treats `(sin φ, cos φ)` as the
+`S¹` representation track. This is not an output-format choice. It is the
+manifold projection and topological grammar that prevents angle wrap-around,
+winding, and kink identity from being reduced to ordinary scalar regression.
+
+In this sense, the topology is not merely penalized after prediction. It
+defines the representation rail on which the learner is allowed to move.
 
 ### Sine-Gordon as the K2→K3 Bridge
 
