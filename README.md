@@ -18,6 +18,97 @@ no-LLM grounded-language claims can share one scientific denominator:
 [![k2-syntax](https://github.com/papasop/Chronos-K1/actions/workflows/k2_syntax.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/k2_syntax.yml)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/papasop/Chronos-K1/blob/main/colab/chronos_k1_quickstart.ipynb)
 
+> **External reviewers / 外部评审入口：**  
+> Please start with [EXTERNAL_REVIEW.md](./EXTERNAL_REVIEW.md) for the fastest
+> path to reproducing the repo, understanding what is claimed, and checking the
+> claim boundaries.
+
+## System Architecture
+
+```mermaid
+flowchart TD
+
+    A[World / Simulation / Experiment] --> B[Y30-Core<br/>Cognitive Substrate]
+    B --> C[K-family<br/>Physics Structure Libraries]
+    B --> D[Y20-Core<br/>Debate Boundary Layer]
+    C --> E[VPSL Gates]
+    D --> E
+    E --> F[ClaimRecord / Claim Denominator]
+    F --> G[Grounded Language Output]
+
+    subgraph Y30 [Y30-Core: cognitive boundary]
+        B1[Appearance]
+        B2[Dependent Conditions]
+        B3[Object Construction]
+        B4[Projection / Self-Grasping Boundary]
+        B5[Eight-Consciousness Functional Stack]
+    end
+
+    subgraph K [K-family: physics validation]
+        C1[K1: causal / Lorentz]
+        C2[K2: symplectic / Hamiltonian]
+        C3[K3: topology / object transport]
+        C4[K4: gauge candidate]
+        C5[K5: Hilbert / quantum candidate]
+    end
+
+    subgraph Y20 [Y20-Core: objection / required-gate grammar]
+        D1[Objection]
+        D2[Response]
+        D3[Boundary]
+        D4[Required Gate]
+    end
+
+    B --> B1
+    B --> B2
+    B --> B3
+    B --> B4
+    B --> B5
+
+    C --> C1
+    C --> C2
+    C --> C3
+    C --> C4
+    C --> C5
+
+    D --> D1
+    D --> D2
+    D --> D3
+    D --> D4
+```
+
+**Architecture rule:**  
+Y30 contextualizes. Y20 audits by objection and required gate. K-family
+validates physics. VPSL authorizes promotion. ClaimRecord audits. Language
+renders.
+
+## Boundary / Non-claims
+
+Chronos-K1 is a bounded research prototype. Its layers have strict roles:
+
+- **Y30-Core contextualizes claims** through appearance, dependent conditions,
+  object construction, projection boundaries, and functional eight-consciousness
+  structure.
+- **Y20-Core audits claims** through objection / response / required-gate
+  grammar.
+- **K-family programs validate physics** through their own diagnostics and VPSL
+  gates.
+- **VPSL authorizes promotion** only when the required regime, control,
+  mechanism, and transfer gates pass.
+- **ClaimRecord records** `supports`, `does_not_support`, `evidence_level`,
+  `next_gate`, and `claim_boundary`.
+
+This repository does **not** claim:
+
+- Y30/Y20 are physics evidence.
+- Y30 proves Buddhist doctrine.
+- Y20 proves external-world nonexistence.
+- Scientific realism is refuted.
+- K-family verdicts are changed by Y30/Y20 context.
+- A physics claim is resolved without its required VPSL gate.
+- Chronos-K1 is a deployed robot, general chatbot, autonomous AGI, or universal
+  Physics-AI.
+
 ## Choose Your Path
 
 - **I want to reproduce the main claim ledger**  
