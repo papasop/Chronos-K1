@@ -33,6 +33,10 @@ It includes happy-path tests and anti-cheat tests. It does not claim general
 language understanding, open-domain conversation, LLM-level fluency, real robot
 deployment, or universal physics AI.
 
+`chronos_full_denominator.py` is a cleaned canonical replay distilled from
+earlier exploratory Colab scripts. Historical raw drafts are not part of the
+active API.
+
 | Layer | Status |
 | --- | --- |
 | K2 symplectic claim | certified within tested FPU-beta scope |
