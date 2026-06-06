@@ -73,6 +73,8 @@ but is presently limited to spherical symmetry and depends on the field-level
 ansatz as a separate input. Neither perspective derives Einstein from
 the framework axioms alone. They are summarised in Fig.~\ref{fig:routes}.
 
+\medskip\noindent\textit{Scope discipline.} The terms ``forces'', ``derives'', ``recovers'', and ``is equivalent to'' are used at different logical levels in this paper. Law~I forces Lorentzian signature only for the point-level leading quadratic form under the realizability axioms. The thermodynamic route conditionally recovers the Einstein equations only after the external identifications $T_{\mathrm{eff}}=T_{\mathrm{tol}}$ and $S\propto A$ are supplied. The field-level conditions $K_i=1$ are introduced as a candidate ansatz; Theorem~\ref{thm:field} proves an algebraic equivalence between that ansatz and the spherical vacuum Einstein equations, not a derivation of the ansatz from Law~I or from Laws~I--III alone.
+
 \medskip\noindent\textit{Main results.} \emph{Point-level}: under isotropic linearisation, Lorentzian signature, real spectrum of the induced generator $J_G$, and the positive stability threshold $d_{c}>0$ are equivalent (Theorem~\ref{thm:equivalence}). \emph{Thermodynamic perspective}: conditionally recovers $R_{\mu\nu}-\tfrac12 R\,g_{\mu\nu}=8\pi T_{\mu\nu}$ for general metrics, given the two external inputs $T_{\mathrm{eff}}=T_{\mathrm{tol}}$ and $S\propto A$. \emph{Algebraic reformulation (\S~\ref{sec:field})}: in static, spherically symmetric metrics on intervals where $f>0$, the differential conditions $K_i=1$ for $i=1,2$ are algebraically equivalent to $R_{\mu\nu}=0$ (Theorem~\ref{thm:field}). The conditions $K_i=1$ are themselves a field-level ansatz, not derived from Laws~I--III.
 
 \medskip\noindent\textbf{Notation.}
@@ -119,7 +121,7 @@ dt_{\mathrm{info}}:=\frac{d\Phi}{H},
 \]
 where $\Phi$ parametrises structural variation and $H>0$ is the local \emph{scalar} cost per unit variation of $\Phi$ (an entropic resistance, unrelated to the matrix weight $H_{*}$ of~\S\ref{sec:stability}). Associated with the local second-order part of $dt_{\mathrm{info}}^{2}$, we introduce a signed leading quadratic form $G$, heuristically written as $G:=\nabla^{2}(dt_{\mathrm{info}}^{2})$. Strictly speaking, this is shorthand: $G$ denotes the \emph{signed leading quadratic coefficient form} associated with $dt_{\mathrm{info}}^{2}$, not a full coordinate-level reconstruction obtained from an explicit expansion of $dt_{\mathrm{info}}$ in a specified chart. More precisely, the present framework models this signed leading coefficient form as the leading quadratic form $Q$ of Appendix~\ref{app:realizability}. Thus the step from $G$ to the realizability theorem is a \emph{structural identification at the level of the signed leading form}, not an independent re-derivation of Axioms~R, E, T from the information-time construction itself.
 
-At the motivating level, the nonnegative cost is represented by the positive-part construction $(x^{\top}Gx)_{+}$, exactly as in the realizability framework of Appendix~\ref{app:realizability}. Once the signature conclusion has been obtained, the later algebra and dynamics work directly with the underlying signed leading form $G$ itself, and no longer require the positive-part construction. The positive-part cost belongs to the realizability layer that constrains the signature of the leading form. Once the Lorentzian signature conclusion has been fixed, the subsequent dynamical development does not call upon Axiom~R again. The later potential
+At the motivating level, the nonnegative cost is represented by the positive-part construction $(x^{\top}Gx)_{+}$, exactly as in the realizability framework of Appendix~\ref{app:realizability}. Once the signature conclusion has been obtained, the later algebra and dynamics work directly with the underlying signed leading form $G$ itself, and no longer require the positive-part construction. The positive-part cost belongs to the realizability layer that constrains the signature of the leading form. Once the Lorentzian signature has been fixed, the subsequent dynamical development does not call upon Axiom~R again. The later potential
 \[
 V=\tfrac12(K-1)^2
 \]
@@ -1199,13 +1201,8 @@ Lorentzian signature is therefore not merely compatible with the cost asymmetry;
 In the body of the paper, the leading quadratic form $G$ of Law~I (\S\ref{sec:lawI}) is identified with the form $Q$ of this appendix. Axioms~R, E, T are imposed on the local cost-form layer of the information-time construction $dt_{\mathrm{info}}:=d\Phi/H$, and Theorem~\ref{app:thm:lorentz} then forces $\mathrm{Sig}(G)=(1,1)$, equivalently $\det G<0$. This is the operative bridge from cost-realizability to Lorentzian signature used throughout the framework; in particular, it supplies the input to Theorems~\ref{thm:spectral}--\ref{thm:equivalence}. The $(1{+}3)$-dimensional extension is not used in the main text and is therefore omitted from this appendix; the framework's higher-dimensional structure is discussed heuristically in \S\ref{sec:discussion}.
 
 %=====================================================================
-%  APPENDIX B  (Version B2 -- obstruction foregrounded)
+%  APPENDIX B
 %  Conditional eta-Weighted Extension of the Field-Level Sector
-%
-%  PLACEMENT: insert immediately AFTER \S A.7 of the realizability
-%  appendix, still inside \appendix, before "Statements and Declarations".
-%  Reuses Definition~\ref{def:esc}, Theorem~\ref{thm:field},
-%  \S\ref{sec:field}, \S\ref{sec:nullflow}, \S\ref{sec:discussion}.
 %=====================================================================
 
 \section{Conditional $\eta$-Weighted Extension, and an Unresolved Weight Ambiguity}
