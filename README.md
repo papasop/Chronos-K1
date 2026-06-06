@@ -1,26 +1,20 @@
 # Chronos
 
-Validated Physics Structure Learning (VPSL)
+**Validated representation stack for a future physics-native baby-talk AI.**
 
-A framework for discovering, validating, and transferring physics structure
-priors.
+Chronos studies how a developing agent can learn to speak from verified
+representations instead of free text generation.
 
-## North Star
+The current VPSL milestone is not a chatbot and not a deployed robot. It is a
+self-contained validation replay showing that physical-structure claims and
+no-LLM grounded-language claims can share one scientific denominator:
+`supports`, `does_not_support`, evidence level, next gate, and claim boundary.
 
-Chronos is the validation stack for a future physics-native baby-talk robot AI.
-
-The long-term goal is not to add physics as a loss after learning, but to let a
-developing agent choose a physical representation language first: Lorentz /
-causal, symplectic / Hamiltonian, topological / defect, gauge, or Hilbert /
-quantum-state.
-
-Current status:
-
-- Today: reproducible VPSL research prototype.
-- S0: pre-robot developmental structure-recognition layer.
-- K1/K2/K3: controlled validation of candidate physical representation
-  languages.
-- Not yet: a deployed robot, an RL agent, or a complete baby-talk system.
+[![tests](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml)
+[![full-denominator](https://github.com/papasop/Chronos-K1/actions/workflows/full_denominator.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/full_denominator.yml)
+[![claims-tests](https://github.com/papasop/Chronos-K1/actions/workflows/claims_tests.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/claims_tests.yml)
+[![k2-syntax](https://github.com/papasop/Chronos-K1/actions/workflows/k2_syntax.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/k2_syntax.yml)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/papasop/Chronos-K1/blob/main/colab/chronos_k1_quickstart.ipynb)
 
 ## Current Canonical Replay
 
@@ -70,11 +64,43 @@ Expected summary:
   ok all full-denominator + self-test + anti-cheat assertions passed
 ```
 
-[![tests](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml)
-[![full-denominator](https://github.com/papasop/Chronos-K1/actions/workflows/full_denominator.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/full_denominator.yml)
-[![claims-tests](https://github.com/papasop/Chronos-K1/actions/workflows/claims_tests.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/claims_tests.yml)
-[![k2-syntax](https://github.com/papasop/Chronos-K1/actions/workflows/k2_syntax.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/k2_syntax.yml)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/papasop/Chronos-K1/blob/main/colab/chronos_k1_quickstart.ipynb)
+## North Star: Baby-Talk AI Without Hallucinated Speech
+
+The long-term goal is a physics-native baby-talk robot AI:
+
+```text
+world evidence -> physical representation -> semantic claim -> grounded utterance -> ClaimRecord
+```
+
+The agent should learn to say only what its verified representations support,
+and say "I do not know" when the evidence does not support a claim.
+
+Current status:
+
+- Today: reproducible VPSL research prototype.
+- Current milestone: `chronos_full_denominator.py`.
+- Language stack: L1 negation, L2 causal boundary, L3 quantifier, L4 reference,
+  L4A ambiguity hardening, L5 temporal ordering.
+- Not yet: deployed robot, RL agent, open-domain conversation, or complete
+  baby-talk system.
+
+## What This Repository Is
+
+Chronos is a VPSL and Claim Denominator validation stack for physical
+representation and language representation claims. It records what each claim
+supports, what it does not support, its evidence boundary, its evidence level,
+its next gate, and its claim boundary.
+
+## What This Repository Is Not
+
+Chronos does not currently claim:
+
+- a deployed robot
+- a general chatbot
+- open-domain language understanding
+- LLM-level fluency
+- autonomous AGI
+- universal physics AI
 
 The Colab badge opens the K1 quickstart. K2 archive scripts live under
 `chronos/k2/experiments/`.
