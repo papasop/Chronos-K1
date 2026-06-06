@@ -22,6 +22,28 @@ Current status:
   languages.
 - Not yet: a deployed robot, an RL agent, or a complete baby-talk system.
 
+## Current Canonical Replay
+
+`chronos_full_denominator.py` is the current self-contained Chronos milestone.
+It inlines the no-LLM grounded language stack and the Claim Denominator Layer,
+then replays K2/K3 physical claims plus L-VPSL language claims under one
+evidence-boundary system.
+
+It includes happy-path tests and anti-cheat tests. It does not claim general
+language understanding, open-domain conversation, LLM-level fluency, real robot
+deployment, or universal physics AI.
+
+| Layer | Status |
+| --- | --- |
+| K2 symplectic claim | certified within tested FPU-beta scope |
+| K3-E2c | archived negative result |
+| K3-E2d | bounded positive evidence |
+| L-VPSL no-LLM language | bounded positive evidence |
+| Claim denominator | full replay passed |
+| Anti-cheat tests | passed |
+| Real robot grounding | not yet |
+| Open-domain language | not supported |
+
 [![tests](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml)
 [![k2-syntax](https://github.com/papasop/Chronos-K1/actions/workflows/k2_syntax.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/k2_syntax.yml)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/papasop/Chronos-K1/blob/main/colab/chronos_k1_quickstart.ipynb)
