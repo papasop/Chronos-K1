@@ -71,3 +71,20 @@ Next Checkpoints:
 - K3.1-B advection-aware prior, sandbox-gated only.
 - 2D vortex topology.
 - Or pause K3 and move to another structure family.
+
+## Y30 / Y20 - Cognitive and Debate Boundary Layer
+
+Status: `BOUNDED_POSITIVE`
+
+Key Results:
+
+- Y30-Core v0.3 provides cognitive substrate and K-family context bridge.
+- Y20-Core v0.2 provides objection / response / required-gate self-audit.
+- Y30/Y20 do not serve as physics evidence.
+- K1/K2/K3 verdicts remain unchanged unless their VPSL gates pass.
+
+Claim Boundary:
+
+- Y30 contextualizes claims; it does not certify metaphysical or physical truth.
+- Y20 audits claims through objection and required-gate grammar; it does not
+  resolve physics claims without the required gates.

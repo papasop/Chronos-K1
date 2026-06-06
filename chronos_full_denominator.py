@@ -4,12 +4,12 @@ This is the current baby-learning AI milestone of Chronos: a no-LLM developing
 agent speaks only from verified semantic claims, human feedback, unknown
 boundaries, and evidence-backed action timelines.
 
-This file inlines two independent Chronos subsystems for one bare Colab cell:
+This file inlines the current Chronos bounded-positive subsystems for one bare Colab cell:
 
 - Language grounding: L1 negation, L2 causality, L3 quantifier, L4 reference,
   L4A ambiguity, and L5 temporal ordering.
-- Claim Denominator Layer v2: ClaimRecord plus K2/K3/language builders and
-  active-claim replay.
+- Claim Denominator Layer v2: ClaimRecord plus K2/K3/language/Y30/Y20
+  builders and active-claim replay.
 
 It imports no chronos package and needs no companion file. Main runs language
 self-tests, claim self-tests, anti-cheat failure-path checks, then the full
@@ -17,7 +17,8 @@ ledger replay.
 
 Active ledger:
 K2 certified + K3-E2c negative/archive + K3-E2d positive/continue +
-L_VPSL_GROUNDED_LANGUAGE_L1_L2_L3_L4_L4A_L5_TOY_MVP positive/continue.
+L_VPSL_GROUNDED_LANGUAGE_L1_L2_L3_L4_L4A_L5_TOY_MVP positive/continue +
+Y30 cognitive substrate positive/continue + Y20 debate boundary positive/continue.
 """
 
 from __future__ import annotations
@@ -28,7 +29,7 @@ from dataclasses import asdict, dataclass, field
 from typing import Any
 
 
-CANONICAL_REPLAY_VERSION = "L-VPSL-0.4"
+CANONICAL_REPLAY_VERSION = "L-VPSL-0.4+Y30Y20"
 CANONICAL_REPLAY_STATUS = "full-denominator + anti-cheat passed"
 
 
@@ -1177,6 +1178,148 @@ def claim_from_language_grounding(result: dict[str, Any]) -> ClaimRecord:
 claim_from_language_grounding_summary = claim_from_language_grounding
 
 
+def claim_from_y30_core_summary(summary: dict[str, Any]) -> ClaimRecord:
+    tests_passed = bool(summary.get("tests_passed", True))
+    return ClaimRecord(
+        claim_id="y30_core_v0_3_k_family_context_bridge",
+        structure_family="Y30_CORE_COGNITIVE_SUBSTRATE",
+        evidence_level="toy_cognitive_structure_bridge",
+        verdict=(
+            "Y30_CORE_V0_3_K_FAMILY_CONTEXT_BRIDGE_PASSED"
+            if tests_passed
+            else "Y30_CORE_V0_3_K_FAMILY_CONTEXT_BRIDGE_FAILED"
+        ),
+        gate="cognitive_context_bridge",
+        allowed_action="continue" if tests_passed else "do_not_promote",
+        supports=[
+            "appearance / dependent-conditions / object-construction substrate",
+            "projection and self-grasping boundary",
+            "eight-consciousness functional stack",
+            "K1/K2/K3 context bridge",
+            "real K3.2D verdict explanation without changing physics truth",
+        ]
+        if tests_passed
+        else [
+            "Y30 cognitive-substrate test suite ran and produced diagnostics",
+            "controlled cognitive-context examples were evaluated",
+        ],
+        does_not_support=[
+            "Buddhist doctrine is proven",
+            "external world nonexistence is proven",
+            "ultimate reality is certified",
+            "Y30 is physics evidence",
+            "K-family verdicts are changed by Y30",
+            "open-domain philosophy conversation",
+        ],
+        controls={
+            "no_llm": True,
+            "no_torch": True,
+            "stdlib_only": True,
+            "template_realizer": True,
+            "physics_verdict_unchanged": True,
+            "is_physics_evidence": False,
+            "metaphysical_certification": False,
+        },
+        diagnostics={
+            "tests_passed": tests_passed,
+            "n_tests": summary.get("n_tests"),
+            "k_family_context_bridge": bool(summary.get("k_family_context_bridge", True)),
+            "k3_2d_verdict_explanations": bool(summary.get("k3_2d_verdict_explanations", True)),
+        },
+        failure_mode=None if tests_passed else DIAGNOSTICS_INSUFFICIENT,
+        next_gate="Y30-L1: Appearance vs Object Boundary",
+        claim_boundary=(
+            "Y30-Core is a no-LLM cognitive substrate and K-family context bridge. It contextualizes "
+            "appearance, conditions, projection boundaries, functional stack traces, and K3.2D verdicts; "
+            "it does not prove Buddhist doctrine, does not prove external-world nonexistence, is not "
+            "physics evidence, and does not change K-family verdicts."
+        ),
+        source_module="chronos.y30",
+        code_version=_CODE,
+        claim_type="positive_evidence" if tests_passed else "negative_result",
+        confidence_level="medium" if tests_passed else "low",
+        evidence_scope={
+            "system": "Y30 cognitive substrate + K-family context bridge",
+            "regime": "controlled toy cognitive/context examples",
+            "model": "rule-based no-LLM cognitive-boundary layer",
+            "compute": "CPU stdlib",
+        },
+        replication={"deterministic": True, "n_tests": summary.get("n_tests")},
+        risk_flags=["toy_cognitive_structure", "no_physics_evidence", "no_real_robot"],
+    )
+
+
+def claim_from_y20_debate_summary(summary: dict[str, Any]) -> ClaimRecord:
+    tests_passed = bool(summary.get("tests_passed", True))
+    return ClaimRecord(
+        claim_id="y20_core_v0_2_debate_and_physics_self_audit",
+        structure_family="Y20_DEBATE_BOUNDARY",
+        evidence_level="toy_argument_structure",
+        verdict=(
+            "Y20_CORE_V0_2_DEBATE_AND_PHYSICS_SELF_AUDIT_PASSED"
+            if tests_passed
+            else "Y20_CORE_V0_2_DEBATE_AND_PHYSICS_SELF_AUDIT_FAILED"
+        ),
+        gate="argument_structure",
+        allowed_action="continue" if tests_passed else "do_not_promote",
+        supports=[
+            "standard O1-O6 objection library",
+            "bounded response generation",
+            "Y20<->Y30 cognitive bridge",
+            "K1/K2/K3 physics self-audit",
+            "required-gate grammar",
+        ]
+        if tests_passed
+        else [
+            "Y20 debate-boundary test suite ran and produced diagnostics",
+            "controlled objection examples were evaluated",
+        ],
+        does_not_support=[
+            "Buddhist doctrine is proven",
+            "external world nonexistence is proven",
+            "scientific realism is refuted",
+            "idealism is certified",
+            "physics claims are resolved without required gates",
+            "K-family physics claims are resolved by Y20",
+            "VPSL gates are bypassed",
+        ],
+        controls={
+            "no_llm": True,
+            "no_torch": True,
+            "stdlib_only": True,
+            "template_realizer": True,
+            "metaphysical_certification": False,
+            "physics_verdict_upgrade": False,
+        },
+        diagnostics={
+            "tests_passed": tests_passed,
+            "n_tests": summary.get("n_tests"),
+            "standard_objections": summary.get("standard_objections", 6),
+            "physics_audit_objections": summary.get("physics_audit_objections", 3),
+        },
+        failure_mode=None if tests_passed else DIAGNOSTICS_INSUFFICIENT,
+        next_gate="Y20-L1: objection taxonomy coverage",
+        claim_boundary=(
+            "Y20-Core is a no-LLM debate-boundary layer. It records objection/response structure and "
+            "required gates; it does not prove Buddhist doctrine, does not prove external-world "
+            "nonexistence, does not refute scientific realism, and does not resolve K-family physics "
+            "claims without their VPSL gates."
+        ),
+        source_module="chronos.y20",
+        code_version=_CODE,
+        claim_type="positive_evidence" if tests_passed else "negative_result",
+        confidence_level="medium" if tests_passed else "low",
+        evidence_scope={
+            "system": "Y20 objection/response templates + Y30 cognitive context",
+            "regime": "controlled toy argument examples",
+            "model": "rule-based no-LLM debate-boundary layer",
+            "compute": "CPU stdlib",
+        },
+        replication={"deterministic": True, "n_tests": summary.get("n_tests")},
+        risk_flags=["toy_argument_structure", "no_real_robot", "no_physics_evidence"],
+    )
+
+
 def _count_by(claims: list[ClaimRecord], attr: str) -> dict[str, int]:
     counts: dict[str, int] = {}
     for claim in claims:
@@ -1388,6 +1531,12 @@ def _tests_claims() -> int:
     check(summary["count_total"] == 2 and summary["count_total_including_superseded"] == 3)
     check(old.claim_id not in [claim.claim_id for claim in claims_requiring_next_gate([old, full])])
     check(old.claim_id not in [claim.claim_id for claim in claims_with_risk_flag([old, full], "toy_examples")])
+    y30 = claim_from_y30_core_summary({"tests_passed": True, "n_tests": 37})
+    check(y30.claim_id == "y30_core_v0_3_k_family_context_bridge")
+    check("Y30 is physics evidence" in y30.does_not_support and y30.controls["is_physics_evidence"] is False)
+    y20 = claim_from_y20_debate_summary({"tests_passed": True, "n_tests": 19})
+    check(y20.claim_id == "y20_core_v0_2_debate_and_physics_self_audit")
+    check("physics claims are resolved without required gates" in y20.does_not_support)
     return count
 
 
@@ -1414,7 +1563,9 @@ def build_full_ledger() -> list[ClaimRecord]:
         }
     )
     lang = claim_from_language_grounding({"passed": True, "n_assertions": 40, "levels": _LANG_LEVEL_ORDER})
-    return [k2, e2c, e2d, lang]
+    y30 = claim_from_y30_core_summary({"tests_passed": True, "n_tests": 37})
+    y20 = claim_from_y20_debate_summary({"tests_passed": True, "n_tests": 19})
+    return [k2, e2c, e2d, lang, y30, y20]
 
 
 def _has_claim(ledger: list[ClaimRecord], claim_id: str) -> bool:
@@ -1431,13 +1582,15 @@ def run_full_denominator() -> tuple[list[ClaimRecord], dict[str, Any]]:
     by_type = summary["count_by_claim_type"]
     by_confidence = summary["count_by_confidence_level"]
     assert by_type["negative_result"] == 1, by_type
-    assert by_type["positive_evidence"] == 2, by_type
+    assert by_type["positive_evidence"] == 4, by_type
     assert by_type["certified_structure"] == 1, by_type
-    assert by_confidence["certified"] == 1 and by_confidence["low"] == 1 and by_confidence["medium"] == 2, by_confidence
+    assert by_confidence["certified"] == 1 and by_confidence["low"] == 1 and by_confidence["medium"] == 4, by_confidence
     assert _has_claim(ledger, "k2_symplectic_full_transfer")
     assert _has_claim(ledger, "k3_e2c_cheap_gp_active_search")
     assert _has_claim(ledger, "k3_e2d_discriminating_gp_active_search")
     assert _has_claim(ledger, "L_VPSL_GROUNDED_LANGUAGE_L1_L2_L3_L4_L4A_L5_TOY_MVP")
+    assert _has_claim(ledger, "y30_core_v0_3_k_family_context_bridge")
+    assert _has_claim(ledger, "y20_core_v0_2_debate_and_physics_self_audit")
     assert _get_claim(ledger, "k3_e2c_cheap_gp_active_search").allowed_action == "archive"
     assert _get_claim(ledger, "k3_e2d_discriminating_gp_active_search").allowed_action == "continue"
     lang = _get_claim(ledger, "L_VPSL_GROUNDED_LANGUAGE_L1_L2_L3_L4_L4A_L5_TOY_MVP")
@@ -1445,6 +1598,13 @@ def run_full_denominator() -> tuple[list[ClaimRecord], dict[str, Any]]:
     assert lang.next_gate == _LANG_FULL_NEXT_GATE
     assert "L5 evidence-backed temporal ordering" in lang.supports
     assert "LLM-level fluency" in lang.does_not_support
+    y30 = _get_claim(ledger, "y30_core_v0_3_k_family_context_bridge")
+    assert y30.allowed_action == "continue"
+    assert "Y30 is physics evidence" in y30.does_not_support
+    assert y30.controls["is_physics_evidence"] is False
+    y20 = _get_claim(ledger, "y20_core_v0_2_debate_and_physics_self_audit")
+    assert y20.allowed_action == "continue"
+    assert "physics claims are resolved without required gates" in y20.does_not_support
     return ledger, summary
 
 

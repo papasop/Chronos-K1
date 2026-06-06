@@ -22,8 +22,8 @@ no-LLM grounded-language claims can share one scientific denominator:
 
 `chronos_full_denominator.py` is the current self-contained Chronos milestone.
 It inlines the no-LLM grounded language stack and the Claim Denominator Layer,
-then replays K2/K3 physical claims plus L-VPSL language claims under one
-evidence-boundary system.
+then replays K2/K3 physical claims, L-VPSL language claims, Y30 cognitive
+claims, and Y20 debate-boundary claims under one evidence-boundary system.
 
 It includes happy-path tests and anti-cheat tests. It does not claim general
 language understanding, open-domain conversation, LLM-level fluency, real robot
@@ -39,6 +39,8 @@ active API.
 | K3-E2c | archived negative result |
 | K3-E2d | bounded positive evidence |
 | L-VPSL no-LLM language | bounded positive evidence |
+| Y30 cognitive substrate | bounded positive; K-family context bridge passed |
+| Y20 debate boundary | bounded positive; physics self-audit passed |
 | Claim denominator | full replay passed |
 | Anti-cheat tests | passed |
 | Real robot grounding | not yet |
@@ -56,12 +58,12 @@ Expected summary:
 
 ```text
 === Self-tests (not just the happy ledger) ===
-  language:10  claims:11  anti-cheat:6
+  language:10  claims:15  anti-cheat:6
 
 === FULL Chronos Denominator Replay (self-contained) ===
-  by_claim_type      : {'certified_structure': 1, 'negative_result': 1, 'positive_evidence': 2}
-  by_confidence_level: {'certified': 1, 'low': 1, 'medium': 2}
-  count_total        : 4
+  by_claim_type      : {'certified_structure': 1, 'negative_result': 1, 'positive_evidence': 4}
+  by_confidence_level: {'certified': 1, 'low': 1, 'medium': 4}
+  count_total        : 6
 
   ok all full-denominator + self-test + anti-cheat assertions passed
 ```

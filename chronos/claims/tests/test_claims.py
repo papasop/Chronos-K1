@@ -11,6 +11,7 @@ from chronos.claims import (
     claim_from_k3_e2c,
     claim_from_k3_e2d,
     claim_from_language_grounding_summary,
+    claim_from_y30_core_summary,
     claim_from_y20_debate_summary,
     claims_requiring_next_gate,
     claims_with_risk_flag,
@@ -291,6 +292,29 @@ class BuilderTests(unittest.TestCase):
         self.assertEqual(claim.failure_mode, DIAGNOSTICS_INSUFFICIENT)
         self.assertNotIn("standard O1-O6 objection library", claim.supports)
 
+    def test_y30_core_builder_records_context_boundaries(self):
+        claim = claim_from_y30_core_summary({"tests_passed": True, "n_tests": 37})
+        self.assertEqual(claim.claim_id, "y30_core_v0_3_k_family_context_bridge")
+        self.assertEqual(claim.structure_family, "Y30_CORE_COGNITIVE_SUBSTRATE")
+        self.assertEqual(claim.evidence_level, "toy_cognitive_structure_bridge")
+        self.assertEqual(claim.verdict, "Y30_CORE_V0_3_K_FAMILY_CONTEXT_BRIDGE_PASSED")
+        self.assertEqual(claim.allowed_action, ACT_CONTINUE)
+        self.assertEqual(claim.claim_type, "positive_evidence")
+        self.assertEqual(claim.confidence_level, "medium")
+        self.assertIn("K1/K2/K3 context bridge", claim.supports)
+        self.assertIn("Y30 is physics evidence", claim.does_not_support)
+        self.assertIn("K-family verdicts are changed by Y30", claim.does_not_support)
+        self.assertFalse(claim.controls["is_physics_evidence"])
+        self.assertTrue(claim.controls["physics_verdict_unchanged"])
+        self.assertIn("no_physics_evidence", claim.risk_flags)
+
+    def test_y30_core_builder_failed_run_does_not_promote(self):
+        claim = claim_from_y30_core_summary({"tests_passed": False, "n_tests": 10})
+        self.assertEqual(claim.allowed_action, ACT_DO_NOT_PROMOTE)
+        self.assertEqual(claim.claim_type, "negative_result")
+        self.assertEqual(claim.failure_mode, DIAGNOSTICS_INSUFFICIENT)
+        self.assertNotIn("K1/K2/K3 context bridge", claim.supports)
+
 
 class ReplayTests(unittest.TestCase):
     def test_summarize_and_next_gate(self):
@@ -321,11 +345,13 @@ class ReplayTests(unittest.TestCase):
         language_claim = claim_from_language_grounding_summary(
             {"passed": True, "n_assertions": 40, "levels": ["L1", "L2", "L3", "L4", "L4A", "L5"]}
         )
+        y30_claim = claim_from_y30_core_summary({"tests_passed": True, "n_tests": 37})
+        y20_claim = claim_from_y20_debate_summary({"tests_passed": True, "n_tests": 19})
         physical_summary = summarize_claims(physical_claims)
-        mixed_summary = summarize_claims(physical_claims + [language_claim])
+        mixed_summary = summarize_claims(physical_claims + [language_claim, y30_claim, y20_claim])
         self.assertEqual(physical_summary["count_total"], 3)
-        self.assertEqual(mixed_summary["count_total"], 4)
-        self.assertEqual(mixed_summary["count_by_claim_type"]["positive_evidence"], 2)
+        self.assertEqual(mixed_summary["count_total"], 6)
+        self.assertEqual(mixed_summary["count_by_claim_type"]["positive_evidence"], 4)
         self.assertEqual(language_claim.allowed_action, ACT_CONTINUE)
         self.assertIn("does NOT establish", human_readable_summary(language_claim))
 

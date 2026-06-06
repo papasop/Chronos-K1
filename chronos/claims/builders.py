@@ -458,6 +458,83 @@ def claim_from_language_grounding_summary(result: dict) -> ClaimRecord:
     )
 
 
+def claim_from_y30_core_summary(summary: dict) -> ClaimRecord:
+    """Build the bounded Y30 cognitive-substrate / K-family context-bridge claim.
+
+    Y30 contextualizes claims; it is not physics evidence and must never change
+    K-family verdicts, allowed actions, evidence levels, or diagnostics.
+    """
+
+    tests_passed = bool(summary.get("tests_passed", True))
+    return ClaimRecord(
+        claim_id="y30_core_v0_3_k_family_context_bridge",
+        structure_family="Y30_CORE_COGNITIVE_SUBSTRATE",
+        evidence_level="toy_cognitive_structure_bridge",
+        verdict=(
+            "Y30_CORE_V0_3_K_FAMILY_CONTEXT_BRIDGE_PASSED"
+            if tests_passed
+            else "Y30_CORE_V0_3_K_FAMILY_CONTEXT_BRIDGE_FAILED"
+        ),
+        gate="cognitive_context_bridge",
+        allowed_action="continue" if tests_passed else "do_not_promote",
+        supports=[
+            "appearance / dependent-conditions / object-construction substrate",
+            "projection and self-grasping boundary",
+            "eight-consciousness functional stack",
+            "K1/K2/K3 context bridge",
+            "real K3.2D verdict explanation without changing physics truth",
+        ]
+        if tests_passed
+        else [
+            "Y30 cognitive-substrate test suite ran and produced diagnostics",
+            "controlled cognitive-context examples were evaluated",
+        ],
+        does_not_support=[
+            "Buddhist doctrine is proven",
+            "external world nonexistence is proven",
+            "ultimate reality is certified",
+            "Y30 is physics evidence",
+            "K-family verdicts are changed by Y30",
+            "open-domain philosophy conversation",
+        ],
+        controls={
+            "no_llm": True,
+            "no_torch": True,
+            "stdlib_only": True,
+            "template_realizer": True,
+            "physics_verdict_unchanged": True,
+            "is_physics_evidence": False,
+            "metaphysical_certification": False,
+        },
+        diagnostics={
+            "tests_passed": tests_passed,
+            "n_tests": summary.get("n_tests"),
+            "k_family_context_bridge": bool(summary.get("k_family_context_bridge", True)),
+            "k3_2d_verdict_explanations": bool(summary.get("k3_2d_verdict_explanations", True)),
+        },
+        failure_mode=None if tests_passed else F.DIAGNOSTICS_INSUFFICIENT,
+        next_gate="Y30-L1: Appearance vs Object Boundary",
+        claim_boundary=(
+            "Y30-Core is a no-LLM cognitive substrate and K-family context bridge. It contextualizes "
+            "appearance, conditions, projection boundaries, functional stack traces, and K3.2D verdicts; "
+            "it does not prove Buddhist doctrine, does not prove external-world nonexistence, is not "
+            "physics evidence, and does not change K-family verdicts."
+        ),
+        source_module="chronos.y30",
+        code_version=_CODE,
+        claim_type="positive_evidence" if tests_passed else "negative_result",
+        confidence_level="medium" if tests_passed else "low",
+        evidence_scope={
+            "system": "Y30 cognitive substrate + K-family context bridge",
+            "regime": "controlled toy cognitive/context examples",
+            "model": "rule-based no-LLM cognitive-boundary layer",
+            "compute": "CPU stdlib",
+        },
+        replication={"deterministic": True, "n_tests": summary.get("n_tests")},
+        risk_flags=["toy_cognitive_structure", "no_physics_evidence", "no_real_robot"],
+    )
+
+
 def claim_from_y20_debate_summary(summary: dict) -> ClaimRecord:
     """Build the bounded Y20 debate-boundary claim.
 
@@ -542,6 +619,7 @@ __all__ = [
     "claim_from_k3_e2c",
     "claim_from_k3_e2d",
     "claim_from_language_grounding_summary",
+    "claim_from_y30_core_summary",
     "claim_from_y20_debate_summary",
     "next_missing_level",
 ]
