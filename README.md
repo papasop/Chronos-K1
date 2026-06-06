@@ -174,6 +174,35 @@ task    = what physical world the grammar is tested on
 VPSL    = whether the evidence is strong enough to promote the grammar
 ```
 
+## Physics as Grammar, Not Loss
+
+Traditional physics-informed ML often treats physics as a loss term:
+
+```text
+loss = prediction_loss + lambda * physics_penalty
+```
+
+In that setting, the model may violate the physical structure; it is only
+penalized for doing so.
+
+Chronos/VPSL treats selected physical structure as representation grammar. A
+structure that becomes grammar is not merely encouraged after the fact; it
+constrains the allowed representation or transformation space.
+
+| Family | Grammar | Meaning |
+| --- | --- | --- |
+| K2 symplectic | `(Df)^T Omega (Df) = Omega` | learned state updates must preserve canonical symplectic structure |
+| K3 topology | `(sin φ, cos φ)` / `S¹` representation | angular fields are represented on the circle, so winding and defect identity are not reduced to scalar field error |
+| L-VPSL language | `SemanticClaim -> GroundedUtterance -> ClaimRecord` | utterances must come from verified semantic claims and carry `does_not_support` boundaries |
+
+In short:
+
+```text
+loss    = soft pressure
+grammar = allowed representation space
+VPSL    = evidence gate deciding whether the grammar deserves to be used
+```
+
 ### K2: Symplectic Grammar
 
 K2 asks whether a learned state update preserves Hamiltonian phase-space
@@ -224,6 +253,12 @@ values.
 
 A low field-prediction error is not enough if a defect, vortex, kink,
 anti-kink, winding number, or soliton identity disappears during rollout.
+
+For angular/topological fields, Chronos treats `(sin φ, cos φ)` as the
+representation track for `S¹`-valued structure. This is not only an output
+formatting choice. It is the topological grammar that prevents angle
+wrap-around, winding, and kink identity from being reduced to ordinary scalar
+regression.
 
 ```text
 K3_TOPOLOGICAL_OBJECT
