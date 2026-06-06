@@ -1,5 +1,9 @@
 """chronos_full_denominator.py - self-contained Chronos denominator replay.
 
+This is the current baby-learning AI milestone of Chronos: a no-LLM developing
+agent speaks only from verified semantic claims, human feedback, unknown
+boundaries, and evidence-backed action timelines.
+
 This file inlines two independent Chronos subsystems for one bare Colab cell:
 
 - Language grounding: L1 negation, L2 causality, L3 quantifier, L4 reference,
