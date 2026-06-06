@@ -78,9 +78,37 @@ flowchart TD
 ```
 
 **Architecture rule:**  
-Y30 contextualizes. Y20 audits by objection and required gate. K-family
-validates physics. VPSL authorizes promotion. ClaimRecord audits. Language
-renders.
+Y30 contextualizes. K-family validates. Y20 challenges. VPSL authorizes.
+ClaimRecord audits. Language renders.
+
+## Dual-Axis Architecture
+
+Chronos is not a single linear stack. It is a two-axis validation structure.
+
+Cognitive generation axis:
+
+```text
+appearance
+-> dependent conditions
+-> object construction
+-> projection / self-grasping boundary
+-> unknown boundary
+```
+
+Physical validation axis:
+
+```text
+K1 causal / Lorentz
+K2 symplectic / Hamiltonian
+K3 topology / object transport
+K4 gauge candidate
+K5 Hilbert / quantum candidate
+```
+
+The axes meet at `ClaimRecord / Claim Denominator`. Y30 supplies cognitive
+context. K-family supplies physical validation. Y20 supplies objection /
+required-gate audit. VPSL supplies authorization. ClaimRecord supplies audit
+memory. Language supplies rendering.
 
 Plain-text path:
 
