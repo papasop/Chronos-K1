@@ -23,6 +23,19 @@ Expected:
 - Y30-Core self-tests pass
 - Y20-Core self-tests pass
 
+## Full Local Review
+
+Run the package tests as well as the portable Colab replays:
+
+```bash
+python chronos_full_denominator.py
+python chronos/y30/tests/test_y30_core.py
+python chronos/y20/tests/test_y20_core.py
+python chronos/y20/tests/test_y20_physics_audit.py
+python colab/chronos_y30_core_single.py
+python colab/chronos_y20_core_single.py
+```
+
 ## What To Look For
 
 Y30:

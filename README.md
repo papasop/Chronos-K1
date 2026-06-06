@@ -82,6 +82,18 @@ Y30 contextualizes. Y20 audits by objection and required gate. K-family
 validates physics. VPSL authorizes promotion. ClaimRecord audits. Language
 renders.
 
+Plain-text path:
+
+```text
+World evidence
+-> Y30 context
+-> K-family physics validation
+-> Y20 required-gate audit
+-> VPSL authorization
+-> ClaimRecord
+-> Grounded language
+```
+
 ## Boundary / Non-claims
 
 Chronos-K1 is a bounded research prototype. Its layers have strict roles:
