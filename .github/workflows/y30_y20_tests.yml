@@ -17,4 +17,5 @@ jobs:
           python chronos/y30/tests/test_y30_core.py
           python chronos/y20/tests/test_y20_core.py
           python chronos/y20/tests/test_y20_physics_audit.py
+          python colab/chronos_y30_core_single.py
           python colab/chronos_y20_core_single.py

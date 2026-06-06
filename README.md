@@ -88,6 +88,19 @@ empirical evidence, and boundary notes, while recording `supports`,
 
 ## Y30/Y20 Cognitive and Debate Boundary Layers
 
+Y30-Core is a no-LLM cognitive substrate for Chronos.
+
+It models:
+
+- appearance
+- dependent conditions
+- object construction
+- projection / overclaim
+- self-grasping boundary
+- seed-trace analogy
+- three-nature analysis
+- eight-consciousness functional stack
+
 Y30-Core supplies a cognitive substrate: appearance, dependent conditions,
 object construction, projection boundary, seed trace, and typed unknown
 boundary.

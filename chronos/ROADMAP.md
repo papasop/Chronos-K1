@@ -187,14 +187,15 @@ Role:
 Status:
 
 ```text
-Y30_CORE_MINIMAL_PACKAGE
+Y30_CORE_V0_3_K_FAMILY_CONTEXT_BRIDGE_PASSED
 Y20_CORE_V0_2_DEBATE_AND_PHYSICS_SELF_AUDIT_PASSED
 ```
 
 Role:
 
 - Y30 contextualizes appearances, dependent conditions, projections, traces,
-  and unknown boundaries.
+  unknown boundaries, and eight-consciousness functional stacks.
+- Y30 explains K3.2D verdicts without changing physics truth.
 - Y20 audits claims through objection/response/required-gate grammar.
 - Neither layer certifies metaphysical or physical truth.
 - K-family physics verdicts remain unchanged unless their VPSL gates pass.
