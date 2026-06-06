@@ -18,6 +18,24 @@ no-LLM grounded-language claims can share one scientific denominator:
 [![k2-syntax](https://github.com/papasop/Chronos-K1/actions/workflows/k2_syntax.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/k2_syntax.yml)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/papasop/Chronos-K1/blob/main/colab/chronos_k1_quickstart.ipynb)
 
+## Choose Your Path
+
+- **I want to reproduce the main claim ledger**  
+  Run `python chronos_full_denominator.py`.
+
+- **I want to test the no-LLM cognitive/debate boundary layers**  
+  Run `python colab/chronos_y30_core_single.py` and
+  `python colab/chronos_y20_core_single.py`.
+
+- **I want to inspect the first certified physical structure**  
+  Read `chronos/k2/archive.md`.
+
+- **I want to inspect the active topology program**  
+  Read `chronos/k3/README.md` and `chronos/k3/K3_EXTERNAL_STATUS.md`.
+
+- **I want to review the claim boundaries**  
+  Read `EXTERNAL_REVIEW.md` and `docs/CLAIM_BOUNDARY_MAP.md`.
+
 ## Current Canonical Replay
 
 `chronos_full_denominator.py` is the current self-contained Chronos milestone.
@@ -66,6 +84,32 @@ Expected summary:
   count_total        : 6
 
   ok all full-denominator + self-test + anti-cheat assertions passed
+```
+
+### External test commands
+
+Lightweight:
+
+```bash
+python chronos_full_denominator.py
+```
+
+Y30/Y20 only:
+
+```bash
+python colab/chronos_y30_core_single.py
+python colab/chronos_y20_core_single.py
+```
+
+Full local review:
+
+```bash
+python chronos_full_denominator.py
+python chronos/y30/tests/test_y30_core.py
+python chronos/y20/tests/test_y20_core.py
+python chronos/y20/tests/test_y20_physics_audit.py
+python colab/chronos_y30_core_single.py
+python colab/chronos_y20_core_single.py
 ```
 
 ## Paper Claim Audit
