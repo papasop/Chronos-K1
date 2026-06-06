@@ -48,6 +48,28 @@ active API.
 | Real robot grounding | not yet |
 | Open-domain language | not supported |
 
+Reproduce the canonical replay:
+
+```bash
+git clone https://github.com/papasop/Chronos-K1.git
+cd Chronos-K1
+python chronos_full_denominator.py
+```
+
+Expected summary:
+
+```text
+=== Self-tests (not just the happy ledger) ===
+  language:10  claims:11  anti-cheat:6
+
+=== FULL Chronos Denominator Replay (self-contained) ===
+  by_claim_type      : {'certified_structure': 1, 'negative_result': 1, 'positive_evidence': 2}
+  by_confidence_level: {'certified': 1, 'low': 1, 'medium': 2}
+  count_total        : 4
+
+  ok all full-denominator + self-test + anti-cheat assertions passed
+```
+
 [![tests](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml)
 [![full-denominator](https://github.com/papasop/Chronos-K1/actions/workflows/full_denominator.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/full_denominator.yml)
 [![k2-syntax](https://github.com/papasop/Chronos-K1/actions/workflows/k2_syntax.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/k2_syntax.yml)
