@@ -24,6 +24,10 @@ from dataclasses import asdict, dataclass, field
 from typing import Any
 
 
+CANONICAL_REPLAY_VERSION = "L-VPSL-0.4"
+CANONICAL_REPLAY_STATUS = "full-denominator + anti-cheat passed"
+
+
 # ======================================================================================
 # Subsystem 1: language grounding
 # ======================================================================================

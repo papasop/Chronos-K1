@@ -48,7 +48,7 @@ active API.
 | Real robot grounding | not yet |
 | Open-domain language | not supported |
 
-Reproduce the canonical replay:
+### Reproduce the canonical replay
 
 ```bash
 git clone https://github.com/papasop/Chronos-K1.git
