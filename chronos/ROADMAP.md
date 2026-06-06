@@ -182,6 +182,23 @@ Role:
 - mirrors S0's never-certify action boundary
 - does not learn, rank, self-evolve, or feed back into S0
 
+## Y30 / Y20 - Cognitive and Debate Boundary Layer
+
+Status:
+
+```text
+Y30_CORE_MINIMAL_PACKAGE
+Y20_CORE_V0_2_DEBATE_AND_PHYSICS_SELF_AUDIT_PASSED
+```
+
+Role:
+
+- Y30 contextualizes appearances, dependent conditions, projections, traces,
+  and unknown boundaries.
+- Y20 audits claims through objection/response/required-gate grammar.
+- Neither layer certifies metaphysical or physical truth.
+- K-family physics verdicts remain unchanged unless their VPSL gates pass.
+
 ## K3 - Structure Discovery Program
 
 Status:

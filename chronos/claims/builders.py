@@ -458,6 +458,83 @@ def claim_from_language_grounding_summary(result: dict) -> ClaimRecord:
     )
 
 
+def claim_from_y20_debate_summary(summary: dict) -> ClaimRecord:
+    """Build the bounded Y20 debate-boundary claim.
+
+    Y20 is a no-LLM objection/response layer. It can audit claims by asking for
+    required gates, but it cannot resolve K-family physics verdicts or certify
+    metaphysical/religious claims.
+    """
+
+    tests_passed = bool(summary.get("tests_passed", True))
+    return ClaimRecord(
+        claim_id="y20_core_v0_2_debate_and_physics_self_audit",
+        structure_family="Y20_DEBATE_BOUNDARY",
+        evidence_level="toy_argument_structure",
+        verdict=(
+            "Y20_CORE_V0_2_DEBATE_AND_PHYSICS_SELF_AUDIT_PASSED"
+            if tests_passed
+            else "Y20_CORE_V0_2_DEBATE_AND_PHYSICS_SELF_AUDIT_FAILED"
+        ),
+        gate="argument_structure",
+        allowed_action="continue" if tests_passed else "do_not_promote",
+        supports=[
+            "standard O1-O6 objection library",
+            "bounded response generation",
+            "Y20<->Y30 cognitive bridge",
+            "K1/K2/K3 physics self-audit",
+            "required-gate grammar",
+        ]
+        if tests_passed
+        else [
+            "Y20 debate-boundary test suite ran and produced diagnostics",
+            "controlled objection examples were evaluated",
+        ],
+        does_not_support=[
+            "Buddhist doctrine is proven",
+            "external world nonexistence is proven",
+            "scientific realism is refuted",
+            "idealism is certified",
+            "K-family physics claims are resolved by Y20",
+            "VPSL gates are bypassed",
+        ],
+        controls={
+            "no_llm": True,
+            "no_torch": True,
+            "stdlib_only": True,
+            "template_realizer": True,
+            "metaphysical_certification": False,
+            "physics_verdict_upgrade": False,
+        },
+        diagnostics={
+            "tests_passed": tests_passed,
+            "n_tests": summary.get("n_tests"),
+            "standard_objections": summary.get("standard_objections", 6),
+            "physics_audit_objections": summary.get("physics_audit_objections", 3),
+        },
+        failure_mode=None if tests_passed else F.DIAGNOSTICS_INSUFFICIENT,
+        next_gate="Y20-L1: objection taxonomy coverage",
+        claim_boundary=(
+            "Y20-Core is a no-LLM debate-boundary layer. It records objection/response structure and "
+            "required gates; it does not prove Buddhist doctrine, does not prove external-world "
+            "nonexistence, does not refute scientific realism, and does not resolve K-family physics "
+            "claims without their VPSL gates."
+        ),
+        source_module="chronos.y20",
+        code_version=_CODE,
+        claim_type="positive_evidence" if tests_passed else "negative_result",
+        confidence_level="medium" if tests_passed else "low",
+        evidence_scope={
+            "system": "Y20 objection/response templates + Y30 cognitive context",
+            "regime": "controlled toy argument examples",
+            "model": "rule-based no-LLM debate-boundary layer",
+            "compute": "CPU stdlib",
+        },
+        replication={"deterministic": True, "n_tests": summary.get("n_tests")},
+        risk_flags=["toy_argument_structure", "no_real_robot", "no_physics_evidence"],
+    )
+
+
 __all__ = [
     "claim_from_k2_summary",
     "claim_from_k3_2d_0_summary",
@@ -465,5 +542,6 @@ __all__ = [
     "claim_from_k3_e2c",
     "claim_from_k3_e2d",
     "claim_from_language_grounding_summary",
+    "claim_from_y20_debate_summary",
     "next_missing_level",
 ]

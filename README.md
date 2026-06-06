@@ -14,6 +14,7 @@ no-LLM grounded-language claims can share one scientific denominator:
 [![full-denominator](https://github.com/papasop/Chronos-K1/actions/workflows/full_denominator.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/full_denominator.yml)
 [![claims-tests](https://github.com/papasop/Chronos-K1/actions/workflows/claims_tests.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/claims_tests.yml)
 [![paper-claims](https://github.com/papasop/Chronos-K1/actions/workflows/paper_claims.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/paper_claims.yml)
+[![y30-y20-tests](https://github.com/papasop/Chronos-K1/actions/workflows/y30_y20_tests.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/y30_y20_tests.yml)
 [![k2-syntax](https://github.com/papasop/Chronos-K1/actions/workflows/k2_syntax.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/k2_syntax.yml)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/papasop/Chronos-K1/blob/main/colab/chronos_k1_quickstart.ipynb)
 
@@ -84,6 +85,19 @@ The audit is rule-based and no-LLM. It does not verify proofs or replace peer
 review. It separates theoretical claims, definitions, conditional claims,
 empirical evidence, and boundary notes, while recording `supports`,
 `does_not_support`, `evidence_level`, `next_gate`, and `claim_boundary`.
+
+## Y30/Y20 Cognitive and Debate Boundary Layers
+
+Y30-Core supplies a cognitive substrate: appearance, dependent conditions,
+object construction, projection boundary, seed trace, and typed unknown
+boundary.
+
+Y20-Core supplies an objection/response boundary layer: objection, bounded
+response, required gate, and unresolved claim boundary.
+
+Neither Y30 nor Y20 is physics evidence. K-family programs validate physics;
+VPSL authorizes promotion. Y20 can ask the system which gate is required, but
+it cannot resolve a K-family claim or bypass the Claim Denominator.
 
 ## North Star: Baby-Talk AI Without Hallucinated Speech
 

@@ -7,6 +7,7 @@ from .builders import (
     claim_from_k3_e2c,
     claim_from_k3_e2d,
     claim_from_language_grounding_summary,
+    claim_from_y20_debate_summary,
     next_missing_level,
 )
 from .failure_taxonomy import KNOWN_FAILURE_MODES, is_known_failure_mode
@@ -34,6 +35,7 @@ __all__ = [
     "claim_from_k3_e2c",
     "claim_from_k3_e2d",
     "claim_from_language_grounding_summary",
+    "claim_from_y20_debate_summary",
     "next_missing_level",
     "claims_requiring_next_gate",
     "claims_with_risk_flag",

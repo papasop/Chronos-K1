@@ -11,6 +11,7 @@ from chronos.claims import (
     claim_from_k3_e2c,
     claim_from_k3_e2d,
     claim_from_language_grounding_summary,
+    claim_from_y20_debate_summary,
     claims_requiring_next_gate,
     claims_with_risk_flag,
     human_readable_summary,
@@ -265,6 +266,30 @@ class BuilderTests(unittest.TestCase):
     def test_language_grounding_builder_rejects_unknown_level(self):
         with self.assertRaises(ValueError):
             claim_from_language_grounding_summary({"passed": True, "n_assertions": 1, "levels": ["L1", "L6"]})
+
+    def test_y20_debate_builder_records_boundaries(self):
+        claim = claim_from_y20_debate_summary({"tests_passed": True, "n_tests": 19})
+        self.assertEqual(claim.claim_id, "y20_core_v0_2_debate_and_physics_self_audit")
+        self.assertEqual(claim.structure_family, "Y20_DEBATE_BOUNDARY")
+        self.assertEqual(claim.evidence_level, "toy_argument_structure")
+        self.assertEqual(claim.verdict, "Y20_CORE_V0_2_DEBATE_AND_PHYSICS_SELF_AUDIT_PASSED")
+        self.assertEqual(claim.allowed_action, ACT_CONTINUE)
+        self.assertEqual(claim.claim_type, "positive_evidence")
+        self.assertEqual(claim.confidence_level, "medium")
+        self.assertIn("standard O1-O6 objection library", claim.supports)
+        self.assertIn("K1/K2/K3 physics self-audit", claim.supports)
+        self.assertIn("external world nonexistence is proven", claim.does_not_support)
+        self.assertIn("K-family physics claims are resolved by Y20", claim.does_not_support)
+        self.assertIn("VPSL gates are bypassed", claim.does_not_support)
+        self.assertFalse(claim.controls["physics_verdict_upgrade"])
+        self.assertIn("no_physics_evidence", claim.risk_flags)
+
+    def test_y20_debate_builder_failed_run_does_not_promote(self):
+        claim = claim_from_y20_debate_summary({"tests_passed": False, "n_tests": 7})
+        self.assertEqual(claim.allowed_action, ACT_DO_NOT_PROMOTE)
+        self.assertEqual(claim.claim_type, "negative_result")
+        self.assertEqual(claim.failure_mode, DIAGNOSTICS_INSUFFICIENT)
+        self.assertNotIn("standard O1-O6 objection library", claim.supports)
 
 
 class ReplayTests(unittest.TestCase):
