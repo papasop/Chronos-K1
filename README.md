@@ -49,6 +49,7 @@ active API.
 | Open-domain language | not supported |
 
 [![tests](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/tests.yml)
+[![full-denominator](https://github.com/papasop/Chronos-K1/actions/workflows/full_denominator.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/full_denominator.yml)
 [![k2-syntax](https://github.com/papasop/Chronos-K1/actions/workflows/k2_syntax.yml/badge.svg)](https://github.com/papasop/Chronos-K1/actions/workflows/k2_syntax.yml)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/papasop/Chronos-K1/blob/main/colab/chronos_k1_quickstart.ipynb)
 
