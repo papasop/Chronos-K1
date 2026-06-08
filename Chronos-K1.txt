@@ -828,17 +828,18 @@ exhibiting the expected quadratic-type blow-up. We stress that this is a
 illustrate the unregulated-divergence pathology that motivates the
 barrier philosophy; it makes no gravitational claim.
 
-\medskip\noindent\textit{(4) Semiclassical saddle.} For the reduced action
-$S(u)=\alpha u+\eta u^{-p}$ with the default
+\medskip\noindent\textit{(4) Semiclassical saddle (default point).} For the
+reduced action $S(u)=\alpha u+\eta u^{-p}$ with the default
 parameters~\eqref{eq:scpi-default} and $\alpha=1$, deterministic
-minimisation gives
+minimisation at the default point gives
 \[
-u_{\mathrm{numeric}}=0.03162,\qquad
-u_{*}=0.03162,
+u_{\mathrm{numeric}}=u_{*}=0.03162,
 \]
 in agreement with~\eqref{eq:scpi-saddle} to relative error
 $3.45\times10^{-5}$, with residual gradient
-$dS/du(u_{*})\approx2.22\times10^{-16}$ (machine precision).
+$dS/du(u_{*})\approx2.22\times10^{-16}$ (machine precision). This is the
+default-point deterministic saddle check; the maximum relative error over
+the full $\alpha$-sweep is reported separately in item~(9) below.
 
 \medskip\noindent\textit{(5) Measure finiteness.} The bare integral follows
 the predicted power law,
@@ -846,19 +847,24 @@ the predicted power law,
 Z_{\mathrm{bare}}\sim\epsilon^{-1/2},\qquad\mathrm{slope}=-0.5017,
 \]
 in agreement with~\eqref{eq:scpi-bare}, while the regulated integral with
-the default parameters~\eqref{eq:scpi-default} approaches
+the default parameters~\eqref{eq:scpi-default} converges to
 \[
-Z_{\mathrm{reg}}\to54.050578,
+Z_{\mathrm{reg}}=54.050578,\qquad
+\max\Delta Z=1.51\times10^{-7},
 \]
-with a relative plateau spread of $2.02\times10^{-6}$ over the deepest
-cutoff decade.
+the cutoff-stability indicator $\max\Delta Z$ being the maximum successive
+change over the near-degenerate cutoff sweep of item~(7). (An earlier
+diagnostic reported a relative plateau spread of $2.02\times10^{-6}$ over
+the deepest cutoff decade; the present cutoff-stability figure is the
+$\epsilon$-sweep $\max\Delta Z$.)
 
 \medskip\noindent\textit{(6) Phase scan.} An $8\times8$ scan over
 $(\eta,p)$ confirms the measure-finite phase: $57$ cases pass directly,
 $7$ are slow-converging but integrable (the plateau appears only at deeper
 cutoffs, where the barrier is weak), and crucially
 \[
-\text{PASS}=57,\qquad\text{SLOW}=7,\qquad\text{FAIL}=0 .
+\text{PASS}=57,\qquad\text{SLOW}=7,\qquad\text{FAIL}=0
+\qquad(\epsilon_{\min}=10^{-10},\;u_{\max}=1).
 \]
 The absence of failures, rather than any single value, is the substantive
 finding.
@@ -881,9 +887,16 @@ $\alpha\in[10^{-3},10^{3}]$ gives
 \[
 \log u_{*}\;\text{vs}\;\log\alpha:\quad\mathrm{slope}=-0.5000,
 \]
-matching the theoretical exponent $-1/(p+1)=-1/2$ of~\eqref{eq:scpi-saddle}.
-The barrier-regulated SCPI sector therefore does not merely suppress a
-divergence; it also generates a non-degenerate internal scale.
+matching the theoretical exponent $-1/(p+1)=-1/2$ of~\eqref{eq:scpi-saddle},
+with maximum relative saddle error
+\[
+\max_{\alpha\text{-sweep}}\frac{|u_{\mathrm{numeric}}-u_{*}|}{u_{*}}
+=6.91\times10^{-5}
+\]
+across the sweep (to be distinguished from the default-point error
+$3.45\times10^{-5}$ of item~(4)). The barrier-regulated SCPI sector
+therefore does not merely suppress a divergence; it also generates a
+non-degenerate internal scale.
 
 \subsection{Scope}
 
