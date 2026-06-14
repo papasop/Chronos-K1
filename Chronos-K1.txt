@@ -28,7 +28,7 @@
 
 \textit{Framework.} Here the cost of change is modelled through an information time $dt_{\mathrm{info}}:=d\Phi/H$. The object constrained is not $dt_{\mathrm{info}}$ itself, but the signed leading quadratic form $G$ associated with the local second-order expansion of $dt_{\mathrm{info}}^{2}$. Modelling this form as satisfying the realizability axioms (Axioms~R, E, T; see Appendix~\ref{app:realizability}) yields, under nondegeneracy, $\mathrm{Sig}(G)=(1,1)$, equivalently $\det G<0$; the unit-cost locus is $K(x)=x^{\top}Gx=1$.
 
-\textit{Dynamics and thermodynamics.} Within the symplectic--dissipative class $GA=\alpha J-GD$, the evolution law takes the uniquely reduced form $\dot x=(J_G-D)\nabla V$. At critical damping the Law~III dynamics degenerates into a rank-one null flow with a conserved linear combination, foliating the plane into invariant leaves on each of which $K=1$ is reached by exact exponential decay, with a recovery time scaling as $c^{-2}$ in the conserved charge $c$; attraction fails only on a single measure-zero freeze leaf. Near $K=1$, the framework supplies the ingredients for a local Clausius relation, thereby providing the thermodynamic input to the Jacobson argument once the two external identifications $T_{\mathrm{eff}}=T_{\mathrm{tol}}$ and $S\propto A$ are supplied.
+\textit{Dynamics and thermodynamics.} Within the symplectic--dissipative class $GA=\alpha J-GD$, the evolution law takes the uniquely reduced form $\dot x=(J_G-D)\nabla V$. At critical damping the Law~III dynamics degenerates into a rank-one null flow with a conserved linear combination. This null-flow structure is universal for every $2\times2$ Lorentzian $G$. The stronger exact exponential recovery law, the pure $c^2$ rate, the $\Theta(c^{-2})$ recovery time, and the single frozen $c=0$ leaf are balanced-canonical special features rather than generic Lorentzian facts. Near $K=1$, the framework supplies the ingredients for a local Clausius relation, thereby providing the thermodynamic input to the Jacobson argument once the two external identifications $T_{\mathrm{eff}}=T_{\mathrm{tol}}$ and $S\propto A$ are supplied.
 
 \textit{Gravitational content.} The thermodynamic perspective above conditionally recovers the Einstein equations $R_{\mu\nu}-\tfrac12 R\,g_{\mu\nu}=8\pi T_{\mu\nu}$ via the Jacobson argument. Independently, in the spherical sector with $f>0$, the differential conditions $K_1=K_2=1$ for the cost-structural functionals $K_i:=\sigma_2^2\Box\ln\sigma_i$ are shown to be algebraically equivalent to the vacuum Einstein equations $R_{\mu\nu}=0$ (Theorem~\ref{thm:field}). The conditions $K_i=1$ are introduced at the field level as a candidate ansatz, motivated by but not derived from the point-level condition $K=1$ of Law~I; Theorem~\ref{thm:field} is therefore an algebraic reformulation of vacuum Einstein in cost-structural language, not a derivation from the framework axioms. Lorentzian signature is supplied internally at the point level throughout.
 
@@ -520,135 +520,542 @@ for that argument.
 
 \subsection{Critical damping as null-flow selection}\label{sec:nullflow}
 
-The critical-damping selection $D=d_{c}I$ of Law~III has a sharper
-structural consequence than minimal stabilisation alone, which we now
-record. Write $A_{c}:=J_{G}-d_{c}I$ for the critically damped generator.
-For the canonical Lorentzian form $G=\mathrm{diag}(1,-1)$ with $\alpha=1$
-(so that $d_{c}=1$ and $J_{G}=G^{-1}J$),
+The critical-damping selection $D=d_cI$ of Law~III has a sharper
+structural consequence than minimal stabilisation alone.  Write
 \[
-A_{c}=\begin{pmatrix}-1&1\\[2pt]1&-1\end{pmatrix},
-\qquad \det A_{c}=0,\qquad \operatorname{rank}(A_{c})=1 .
+        A_c:=J_G-d_cI,
+        \qquad
+        J_G=\alpha G^{-1}J,
+        \qquad
+        d_c=\alpha\sqrt{-1/\det G}.
 \]
-Every image vector lies in a single direction,
-$A_{c}u\in\operatorname{span}\{(-1,1)\}$ for all $u\in\mathbb{R}^{2}$, and
-that direction is null,
+For the canonical Lorentzian form $G=\operatorname{diag}(1,-1)$ with
+$\alpha=1$, one has $d_c=1$, $J_G=G^{-1}J$, and
 \[
-(-1,1)^{\top}G\,(-1,1)=0 .
+        A_c
+        =
+        \begin{pmatrix}
+        -1&1\\[2pt]
+        1&-1
+        \end{pmatrix},
+        \qquad
+        \det A_c=0,
+        \qquad
+        \operatorname{rank}(A_c)=1 .
 \]
-Thus the critically damped Law~III drift is confined to a null ray.
-Explicitly, with $V=\tfrac12(K-1)^2$ and $\nabla V=2(K-1)Gx$,
-\begin{equation}\label{eq:nullflow}
-\dot x=A_{c}\nabla V=2(K-1)(x_1+x_2)\,(-1,1).
+Every image vector lies in the single direction
+\[
+        \operatorname{im}(A_c)=\operatorname{span}\{(-1,1)\},
+\]
+and this direction is null:
+\[
+        (-1,1)^{\top}G(-1,1)=0 .
+\]
+Thus, in the canonical model, the critically damped Law~III drift is
+confined to a null ray.  Explicitly, with
+\[
+        V=\frac12(K-1)^2,
+        \qquad
+        K=x^{\top}Gx,
+        \qquad
+        \nabla V=2(K-1)Gx ,
+\]
+one obtains
+\begin{equation}
+\label{eq:nullflow}
+        \dot x
+        =
+        A_c\nabla V
+        =
+        2(K-1)(x_1+x_2)(-1,1).
 \end{equation}
 
 The drift~\eqref{eq:nullflow} vanishes on two distinct loci: the target
-$\{K=1\}$ (through the factor $K-1$) and the line
 \[
-\Sigma_0:=\{x\in\mathbb{R}^2 : x_1+x_2=0\}
+        \{K=1\},
 \]
-(through the factor $x_1+x_2$). These two loci play opposite dynamical
-roles. On $\{K=1\}$ the equilibrium is attracting: linearising the
-$K$-dynamics induced by~\eqref{eq:nullflow} at a base point
-$x_{*}\in\{K=1\}$ gives effective rate $4(x_1+x_2)^2$, recovering
-$\kappa_{K}=4d_{c}$ at the normalised base point
-$x_{*}^{\top}G^{2}x_{*}=1$ (cf.\ Theorem~\ref{thm:restoring}). On
-$\Sigma_0$, by contrast, one has $x_2=-x_1$, and therefore
+through the factor $K-1$, and the line
 \[
-K|_{\Sigma_0}=0 ,
+        \Sigma_0
+        :=
+        \{x\in\mathbb R^2:x_1+x_2=0\},
 \]
-so the line lies entirely off the target $\{K=1\}$ and the drift freezes
-there, with no restoring force.
-
-The combination $c:=x_1+x_2$ is moreover an exact first integral of the
-critical flow. Indeed,
+through the factor $x_1+x_2$.  These two loci play opposite dynamical
+roles.  On $\{K=1\}$, the equilibrium is attracting on every
+non-degenerate invariant leaf.  On $\Sigma_0$, by contrast, one has
+$x_2=-x_1$, and therefore
 \[
-\frac{d}{dt}(x_1+x_2)=(1,1)\cdot\dot x
-=2(K-1)(x_1+x_2)\,\bigl[(1,1)\cdot(-1,1)\bigr]=0 ,
+        K|_{\Sigma_0}=0 .
 \]
-since $(1,1)\cdot(-1,1)=0$. Hence $c$ foliates $\mathbb{R}^2$ into invariant
-lines $\{x_1+x_2=\mathrm{const}\}$. Generic leaves carry nontrivial dynamics
-toward $\{K=1\}$, in fact with an exactly linear $K$-decay at rate $4c^2$
-(Proposition~\ref{prop:recovery}); the single leaf $\Sigma_0=\{c=0\}$ is
-exceptional, being a line of equilibria on which $K|_{\Sigma_0}=0$. Thus
-$\Sigma_0$ is not merely a set of equilibria, but the degenerate ($c=0$)
-leaf of a first-integral foliation.
+Hence $\Sigma_0$ lies entirely off the target $\{K=1\}$ and the drift
+freezes there, with no restoring force.
 
-This refines the status of Law~III: critical damping is not merely the
-minimal isotropic stabilising choice, but selects a rank-one null flow.
-The $K=1$ locus is accordingly a global attractor on every non-degenerate
-leaf $\{x_1+x_2=c\}$, $c\neq 0$ (approached by exact exponential $K$-decay
-at rate $4c^2$, Proposition~\ref{prop:recovery}), failing to attract only on
-the measure-zero freeze leaf $\Sigma_0$; it is therefore not a global
-attractor on all of $\mathbb{R}^2$. The dependence of
-this structure --- the rank of $A_{c}$, the conserved combination $c$, and
-the freeze leaf $\Sigma_0$ --- on the specific form $G=\mathrm{diag}(1,-1)$
-is taken up in Open Problem~6 (\S\ref{sec:discussion}); for a general
-$2\times2$ Lorentzian $G$ the null direction of $A_{c}$ and the conserved
-linear combination change accordingly.
+The combination
+\[
+        c:=x_1+x_2
+\]
+is moreover an exact first integral of the canonical critical flow.  Indeed,
+\[
+        \frac{d}{dt}(x_1+x_2)
+        =
+        (1,1)\cdot\dot x
+        =
+        2(K-1)(x_1+x_2)\bigl[(1,1)\cdot(-1,1)\bigr]
+        =
+        0 .
+\]
+Thus $c$ foliates $\mathbb R^2$ into invariant lines
+\[
+        \{x_1+x_2=\mathrm{const}\}.
+\]
+Generic leaves carry nontrivial dynamics toward $\{K=1\}$, while the
+single leaf $\Sigma_0=\{c=0\}$ is exceptional: it is a line of equilibria
+on which $K|_{\Sigma_0}=0$.  Thus $\Sigma_0$ is not merely a set of
+equilibria, but the degenerate $c=0$ leaf of a first-integral foliation.
 
-\begin{remark}[Numerical diagnostic]
-Integration of the critically damped system confirms this structure. In
-random initial-condition tests, non-convergent trajectories concentrate
-sharply near $\Sigma_0$: sampled initial points within Euclidean distance
-of order $10^{-1}$ of $\Sigma_0$ failed to reach $K=1$ within the
-integration horizon, consistent with the rate $4c^2\to 0$ as $\Sigma_0$ is
-approached, while points well separated from $\Sigma_0$ converged. The
-critically damped velocity field is moreover null throughout (its image is
-$\operatorname{span}\{(-1,1)\}$), in contrast to the under-damped case
-$D=dI$ with $d<d_{c}$, where the drift acquires spacelike components. This
-supports reading $\Sigma_0$ as a genuine geometric degeneracy locus of
-Law~III rather than a numerical artifact.
+This refines the status of Law~III.  Critical damping is not merely the
+minimal isotropic stabilising choice; it selects a rank-one null flow.
+The precise status of this statement for a general $2\times2$ Lorentzian
+metric is settled below: the rank-one null-flow structure is universal,
+whereas the exact exponential $c^{-2}$ recovery law is a
+balanced-canonical specialization.
+
+\begin{remark}[Canonical numerical diagnostic]
+Integration of the canonical critically damped system confirms the
+structure above.  In random initial-condition tests, non-convergent
+trajectories concentrate sharply near $\Sigma_0$: sampled initial points
+within Euclidean distance of order $10^{-1}$ of $\Sigma_0$ fail to
+reach $K=1$ within a finite integration horizon, consistent with the
+rate tending to zero as $c=x_1+x_2\to0$.  Points well separated from
+$\Sigma_0$ converge.  The critically damped velocity field is moreover
+null throughout, since its image is
+\[
+        \operatorname{span}\{(-1,1)\}.
+\]
+This supports reading $\Sigma_0$ as a genuine geometric degeneracy locus
+of Law~III rather than a numerical artifact.  The general Lorentzian
+extension is given in Proposition~\ref{prop:nullflow-universal} and
+Remark~\ref{rem:generic-split}.
 \end{remark}
 
-\begin{proposition}[Exact leaf dynamics and recovery-time scaling]\label{prop:recovery}
-Let $c=x_1+x_2$ be the first integral of the critically damped flow
-\eqref{eq:nullflow}. On each invariant leaf $\{x_1+x_2=c\}$, the induced
-$K$-dynamics is the \emph{linear} ordinary differential equation
+\begin{proposition}[Universal critical null-flow]
+\label{prop:nullflow-universal}
+Let $G$ be any $2\times2$ Lorentzian metric, $\det G<0$.  Define
 \[
-\frac{d}{dt}(K-1)=-4c^{2}\,(K-1),
+        J_G=\alpha G^{-1}J,
+        \qquad
+        d_c=\alpha\sqrt{-1/\det G},
+        \qquad
+        A_c=J_G-d_cI .
 \]
-so that
+Then
 \[
-K(t)-1=(K_0-1)\,e^{-4c^{2}t}
+        \det A_c=0,
+        \qquad
+        \operatorname{spec}(A_c)=\{0,-2d_c\},
+        \qquad
+        \operatorname{rank}(A_c)=1 .
 \]
-holds exactly on the leaf, not merely near $\{K=1\}$. Consequently, for any
-tolerance $\varepsilon\in(0,|K_0-1|)$ the time to reach $|K-1|<\varepsilon$
-from initial offset $K_0$ is
-\[
-T_{\mathrm{recover}}(c)=\frac{1}{4c^{2}}\,
-\ln\!\frac{|K_0-1|}{\varepsilon}
-=\Theta\!\left(c^{-2}\right)\qquad(c\to 0).
-\]
-For $c\neq 0$ the flow therefore converges to $\{K=1\}$, the convergence
-being exponential but not finite-time ($K(t)\to 1$ only as $t\to\infty$);
-on the freeze leaf $\Sigma_0=\{c=0\}$ the rate vanishes and
-$K|_{\Sigma_0}=0$. Convergence thus holds on
-$\mathbb{R}^2\setminus\Sigma_0$ but is non-uniform, with the recovery time
-diverging as $c^{-2}$ as $\Sigma_0$ is approached.
+Consequently:
+\begin{enumerate}
+\item[\textup{(i)}]
+      the left null covector $\ell$ of $A_c$ defines a conserved
+      linear charge
+      \[
+            c_\ell:=\ell^{\top}x ,
+      \]
+      unique up to nonzero normalization, for the critically damped drift
+      \[
+            \dot x=2(K-1)A_cGx,
+            \qquad
+            K=x^{\top}Gx .
+      \]
+      Indeed,
+      \[
+            \ell^{\top}A_c=0
+            \quad\Longrightarrow\quad
+            \frac{d}{dt}(\ell^{\top}x)
+            =
+            2(K-1)\ell^{\top}A_cGx
+            =
+            0 .
+      \]
+
+\item[\textup{(ii)}]
+      the drift is confined to a single $G$-null ray
+      \[
+            u\in\operatorname{im}(A_c),
+            \qquad
+            u^{\top}Gu=0 ,
+      \]
+      while the kernel is the other $G$-null ray
+      \[
+            v\in\ker(A_c),
+            \qquad
+            v^{\top}Gv=0 .
+      \]
+      The two rays are distinct.
+\end{enumerate}
+Thus critical damping universally selects a rank-one null flow on one
+$G$-null ray, with the kernel on the other, and a conserved linear charge
+unique up to normalization, for every Lorentzian $G$.
 \end{proposition}
 
-\begin{remark}[Exact-leaf numerical reproduction of the closed-form recovery law]
-Direct integration on exact invariant leaves reproduces the closed-form
-recovery law of Proposition~\ref{prop:recovery} to solver accuracy. With
-exact on-leaf initialisation ($x_1+x_2=c$ held exactly), the measured
-recovery time matches
-$T_{\mathrm{recover}}=\tfrac{1}{4c^2}\ln(|K_0-1|/\varepsilon)$ pointwise
-(ratio $1.0000$ across $c\in[0.03,1]$), and a log--log fit of recovery
-time against $c$ gives
+\begin{proof}
+The operator $J_G$ is traceless and satisfies
 \[
-\mathrm{slope}=-2.000,\qquad R^2=1.000,
+        \det J_G
+        =
+        \alpha^2\det(G^{-1})\det J
+        =
+        \frac{\alpha^2}{\det G}
+        <0 .
 \]
-in agreement with $T_{\mathrm{recover}}=\Theta(c^{-2})$ up to the
-logarithmic factor $\ln(|K_0-1|/\varepsilon)$. The rescaled product
-$T_{\mathrm{recover}}\,c^2=\tfrac14\ln(|K_0-1|/\varepsilon)$ is therefore
-constant along leaves at fixed $(K_0,\varepsilon)$, not a failure of the
-scaling. Deviations from the $c^{-2}$ exponent observed in earlier
-control runs (fitted slopes in the range $-0.7$ to $-1.1$) arose from
-short-window identifiability effects --- curves near the freeze leaf
-$\Sigma_0$ decay too slowly for the rate to be statistically resolved
-within a finite observation window --- rather than from any failure of
-the theory, consistent with the non-uniform convergence as $\Sigma_0$ is
-approached (Proposition~\ref{prop:recovery}).
+Hence
+\[
+        \operatorname{spec}(J_G)=\{+d_c,-d_c\},
+        \qquad
+        d_c=\alpha\sqrt{-1/\det G}.
+\]
+Therefore
+\[
+        \operatorname{spec}(A_c)
+        =
+        \operatorname{spec}(J_G-d_cI)
+        =
+        \{0,-2d_c\}.
+\]
+This gives
+\[
+        \det A_c=0,
+        \qquad
+        \operatorname{tr}A_c=-2d_c\neq0,
+        \qquad
+        \operatorname{rank}(A_c)=1 .
+\]
+
+For the conserved charge, if $\ell^{\top}A_c=0$, then along
+$\dot x=2(K-1)A_cGx$,
+\[
+        \frac{d}{dt}(\ell^{\top}x)
+        =
+        \ell^{\top}\dot x
+        =
+        2(K-1)\ell^{\top}A_cGx
+        =
+        0 .
+\]
+
+It remains to identify the null rays.  Since
+\[
+        GJ_G=\alpha J
+\]
+is skew-symmetric, any real eigenvector $w$ of $J_G$ with nonzero
+eigenvalue $\lambda$ satisfies
+\[
+        0
+        =
+        w^{\top}(\alpha J)w
+        =
+        w^{\top}GJ_Gw
+        =
+        \lambda\,w^{\top}Gw .
+\]
+Thus $w^{\top}Gw=0$.  The two eigenvalues of $J_G$ are $+d_c$ and
+$-d_c$, with two distinct real eigendirections.  Shifting by $-d_cI$
+makes the $+d_c$ eigendirection the kernel of $A_c$, while the
+remaining eigendirection spans the image of the rank-one map $A_c$.
+These are precisely the two distinct $G$-null rays.
+\end{proof}
+
+The companion scripts \texttt{op6\_symbolic.py} and
+\texttt{op6\_nullflow\_general.py} reproduce the identities of
+Proposition~\ref{prop:nullflow-universal} symbolically and numerically.
+
+We use three related charge notations in this subsection.  The symbol
+$c_\ell=\ell^{\top}x$ denotes the conserved charge for a general
+Lorentzian $G$, determined only up to nonzero normalization.  In the
+normalized balanced-canonical gauge $G=\operatorname{diag}(1,-1)$, we
+choose the unnormalized charge $c=x_1+x_2$.  The unit-normalized version is
+\[
+        \hat c=\frac{x_1+x_2}{\sqrt2}.
+\]
+The recovery Corollary is stated in terms of $c$, while the generic rate
+law is stated in terms of $\hat c$.
+
+\begin{corollary}[Balanced-canonical recovery law]
+\label{prop:recovery}
+Specialize Proposition~\ref{prop:nullflow-universal} to the normalized
+balanced-canonical gauge
+\[
+        G=\operatorname{diag}(1,-1),
+\]
+for which the conserved charge may be taken as
+\[
+        c=x_1+x_2 .
+\]
+On each invariant leaf $\{x_1+x_2=c\}$, the image direction of $A_c$ is
+$G$-null by Proposition~\ref{prop:nullflow-universal}.  Hence $K$ is
+exactly affine along the leaf, and the induced $(K-1)$-equation is exactly
+linear, not merely a linearization near $\{K=1\}$:
+\[
+        \frac{d}{dt}(K-1)
+        =
+        -4c^2(K-1),
+\]
+and hence
+\[
+        K(t)-1
+        =
+        (K_0-1)e^{-4c^2t}
+\]
+exactly on the leaf.  Consequently, for any tolerance
+\[
+        \varepsilon\in(0,|K_0-1|),
+\]
+the recovery time is
+\[
+        T_{\mathrm{recover}}(c)
+        =
+        \frac{1}{4c^2}
+        \log\frac{|K_0-1|}{\varepsilon}
+        =
+        \Theta(c^{-2})
+        \qquad
+        (c\to0).
+\]
+
+For an overall balanced-canonical rescaling
+\[
+        G=s\,\operatorname{diag}(1,-1),
+        \qquad
+        s>0,
+\]
+the same mechanism gives
+\[
+        \frac{d}{dt}(K-1)
+        =
+        -4s\,c^2(K-1),
+\]
+so the recovery remains exactly exponential and still satisfies
+\[
+        T_{\mathrm{recover}}(c)=\Theta(c^{-2}),
+\]
+with only the prefactor changed by the overall scale.
+
+Equivalently, using the unit-normalized charge
+\[
+        \hat c
+        =
+        \frac{x_1+x_2}{\sqrt2},
+\]
+the balanced-canonical rate law reads
+\[
+        \frac{d}{dt}(K-1)
+        =
+        -\kappa \hat c^2(K-1),
+        \qquad
+        \kappa=8s .
+\]
+For the normalized case $s=1$, this is consistent with
+\[
+        4(x_1+x_2)^2
+        =
+        8\hat c^2 .
+\]
+
+The convergence is exponential but not finite-time:
+\[
+        K(t)\to1
+        \qquad
+        \text{only as}
+        \qquad
+        t\to\infty .
+\]
+On the freeze leaf
+\[
+        \Sigma_0=\{c=0\},
+\]
+the rate vanishes and
+\[
+        K|_{\Sigma_0}=0 .
+\]
+In this balanced-canonical case, the freeze locus $\Sigma_0$ coincides
+with the degenerate leaf $\{c=0\}$, convergence holds on
+\[
+        \mathbb R^2\setminus\Sigma_0,
+\]
+and $\{K=1\}$ is attracting on every $c\neq0$ leaf.
+
+Thus the exact exponential law, pure $c^2$ rate,
+$\Theta(c^{-2})$ recovery, frozen $c=0$ leaf, and the coincidence
+\[
+        \Sigma_0=\{c=0\}
+\]
+are balanced-canonical features.  Their generic Lorentzian status is given
+in Remark~\ref{rem:generic-split}.
+\end{corollary}
+
+\begin{remark}[Exact-leaf numerical reproduction of the balanced-canonical law]
+Direct integration on exact invariant leaves reproduces the closed-form
+recovery law of Corollary~\ref{prop:recovery} to solver accuracy.  With
+exact on-leaf initialisation, so that $x_1+x_2=c$ is held exactly, the
+measured recovery time matches
+\[
+        T_{\mathrm{recover}}
+        =
+        \frac{1}{4c^2}
+        \log\frac{|K_0-1|}{\varepsilon}
+\]
+pointwise, and a log--log fit of recovery time against $c$ gives
+\[
+        \mathrm{slope}=-2.000,
+        \qquad
+        R^2=1.000 ,
+\]
+in agreement with
+\[
+        T_{\mathrm{recover}}=\Theta(c^{-2})
+\]
+up to the logarithmic factor
+\[
+        \log\frac{|K_0-1|}{\varepsilon}.
+\]
+The rescaled product
+\[
+        T_{\mathrm{recover}}\,c^2
+        =
+        \frac14
+        \log\frac{|K_0-1|}{\varepsilon}
+\]
+is therefore constant along leaves at fixed $(K_0,\varepsilon)$.
+Deviations from the $c^{-2}$ exponent observed in earlier control runs
+arose from finite-window identifiability effects: curves near the freeze
+leaf $\Sigma_0$ decay too slowly for the rate to be statistically
+resolved within a finite observation window.  This is consistent with the
+non-uniform convergence as $\Sigma_0$ is approached.
+\end{remark}
+
+\begin{remark}[Generic Lorentzian split]
+\label{rem:generic-split}
+For a generic Lorentzian $G$, the leaf dynamics is logistic rather than
+exactly exponential.  The linearized rate at $K=1$ takes the form
+\begin{equation}
+\label{eq:generic-rate}
+        \rho(\hat c)
+        =
+        \rho_0+\kappa\hat c^2 .
+\end{equation}
+Here $\hat c$ denotes the unit-normalized conserved charge associated
+with the left null covector of $A_c$.  In the diagonal Lorentzian gauge
+below, $\kappa>0$ follows symbolically.  For general non-diagonal $G$,
+the same positivity is verified in the reproduction script over random
+Lorentzian samples; a fully coordinate-free closed form for this
+positivity is left as part of the gauge-independent formulation in
+Open Problem~6.  The constant term satisfies
+\[
+        \rho_0=-\beta ,
+\]
+where $\beta$ is the quadratic logistic coefficient.  Thus the failure
+of the exact exponential law is measured by the same coefficient that
+controls the nonzero intercept of the rate law.
+
+In a diagonal Lorentzian gauge
+\[
+        G=\operatorname{diag}(a,-b),
+        \qquad
+        a>0,
+        \qquad
+        b>0,
+\]
+one obtains the closed forms
+\[
+        \beta
+        =
+        \frac{2(b-a)}{\sqrt{ab}},
+        \qquad
+        \rho_0
+        =
+        \frac{2(a-b)}{\sqrt{ab}},
+        \qquad
+        \kappa
+        =
+        \frac{2(a+b)^2}{\sqrt{ab}}
+        >
+        0 .
+\]
+The gauge-fixed diagnostic
+\[
+        \chi_{\mathrm{unit}}
+        =
+        u^{\top}G^{-1}u
+        =
+        \frac{b-a}{ab}
+\]
+has the same zero set as $\beta$, and
+\[
+        \frac{\rho_0}{\chi_{\mathrm{unit}}}
+        =
+        -2\sqrt{ab}
+        =
+        -2\sqrt{-\det G}.
+\]
+Therefore
+\[
+        \beta=0
+        \quad\Longleftrightarrow\quad
+        \rho_0=0
+        \quad\Longleftrightarrow\quad
+        \chi_{\mathrm{unit}}=0
+        \quad\Longleftrightarrow\quad
+        a=b .
+\]
+The balanced-canonical condition is exactly the condition under which the
+generic rate law collapses to a pure $\hat c^2$ law.
+
+Off the balanced gauge, two cases arise.  If
+\[
+        \rho_0<0,
+\]
+then there is a finite repelling band
+\[
+        |\hat c|<\hat c_{\mathrm{crit}},
+        \qquad
+        \hat c_{\mathrm{crit}}
+        =
+        \sqrt{-\rho_0/\kappa},
+\]
+inside which $\{K=1\}$ is not attracting.  If
+\[
+        \rho_0>0,
+\]
+there is no small-$\hat c$ repelling band, but the $\hat c=0$ leaf is
+still not a zero-rate frozen leaf.  In both cases the exact exponential
+law, the pure $c^2$ or $\hat c^2$ rate, the $\Theta(c^{-2})$ recovery
+time, and the coincidence
+\[
+        \Sigma_0=\{c=0\}
+\]
+of Corollary~\ref{prop:recovery} are broken.
+
+The diagnostic $\chi_{\mathrm{unit}}$ is defined relative to the
+Euclidean gauge already fixed by the isotropic dissipation
+\[
+        D=d_cI
+\]
+of Law~III, and is not a coordinate scalar.  A gauge-independent
+formulation of the same split is left open
+(cf.\ Open Problem~6).
+
+In summary,
+\[
+        \text{critical null-flow is universal,}
+        \qquad
+        \text{exact }c^{-2}\text{ recovery is balanced-canonical.}
+\]
+Equivalently, Proposition~\ref{prop:nullflow-universal} gives the
+universal theorem, while Corollary~\ref{prop:recovery} gives the
+balanced-canonical specialization.
 \end{remark}
 
 %===================================================================
@@ -993,7 +1400,7 @@ exhibiting exact $\kappa$-cancellation. Hence the internal algebraic identity $d
 
 In this subsection we work within the Sekimoto--Seifert stochastic thermodynamics framework~\cite{Sekimoto}; within that external framework, the key additional external input is the identification $T_{\mathrm{eff}}=T_{\mathrm{tol}}$, which is assumed here and not derived from the present framework.
 
-\medskip\noindent\textit{Scope of the OU reduction.} The OU reduction below presupposes a strictly positive restoring rate toward $\{K=1\}$. It therefore applies wherever that rate is strictly positive, and degenerates where it vanishes --- namely on the freeze leaf $\Sigma_0$ of the critically damped flow (\S\ref{sec:nullflow}, Proposition~\ref{prop:recovery}), where the restoring rate is zero and the OU stationary distribution is undefined. All thermodynamic statements of this section are accordingly understood on the non-degenerate part of the dynamics, away from $\Sigma_0$.
+\medskip\noindent\textit{Scope of the OU reduction.} The OU reduction below presupposes a strictly positive restoring rate toward $\{K=1\}$. It therefore applies wherever that rate is strictly positive, and degenerates where the restoring rate vanishes or where the leaf is non-attracting. In the balanced-canonical case this excludes the freeze leaf $\Sigma_0$ of Corollary~\ref{prop:recovery}; for generic Lorentzian $G$, the corresponding non-attracting set is described by the rate split of Remark~\ref{rem:generic-split}. All thermodynamic statements of this section are accordingly understood on the attracting, non-degenerate part of the dynamics.
 
 Within Class~A (fixed inertial observer), and at a fixed $G$-eigenvector base point on $\{K=1\}$, the normal $K$-dynamics near $K=1$ reduces to a one-dimensional Ornstein--Uhlenbeck process. Its stationary variance is
 \begin{equation}
@@ -1381,7 +1788,7 @@ The following remarks are heuristic and should be read as an outlook rather than
 \item No observational deviation from GR is obtained in the present analysis. \textit{(predictive gap)}
 \item The $\sigma_1$ threshold derived in \S\ref{sec:singularity} is a soft consistency bound only, not a hard quantum-gravitational cutoff. \textit{(strength)}
 \item The scalar $H$ (information-time layer) and the matrix weight $H_{*}$ (stability layer) are not unified in the present framework. \textit{(notation and layering)}
-\item At critical damping the global attractivity of $\{K=1\}$ fails on a measure-zero freeze leaf $\Sigma_0$ (\S\ref{sec:nullflow}); only convergence on $\mathbb{R}^2\setminus\Sigma_0$, with base-point-dependent rate, is established, and only for the canonical $2\times2$ form. \textit{(attractivity)}
+\item At critical damping the rank-one null-flow structure is universal for every $2\times2$ Lorentzian $G$, but the stronger exact exponential law, pure $c^2$ recovery rate, $\Theta(c^{-2})$ recovery time, and the single frozen $c=0$ leaf are balanced-canonical special features. For generic $G$, the leaf dynamics is logistic and the rate has the form $\rho(\hat c)=\rho_0+\kappa\hat c^2$, with possible repelling bands depending on the sign of $\rho_0$. \textit{(OP6 split)}
 \item The structural path integral of \S\ref{sec:scpi} is a finite-dimensional minisuperspace validator; the barrier weight $\eta$ and exponent $p$ are inputs, and the full infinite-dimensional, diffeomorphism-invariant measure is not constructed. \textit{(scope of the path-integral extension)}
 \end{enumerate}
 
@@ -1409,7 +1816,7 @@ $K_i=1$, which correspond to the hard-constraint limit of \eqref{eq:Seta}.
 \item Identify testable strong-field predictions. Within the present spherical-vacuum analysis, since in the weak-field regime $K_2=1$ already reproduces the Newtonian potential while $K_1=1$ is automatic at linear order, any observational distinction between the eigenvalue principle and standard GR must arise from the nonlinear strong-field sector, i.e.\ from the term $B/r^2$ in the $K_1$-only family that distinguishes $K_1$-equivalence from pure Schwarzschild (Lemma~\ref{lem:rigidity}). Possible windows include high-precision black-hole shadow data, strong-field gravitational-wave signals, and near-horizon quantum effects.
 \item Establish a first-principles relation between the motivating information time $dt_{\mathrm{info}}$ and the effective dynamical evolution parameter $t$ used in Laws~II--III and the thermodynamic perspective.
 \item Prove $\sigma_{1,\min}\geq\hbar/(4\pi)$ as a hard bound from $K$--$\varphi$ canonical conjugacy \emph{without} invoking the thermodynamic identification $T_{\mathrm{eff}}=T_{\mathrm{tol}}$, where $\varphi$ is the boost angle along $\{K{=}1\}$.
-\item For the canonical form, the critically damped generator $A_{c}=J_{G}-d_{c}I$ is rank-one and admits the first integral $c=x_1+x_2$, whose foliation contains the degenerate freeze leaf $\Sigma_0=\{c=0\}$ on which $K|_{\Sigma_0}=0$ (\S\ref{sec:nullflow}). For a general $2\times2$ Lorentzian form $G$ (with $\det G<0$), determine: (i)~whether $A_{c}$ remains rank-one and thus admits an analogous first integral; (ii)~the resulting invariant foliation and its degenerate leaf; and (iii)~whether convergence of the critically damped flow to $\{K=1\}$ holds on the complement of that leaf, with an explicit base-point-dependent rate generalising $4c^2$ and an associated recovery-time scaling generalising the $\Theta(c^{-2})$ law of Proposition~\ref{prop:recovery}.
+\item Develop a gauge-independent and higher-dimensional formulation of the OP6 split. In the $2\times2$ Lorentzian setting, Proposition~\ref{prop:nullflow-universal} settles the universal part: at critical damping $A_c$ is rank-one, admits a conserved linear charge, and its image and kernel are the two $G$-null rays. Remark~\ref{rem:generic-split} also shows that the exact exponential law, pure $c^2$ rate, $\Theta(c^{-2})$ recovery, and the single frozen $c=0$ leaf are balanced-canonical special features. What remains open is to formulate this split without the gauge-fixed diagnostic $\chi_{\mathrm{unit}}$, to characterise the corresponding non-attracting sets invariantly, and to determine whether an analogue survives in $(1{+}3)$ dimensions once a symplectic pairing choice is supplied.
 \item Determine whether the structural barrier $S_{\mathrm{barrier}}=\eta|\det G|^{-p}$ of \S\ref{sec:scpi} can be \emph{derived} from the cost axioms (Axioms~R, E, T) rather than imposed. A derivation fixing the exponent $p$ and weight $\eta$ would upgrade the interior structural scale $u_{*}=(\eta p/\alpha)^{1/(p+1)}$ from a parameter-dependent quantity to a prediction of the framework, and would parallel the $\eta$-weight question of Open Problem~1 at the level of the path-integral measure. Whether a covariant, diffeomorphism-invariant lift of the finite-dimensional measure of \S\ref{sec:scpi} exists is a further, logically subsequent question.
 \end{enumerate}
 
@@ -1647,7 +2054,7 @@ sharpened form of Open Problem~1.
 
 \medskip\noindent\textbf{Author contributions.} Y.\,Y.\,N.\ Li is the sole author of the work presented.
 
-\medskip\noindent\textbf{Data availability.} No primary research datasets were generated during the current study. The symbolic and numerical verification scripts that reproduce the recovery-time scaling of Proposition~\ref{prop:recovery}, the algebraic field equivalence of Theorem~\ref{thm:field}, the $\eta$-weighted indicial computation of Appendix~\ref{app:eta}, and the barrier-regulated measure-finiteness and saddle scan of \S\ref{sec:scpi}, are available from the author on reasonable request.
+\medskip\noindent\textbf{Data availability.} No primary research datasets were generated during the current study. The symbolic and numerical verification scripts that reproduce the OP6 null-flow split of Proposition~\ref{prop:nullflow-universal} and Remark~\ref{rem:generic-split}, the balanced-canonical recovery-time scaling of Corollary~\ref{prop:recovery}, the algebraic field equivalence of Theorem~\ref{thm:field}, the $\eta$-weighted indicial computation of Appendix~\ref{app:eta}, and the barrier-regulated measure-finiteness and saddle scan of \S\ref{sec:scpi}, are available from the author on reasonable request.
 
 \begin{thebibliography}{99}
 
